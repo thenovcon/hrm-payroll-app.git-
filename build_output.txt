@@ -1,0 +1,34 @@
+
+> hrm-system@0.1.0 build
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/kokug/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/kokug/Documents/Study/Apps/HRM + Payroll App/package-lock.json
+
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.7s
+  Running TypeScript ...
+Failed to compile.
+
+./src/lib/actions/createEmployee.ts:26:13
+Type error: Type '{ firstName: string; lastName: string; email: string; phone: string; dateOfBirth: Date; gender: string; position: string; department: string; dateJoined: Date; employeeId: string; employmentType: string; ghanaCardNumber: string; ssnitNumber: string; }' is not assignable to type '(Without<EmployeeCreateInput, EmployeeUncheckedCreateInput> & EmployeeUncheckedCreateInput) | (Without<...> & EmployeeCreateInput)'.
+  Type '{ firstName: string; lastName: string; email: string; phone: string; dateOfBirth: Date; gender: string; position: string; department: string; dateJoined: Date; employeeId: string; employmentType: string; ghanaCardNumber: string; ssnitNumber: string; }' is not assignable to type 'Without<EmployeeUncheckedCreateInput, EmployeeCreateInput> & EmployeeCreateInput'.
+    Types of property 'department' are incompatible.
+      Type 'string' has no properties in common with type 'DepartmentCreateNestedOneWithoutEmployeesInput'.
+
+[0m [90m 24 |[39m     [36mtry[39m {
+ [90m 25 |[39m         [36mconst[39m employee [33m=[39m [36mawait[39m prisma[33m.[39memployee[33m.[39mcreate({
+[31m[1m>[22m[39m[90m 26 |[39m             data[33m:[39m {
+ [90m    |[39m             [31m[1m^[22m[39m
+ [90m 27 |[39m                 [33m...[39mdata[33m,[39m
+ [90m 28 |[39m             }[33m,[39m
+ [90m 29 |[39m         })[33m;[39m[0m
+Next.js build worker exited with code: 1 and signal: null

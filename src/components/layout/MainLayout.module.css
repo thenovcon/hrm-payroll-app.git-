@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-body);
+}
+
+.mainWrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+}
+
+.content {
+    padding: 2rem;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    /* Future: Add mobile menu toggle logic and responsive adjustments */
+}
