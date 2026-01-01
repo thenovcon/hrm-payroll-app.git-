@@ -5,12 +5,17 @@ import { useRouter } from 'next/navigation';
 import styles from './Header.module.css';
 import { logout } from '@/lib/actions/auth-actions';
 
+import { useTheme } from "next-themes";
+
 export default function Header() {
     const router = useRouter();
+    const { setTheme, theme } = useTheme();
     const [showNotifications, setShowNotifications] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
+
+    // Removing manual dark mode state
+    // const [darkMode, setDarkMode] = useState(false);
 
     const notifRef = useRef<HTMLDivElement>(null);
     const settingsRef = useRef<HTMLDivElement>(null);
@@ -141,12 +146,29 @@ export default function Header() {
                                 >
                                     <span>🔐</span> Change Password
                                 </button>
-                                <button
-                                    onClick={toggleDarkMode}
-                                    className={styles.settingItem}
-                                >
-                                    <span>{darkMode ? '☀️' : '🌙'}</span> {darkMode ? 'Light Mode' : 'Dark Mode'}
-                                </button>
+                                <div className="px-4 py-2">
+                                    <p className="text-xs font-semibold text-slate-500 mb-2 uppercase">Theme</p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setTheme("light")}
+                                            className={`flex-1 py-1 text-xs rounded border ${theme === 'light' ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-slate-50 border-slate-200'}`}
+                                        >
+                                            ☀️ Light
+                                        </button>
+                                        <button
+                                            onClick={() => setTheme("dark")}
+                                            className={`flex-1 py-1 text-xs rounded border ${theme === 'dark' ? 'bg-indigo-900 border-indigo-700 text-white' : 'bg-slate-50 border-slate-200'}`}
+                                        >
+                                            🌙 Dark
+                                        </button>
+                                        <button
+                                            onClick={() => setTheme("system")}
+                                            className={`flex-1 py-1 text-xs rounded border ${theme === 'system' ? 'bg-slate-200 border-slate-300' : 'bg-slate-50 border-slate-200'}`}
+                                        >
+                                            💻 Auto
+                                        </button>
+                                    </div>
+                                </div>
                                 <button
                                     onClick={() => handleSettingClick('/settings')}
                                     className={styles.settingItem}
@@ -177,25 +199,25 @@ export default function Header() {
                             </div>
                             <div className={styles.dropdownContent}>
                                 <button
-                                    onClick={() => { setShowHelp(false); alert('User Guide coming soon!'); }}
+                                    onClick={() => handleSettingClick('/help/user-guide')}
                                     className={styles.settingItem}
                                 >
                                     <span>📖</span> User Guide
                                 </button>
                                 <button
-                                    onClick={() => { setShowHelp(false); alert('Video Tutorials coming soon!'); }}
+                                    onClick={() => handleSettingClick('/help/user-guide')} // Creating placeholder for video tutorials or link to same guide
                                     className={styles.settingItem}
                                 >
                                     <span>🎥</span> Video Tutorials
                                 </button>
                                 <button
-                                    onClick={() => { setShowHelp(false); alert('Contact Support: support@novcon.com'); }}
+                                    onClick={() => handleSettingClick('/help/support')}
                                     className={styles.settingItem}
                                 >
                                     <span>💬</span> Contact Support
                                 </button>
                                 <button
-                                    onClick={() => { setShowHelp(false); alert('Please email bugs to: bugs@novcon.com'); }}
+                                    onClick={() => handleSettingClick('/help/bug-report')}
                                     className={styles.settingItem}
                                 >
                                     <span>🐛</span> Report a Bug

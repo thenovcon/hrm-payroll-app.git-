@@ -103,6 +103,11 @@ model User {
   requisitions  Requisition[] @relation("UserRequisitions")
   interviews    Interview[]
 
+  // Support
+  createdTickets  Ticket[]
+  assignedTickets Ticket[]  @relation("TicketAssignee")
+  ticketComments  TicketComment[]
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -744,3 +749,44 @@ model CompanyProfile {
   updatedAt       DateTime  @updatedAt
 }
 
+
+// --- SUPPORT & TICKETING ---
+
+model Ticket {
+  id              String    @id @default(uuid())
+  title           String    // Subject
+  description     String
+  type            String    // BUG_REPORT, SUPPORT_REQUEST
+  priority        String    @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status          String    @default("OPEN")   // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  
+  // For Bug Reports
+  stepsToReproduce String?
+  expectedBehavior String?
+  screenshotUrl    String?
+  
+  // Relations
+  createdById     String
+  createdBy       User      @relation(fields: [createdById], references: [id])
+  
+  assignedToId    String?
+  assignedTo      User?     @relation("TicketAssignee", fields: [assignedToId], references: [id])
+  
+  comments        TicketComment[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model TicketComment {
+  id              String    @id @default(uuid())
+  ticketId        String
+  ticket          Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  
+  content         String
+  
+  createdAt       DateTime  @default(now())
+}
