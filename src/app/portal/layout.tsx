@@ -1,10 +1,12 @@
-
-import MainLayout from '@/components/layout/MainLayout';
-
 export default function PortalLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    return <MainLayout>{children}</MainLayout>;
+    return (
+        <div style={{ padding: '20px', border: '5px solid green' }}>
+            <p>DEBUG: Raw Portal Layout (No Sidebar)</p>
+            {children}
+        </div>
+    );
 }
