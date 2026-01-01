@@ -60,6 +60,10 @@ export default async function Sidebar() {
           </div>
         </div>
 
+        <div style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--slate-400)', marginBottom: '0.5rem' }}>
+          {FULL_VERSION}
+        </div>
+
         <form action={async () => {
           'use server';
           await signOut();
