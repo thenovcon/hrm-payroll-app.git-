@@ -11,6 +11,11 @@ import { useTheme } from "next-themes";
 export default function Header() {
     const router = useRouter();
     const { setTheme, theme } = useTheme();
+
+    useEffect(() => {
+        console.log(`App Version: ${FULL_VERSION}`);
+    }, []);
+
     const [showNotifications, setShowNotifications] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
