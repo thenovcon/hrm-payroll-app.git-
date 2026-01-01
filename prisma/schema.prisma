@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  // Using absolute path for dev to resolve locking/resolution issues in Next.js
-  url      = "file:///Users/kokug/Documents/Study/Apps/HRM + Payroll App/dev.db" 
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Employee {
