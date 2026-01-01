@@ -18,8 +18,8 @@ export const authConfig = {
 
             if (isOnLogin || isOnRoot || isOnCareers) {
                 if (isLoggedIn && isOnLogin) {
-                    console.log('Middleware: User is logged in, redirecting to /');
-                    return Response.redirect(new URL('/', nextUrl));
+                    console.log('Middleware: User is logged in, redirecting to /dashboard');
+                    return Response.redirect(new URL('/dashboard', nextUrl));
                 }
                 return true;
             }
