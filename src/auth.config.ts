@@ -13,9 +13,10 @@ export const authConfig = {
             console.log('Middleware:', { pathname, isLoggedIn, user: auth?.user?.name });
 
             const isOnLogin = pathname.startsWith('/login');
+            const isOnRoot = pathname === '/';
             const isOnCareers = pathname.startsWith('/careers');
 
-            if (isOnLogin || isOnCareers) {
+            if (isOnLogin || isOnRoot || isOnCareers) {
                 if (isLoggedIn && isOnLogin) {
                     console.log('Middleware: User is logged in, redirecting to /');
                     return Response.redirect(new URL('/', nextUrl));
