@@ -29,7 +29,6 @@ export default async function Sidebar() {
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
         <h1 className={styles.logoText}>Novcon Ghana HRM+</h1>
-        <span className={styles.version}>{FULL_VERSION}</span>
       </div>
 
       <nav className={styles.nav}>
