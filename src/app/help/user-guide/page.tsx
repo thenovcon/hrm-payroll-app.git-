@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Link from "next/link";
 
 export default function UserGuidePage() {
@@ -106,21 +105,21 @@ export default function UserGuidePage() {
 
 function SectionCard({ title, description, icon, children }: { title: string, description: string, icon: string, children: React.ReactNode }) {
     return (
-        <Card className="hover:shadow-lg transition-shadow duration-300">
-            <CardHeader className="pb-3">
+        <div className="bg-white dark:bg-slate-900 rounded-lg shadow border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+            <div className="p-6 pb-3">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-2xl">
                         {icon}
                     </div>
                     <div>
-                        <CardTitle className="text-xl">{title}</CardTitle>
+                        <h3 className="text-xl font-semibold leading-none tracking-tight text-slate-900 dark:text-white">{title}</h3>
                     </div>
                 </div>
-                <CardDescription className="text-base mt-2">{description}</CardDescription>
-            </CardHeader>
-            <CardContent>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">{description}</p>
+            </div>
+            <div className="p-6 pt-0">
                 {children}
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }
