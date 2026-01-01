@@ -14,9 +14,10 @@ export const authConfig = {
 
             const isOnLogin = pathname.startsWith('/login');
             const isOnRoot = pathname === '/';
+            const isOnPortal = pathname.startsWith('/portal');
             const isOnCareers = pathname.startsWith('/careers');
 
-            if (isOnLogin || isOnRoot || isOnCareers) {
+            if (isOnLogin || isOnRoot || isOnPortal || isOnCareers) {
                 if (isLoggedIn && isOnLogin) {
                     console.log('Middleware: User is logged in, redirecting to /portal');
                     return Response.redirect(new URL('/portal', nextUrl));
