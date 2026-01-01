@@ -32,11 +32,16 @@ export async function seedAdminUser() {
     try {
         const user = await prisma.user.upsert({
             where: { username: 'admin' },
-            update: {},
+            update: {
+                password: password,
+                role: 'ADMIN',
+                status: 'ACTIVE'
+            },
             create: {
                 username: 'admin',
                 password: password,
                 role: 'ADMIN',
+                status: 'ACTIVE'
             },
         });
         return { success: true };
