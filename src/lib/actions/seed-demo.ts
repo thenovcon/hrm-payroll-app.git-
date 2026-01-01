@@ -240,10 +240,11 @@ export async function seedDemoData() {
         const hashedPassword = await bcrypt.hash('demo123', 10);
 
         // Admin user
+        const adminPassword = await bcrypt.hash('J4v!9Kz#tQ2m&X7pLf@', 10);
         await prisma.user.create({
             data: {
-                username: 'admin',
-                password: hashedPassword,
+                username: 'thenovcon@gmail.com',
+                password: adminPassword,
                 role: 'ADMIN',
                 status: 'ACTIVE'
             }
