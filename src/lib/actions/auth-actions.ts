@@ -47,6 +47,6 @@ export async function seedAdminUser() {
         return { success: true };
     } catch (error) {
         console.error('Failed to seed admin:', error);
-        return { success: false, error: 'Failed' };
+        return { success: false, error: String(error) };
     }
 }

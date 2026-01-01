@@ -7,6 +7,6 @@ export async function GET() {
         const result = await seedAdminUser();
         return NextResponse.json(result);
     } catch (error) {
-        return NextResponse.json({ error: 'Failed' }, { status: 500 });
+        return NextResponse.json({ error: String(error) }, { status: 500 });
     }
 }
