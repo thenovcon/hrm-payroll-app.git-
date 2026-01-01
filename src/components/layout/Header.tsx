@@ -196,25 +196,25 @@ export default function Header() {
                             </div>
                             <div className={styles.dropdownContent}>
                                 <button
-                                    onClick={() => handleSettingClick('/help/user-guide')}
+                                    onClick={() => handleSettingClick('/support-portal/user-guide')}
                                     className={styles.settingItem}
                                 >
                                     <span>📖</span> User Guide
                                 </button>
                                 <button
-                                    onClick={() => handleSettingClick('/help/user-guide')} // Creating placeholder for video tutorials or link to same guide
+                                    onClick={() => handleSettingClick('/support-portal/user-guide')} // Creating placeholder for video tutorials or link to same guide
                                     className={styles.settingItem}
                                 >
                                     <span>🎥</span> Video Tutorials
                                 </button>
                                 <button
-                                    onClick={() => handleSettingClick('/help/support')}
+                                    onClick={() => handleSettingClick('/support-portal/support')}
                                     className={styles.settingItem}
                                 >
                                     <span>💬</span> Contact Support
                                 </button>
                                 <button
-                                    onClick={() => handleSettingClick('/help/bug-report')}
+                                    onClick={() => handleSettingClick('/support-portal/bug-report')}
                                     className={styles.settingItem}
                                 >
                                     <span>🐛</span> Report a Bug

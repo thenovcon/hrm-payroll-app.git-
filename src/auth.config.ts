@@ -16,10 +16,10 @@ export const authConfig = {
             const isOnRoot = pathname === '/';
             const isOnPortal = pathname.startsWith('/portal');
             const isOnCareers = pathname.startsWith('/careers');
-            const isOnHelp = pathname.startsWith('/help'); // Whitelist Help
+            const isOnSupport = pathname.startsWith('/support-portal'); // Whitelist Support Portal
             const isOnLegal = pathname.startsWith('/legal'); // Whitelist Legal
 
-            if (isOnLogin || isOnRoot || isOnPortal || isOnCareers || isOnHelp || isOnLegal) {
+            if (isOnLogin || isOnRoot || isOnPortal || isOnCareers || isOnSupport || isOnLegal) {
                 if (isLoggedIn && isOnLogin) {
                     console.log('Middleware: User is logged in, redirecting to /portal');
                     return Response.redirect(new URL('/portal', nextUrl));

@@ -82,9 +82,9 @@ export default function UserGuidePage() {
                         If you encounter issues or need specific guidance, use the support tools.
                     </p>
                     <div className="flex gap-2">
-                        <Link href="/help/support" className="text-sm font-medium text-blue-600 hover:underline">Contact Support</Link>
+                        <Link href="/support-portal/support" className="text-sm font-medium text-blue-600 hover:underline">Contact Support</Link>
                         <span className="text-slate-300">|</span>
-                        <Link href="/help/bug-report" className="text-sm font-medium text-blue-600 hover:underline">Report a Bug</Link>
+                        <Link href="/support-portal/bug-report" className="text-sm font-medium text-blue-600 hover:underline">Report a Bug</Link>
                     </div>
                 </SectionCard>
             </div>
@@ -93,7 +93,7 @@ export default function UserGuidePage() {
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Still need help?</h3>
                 <p className="text-slate-600 dark:text-slate-400 mb-6">Our support team is ready to assist you with technical issues or feature requests.</p>
                 <Link
-                    href="/help/support"
+                    href="/support-portal/support"
                     className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
                 >
                     Open a Support Ticket
