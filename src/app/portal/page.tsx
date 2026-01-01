@@ -1,14 +1,19 @@
-import React from 'react';
+import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db/prisma';
 import AgentPortal from '@/components/portal/AgentPortal';
 
 export default async function Home() {
   const session = await auth();
+
+  if (!session?.user) {
+    redirect('/login');
+  }
+
   const userRole = (session?.user as any)?.role || 'EMPLOYEE';
 
   // If user is an employee, show Agent Portal
-  if (userRole === 'EMPLOYEE' && session?.user?.id) {
+  if (userRole === 'EMPLOYEE') {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       include: {
