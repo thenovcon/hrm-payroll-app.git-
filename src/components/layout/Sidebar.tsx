@@ -17,6 +17,7 @@ const menuItems = [
 ];
 
 import { auth, signOut } from '@/auth';
+import { FULL_VERSION } from '@/lib/version';
 
 export default async function Sidebar() {
   const session = await auth();
@@ -28,7 +29,7 @@ export default async function Sidebar() {
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
         <h1 className={styles.logoText}>Novcon Ghana HRM</h1>
-        <span className={styles.version}>v1.0</span>
+        <span className={styles.version}>{FULL_VERSION}</span>
       </div>
 
       <nav className={styles.nav}>

@@ -1,4 +1,5 @@
 'use client';
+import { FULL_VERSION } from '@/lib/version';
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -215,7 +216,7 @@ export default function Header() {
                                 </button>
                             </div>
                             <div className={styles.dropdownFooter} style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
-                                Version 1.0.0
+                                {FULL_VERSION}
                             </div>
                         </div>
                     )}
