@@ -14,12 +14,13 @@ export const authConfig = {
 
             const isOnLogin = pathname.startsWith('/login');
             const isOnRoot = pathname === '/';
+            // const isOnDashboard = pathname.startsWith('/main'); // Optional check
             const isOnCareers = pathname.startsWith('/careers');
 
             if (isOnLogin || isOnRoot || isOnCareers) {
                 if (isLoggedIn && isOnLogin) {
-                    console.log('Middleware: User is logged in, redirecting to /dashboard');
-                    return Response.redirect(new URL('/dashboard', nextUrl));
+                    console.log('Middleware: User is logged in, redirecting to /main');
+                    return Response.redirect(new URL('/main', nextUrl));
                 }
                 return true;
             }

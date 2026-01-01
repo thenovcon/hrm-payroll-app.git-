@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
     try {
-        await signIn('credentials', { ...Object.fromEntries(formData), redirectTo: '/dashboard' });
+        await signIn('credentials', { ...Object.fromEntries(formData), redirectTo: '/main' });
     } catch (error) {
         if (error instanceof AuthError) {
             console.error('Auth Error:', error.type, error.message);
