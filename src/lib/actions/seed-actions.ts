@@ -56,7 +56,6 @@ export async function seedGhanaianDemoData() {
             await prisma.user.create({
                 data: {
                     username: 'admin',
-                    email: adminEmail,
                     password: hashedPassword,
                     role: 'ADMIN',
                     employee: {
@@ -108,7 +107,6 @@ export async function seedGhanaianDemoData() {
             await prisma.user.create({
                 data: {
                     username,
-                    email,
                     password: hashedPassword,
                     role: position === 'Director' || position === 'Manager' ? 'DEPT_HEAD' : 'EMPLOYEE',
                     employee: {
