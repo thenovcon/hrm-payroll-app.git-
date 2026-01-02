@@ -197,6 +197,8 @@ model HRPolicy {
   title           String
   content         String    // Full text
   category        String    // LEAVE, CONDUCT, BENEFITS
+  fileUrl         String?   // PDF/DOCX link
+
   
   // Basic Vector implementation: we might store JSON embedding here if using generic DB,
   // or just use this table for text retrieval.

@@ -2,107 +2,53 @@
 
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
-// --- SKILLS ---
+export async function createTrainingCourse(formData: FormData) {
+    const title = formData.get('title') as string;
+    const description = formData.get('description') as string;
+    const category = formData.get('category') as string;
+    const deliveryMethod = formData.get('deliveryMethod') as string;
+    const duration = formData.get('duration') as string;
+    // const level = formData.get('level') as string; // Note: 'level' isn't in TrainingCourse model, might need to rely on description or Skills relations. 
+    // However, the mocked component used 'level'. I'll skip it for now or store it in description if needed, or add it to schema if the user really wants it. 
+    // For now, I'll stick to the model: title, description, category, deliveryMethod, duration, costPerParticipant, contentUrl
+    const contentUrl = formData.get('contentUrl') as string;
 
-export async function getSkills() {
+    if (!title || !description || !category || !deliveryMethod) {
+        throw new Error('Missing required fields');
+    }
+
     try {
-        const skills = await prisma.skill.findMany({
-            orderBy: { name: 'asc' }
+        await prisma.trainingCourse.create({
+            data: {
+                title,
+                description,
+                category,
+                deliveryMethod,
+                duration: duration || null,
+                contentUrl: contentUrl || null,
+                costPerParticipant: 0, // Default for now
+                // We're not handling skills logic yet for simplicity in this step
+            }
         });
-        return { success: true, data: skills };
     } catch (error) {
-        return { success: false, error: 'Failed to fetch skills' };
+        console.error('Error creating training course:', error);
+        throw new Error('Failed to create training course');
     }
+
+    revalidatePath('/training');
+    redirect('/training');
 }
 
-export async function createSkill(data: any) {
-    try {
-        const skill = await prisma.skill.create({ data });
-        revalidatePath('/training');
-        return { success: true, data: skill };
-    } catch (error) {
-        return { success: false, error: 'Failed to create skill' };
-    }
-}
-
-// --- COURSES ---
-
-export async function getCourses() {
+export async function getTrainingCourses() {
     try {
         const courses = await prisma.trainingCourse.findMany({
-            include: { skills: true },
             orderBy: { createdAt: 'desc' }
         });
-        return { success: true, data: courses };
+        return courses;
     } catch (error) {
-        return { success: false, error: 'Failed to fetch courses' };
-    }
-}
-
-export async function createCourse(data: any) {
-    try {
-        const { skillIds, ...courseData } = data;
-        const course = await prisma.trainingCourse.create({
-            data: {
-                ...courseData,
-                skills: {
-                    connect: skillIds?.map((id: string) => ({ id })) || []
-                }
-            }
-        });
-        revalidatePath('/training');
-        return { success: true, data: course };
-    } catch (error) {
-        return { success: false, error: 'Failed to create course' };
-    }
-}
-
-// --- ENROLLMENTS ---
-
-export async function enrollEmployee(data: { employeeId: string; courseId: string; assignedBy?: string; deadline?: Date }) {
-    try {
-        const enrollment = await prisma.enrollment.create({
-            data: {
-                ...data,
-                status: 'ENROLLED',
-                progress: 0
-            }
-        });
-        revalidatePath('/training');
-        return { success: true, data: enrollment };
-    } catch (error) {
-        return { success: false, error: 'Failed to enroll employee' };
-    }
-}
-
-export async function updateEnrollmentProgress(id: string, progress: number, status?: string) {
-    try {
-        const enrollment = await prisma.enrollment.update({
-            where: { id },
-            data: {
-                progress,
-                status: status || (progress === 100 ? 'COMPLETED' : 'IN_PROGRESS'),
-                completionDate: progress === 100 ? new Date() : undefined
-            }
-        });
-        revalidatePath('/training');
-        return { success: true, data: enrollment };
-    } catch (error) {
-        return { success: false, error: 'Failed to update progress' };
-    }
-}
-
-// --- CERTIFICATIONS ---
-
-export async function getCertifications() {
-    try {
-        const certs = await prisma.certification.findMany({
-            include: { employee: true, course: true },
-            orderBy: { issueDate: 'desc' }
-        });
-        return { success: true, data: certs };
-    } catch (error) {
-        return { success: false, error: 'Failed to fetch certifications' };
+        console.error('Error fetching training courses:', error);
+        return [];
     }
 }

@@ -1,24 +1,24 @@
+
 'use server';
 
-import { auth } from '@/auth';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
-import { generateEmbedding } from '@/lib/ai/gemini';
+import { redirect } from 'next/navigation';
 
-export async function createPolicy(title: string, content: string, category: string) {
-    const session = await auth();
-    const user = session?.user as any;
-    if (user?.role !== 'ADMIN' && user?.role !== 'HR_MANAGER') {
-        throw new Error('Unauthorized');
-    }
+export async function getPolicies() {
+    return await prisma.hRPolicy.findMany({
+        orderBy: { createdAt: 'desc' }
+    });
+}
 
-    let embeddingStr = "[]";
-    try {
-        const embedding = await generateEmbedding(`${title}\n${content}`);
-        embeddingStr = JSON.stringify(embedding);
-    } catch (e) {
-        console.error("Failed to generate embedding", e);
-        // Fallback to empty or retry logic in real app
+export async function createPolicy(formData: FormData) {
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    const category = formData.get('category') as string;
+    const fileUrl = formData.get('fileUrl') as string; // from FileUpload
+
+    if (!title || !content || !category) {
+        throw new Error('Missing required fields');
     }
 
     await prisma.hRPolicy.create({
@@ -26,24 +26,15 @@ export async function createPolicy(title: string, content: string, category: str
             title,
             content,
             category,
-            embedding: embeddingStr
+            fileUrl: fileUrl || null
         }
     });
 
     revalidatePath('/policies');
-}
-
-export async function getPolicies() {
-    return await prisma.hRPolicy.findMany({
-        orderBy: { title: 'asc' }
-    });
+    redirect('/policies');
 }
 
 export async function deletePolicy(id: string) {
-    const session = await auth();
-    const user = session?.user as any;
-    if (user?.role !== 'ADMIN') throw new Error('Unauthorized');
-
     await prisma.hRPolicy.delete({ where: { id } });
     revalidatePath('/policies');
 }

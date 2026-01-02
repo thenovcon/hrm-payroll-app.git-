@@ -1,88 +1,74 @@
+
 'use client';
 
+import React, { useState } from 'react';
 import { createPolicy } from '@/lib/actions/policy-actions';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import FileUpload from '@/components/shared/FileUpload';
+import Link from 'next/link';
 
 export default function NewPolicyPage() {
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = async (formData: FormData) => {
-        setLoading(true);
-        const title = formData.get('title') as string;
-        const category = formData.get('category') as string;
-        const content = formData.get('content') as string;
-
-        try {
-            await createPolicy(title, content, category);
-            router.push('/policies');
-        } catch (error) {
-            console.error(error);
-            alert('Failed to save policy');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const [fileUrl, setFileUrl] = useState('');
 
     return (
-        <div className="p-6 max-w-2xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Add New Policy</h1>
+        <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-sm border border-slate-100 mt-6">
+            <h1 className="text-2xl font-bold mb-6 text-slate-800">Add New HR Policy</h1>
 
-            <form action={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <form action={createPolicy} className="space-y-6">
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Policy Title</label>
                     <input
                         name="title"
                         required
-                        placeholder="e.g. Remote Work Policy"
-                        className="w-full px-3 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500"
+                        className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:outline-none"
+                        placeholder="e.g. Employee Code of Conduct"
                     />
                 </div>
 
-                <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
                     <select
                         name="category"
-                        className="w-full px-3 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500 bg-white"
+                        className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                     >
                         <option value="GENERAL">General</option>
-                        <option value="LEAVE">Leave & Attendance</option>
-                        <option value="BENEFITS">Benefits & Compensation</option>
+                        <option value="LEAVE">Leave & Time Off</option>
                         <option value="CONDUCT">Code of Conduct</option>
-                        <option value="IT">IT & Security</option>
+                        <option value="BENEFITS">Benefits & Comp</option>
+                        <option value="HEALTH">Health & Safety</option>
                     </select>
                 </div>
 
-                <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Policy Content</label>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Summary / AI Content</label>
+                    <p className="text-xs text-slate-500 mb-2">Paste the text content here so the AI Assistant can read it.</p>
                     <textarea
                         name="content"
+                        rows={6}
                         required
-                        rows={10}
-                        placeholder="Paste the full policy text here. The AI will read this to answer employee questions."
-                        className="w-full px-3 py-2 border rounded-md focus:ring-primary-500 focus:border-primary-500"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                        Note: This content will be embedded into the vector database for RAG retrieval.
-                    </p>
+                        className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:outline-none"
+                        placeholder="Paste full text of the policy here..."
+                    ></textarea>
                 </div>
 
-                <div className="flex justify-end gap-3">
-                    <button
-                        type="button"
-                        onClick={() => router.back()}
-                        className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                    >
-                        Cancel
-                    </button>
+                <div>
+                    <FileUpload
+                        label="Attach PDF Document (Optional)"
+                        folder="policies"
+                        onUploadComplete={(url) => setFileUrl(url)}
+                    />
+                    <input type="hidden" name="fileUrl" value={fileUrl} />
+                </div>
+
+                <div className="flex gap-4 pt-4">
                     <button
                         type="submit"
-                        disabled={loading}
-                        className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
+                        className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition"
                     >
-                        {loading ? 'Saving & Embedding...' : 'Save Policy'}
+                        Save Policy
                     </button>
+                    <Link href="/policies" className="bg-slate-100 text-slate-600 px-6 py-2 rounded-lg font-medium hover:bg-slate-200 transition">
+                        Cancel
+                    </Link>
                 </div>
             </form>
         </div>

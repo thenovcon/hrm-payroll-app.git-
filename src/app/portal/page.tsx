@@ -50,7 +50,11 @@ export default async function MainPage() {
     attendanceToday,
     financials,
     compliance,
-    attrition
+    attrition,
+    payrollRuns,
+    departments,
+    attendanceRecords,
+    applicationTrendsData
   ] = await Promise.all([
     // 1. Employees
     prisma.employee.count({ where: { status: 'ACTIVE' } }),
@@ -81,15 +85,85 @@ export default async function MainPage() {
     getComplianceMetrics(),
 
     // 6. Attrition
-    getAttritionMetrics()
+    getAttritionMetrics(),
+
+    // 7. Payroll History for Charts
+    prisma.payrollRun.findMany({
+      orderBy: { year: 'asc', month: 'asc' },
+      take: 6,
+      select: { month: true, year: true, totalCost: true }
+    }),
+
+    // 8. Department Headcount
+    prisma.department.findMany({
+      include: {
+        _count: { select: { employees: true } }
+      }
+    }),
+
+    // 9. Attendance Trends (Last 14 days)
+    prisma.attendanceRecord.findMany({
+      where: {
+        date: { gte: new Date(new Date().setDate(new Date().getDate() - 14)) }
+      },
+      select: { date: true, status: true },
+      orderBy: { date: 'asc' }
+    }),
+
+    // 10. Application Trends (This Year)
+    prisma.application.findMany({
+      where: {
+        createdAt: { gte: new Date(new Date().getFullYear(), 0, 1) }
+      },
+      select: { createdAt: true }
+    })
   ]);
+
+  // Format Data for Charts
+  const chartPayrollData = (payrollRuns || []).map((run: any) => ({
+    month: `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][run.month - 1]}`,
+    cost: run.totalCost
+  }));
+
+  const chartHeadcountData = (departments || []).map((dept: any) => ({
+    name: dept.name,
+    value: dept._count.employees
+  })).filter((d: any) => d.value > 0);
+
+  // Process Attendance Trends
+  const attendanceMap = new Map<string, { date: string, present: number, late: number, absent: number }>();
+
+  (attendanceRecords || []).forEach((record: any) => {
+    const dateStr = record.date.toISOString().split('T')[0];
+    const dayLabel = new Date(record.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+
+    if (!attendanceMap.has(dateStr)) {
+      attendanceMap.set(dateStr, { date: dayLabel, present: 0, late: 0, absent: 0 });
+    }
+
+    const entry = attendanceMap.get(dateStr)!;
+    if (record.status === 'PRESENT') entry.present++;
+    else if (record.status === 'LATE') entry.late++;
+    else if (record.status === 'ABSENT') entry.absent++;
+  });
+
+  const chartAttendanceData = Array.from(attendanceMap.values());
+
+  // Process Application Trends (Monthly)
+  const applicationTrends = new Array(12).fill(0);
+  (applicationTrendsData || []).forEach((app: any) => {
+    const month = new Date(app.createdAt).getMonth();
+    applicationTrends[month]++;
+  });
 
   // Normalize Recruitment Data
   const activeJobs = recruitmentStats.length;
-  const totalApplications = 77; // Mock for matching screenshot (or sum recruitmentStats)
-  const jobViews = 3342; // Mock
+  // Calculate total applications by summing up the counts from recruitmentStats
+  const totalApplications = recruitmentStats.reduce((sum, job) => sum + job._count.applications, 0);
+  const jobViews = 0; // Not tracked in schema yet
 
   const JobStatsChart = (await import('@/components/dashboard/JobStatsChart')).default;
+  const OverviewAnalytics = (await import('@/components/dashboard/OverviewAnalytics')).default;
 
   return (
     <div className="container mx-auto space-y-6 p-6 max-w-7xl animate-in fade-in duration-500">
@@ -231,10 +305,18 @@ export default async function MainPage() {
 
       </div>
 
+      {/* NEW: VISUAL ANALYTICS ROW */}
+      <OverviewAnalytics
+        payrollHistory={chartPayrollData}
+        headcountByDept={chartHeadcountData}
+        attendanceTrends={chartAttendanceData}
+      />
+
       {/* Main Chart Section - Enhanced Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <JobStatsChart views={jobViews} applied={totalApplications} />
+          {/* We want to keep Job Stats or replace it? Keeping it for detailed view below the main analytics */}
+          <JobStatsChart views={jobViews} applied={totalApplications} data={applicationTrends} />
         </div>
 
         {/* Helper Widgets Column */}
