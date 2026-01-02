@@ -16,7 +16,7 @@ const menuItems = [
   { label: 'Policies', href: '/policies', icon: '📚', roles: ['ADMIN', 'HR_MANAGER', 'DEPT_HEAD'] },
   { label: 'Training', href: '/training', icon: '🎓' },
   { label: 'Reports', href: '/reports', icon: '📑', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
-  { label: 'Settings', href: '/settings', icon: '⚙️', roles: ['ADMIN', 'HR_MANAGER'] },
+  { label: 'System Config', href: '/settings', icon: '⚙️', roles: ['ADMIN', 'HR_MANAGER'] },
 ];
 
 import { auth, signOut } from '@/auth';
@@ -58,8 +58,7 @@ export default async function Sidebar() {
         )}
       </nav>
 
-      {/* Help & Support Trigger */}
-      <HelpTrigger />
+
 
       <div className={styles.footer}>
         <div className={styles.userProfile} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>

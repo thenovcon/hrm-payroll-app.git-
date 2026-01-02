@@ -84,44 +84,51 @@ export default function Header({ notifications = [] }: HeaderProps) {
                                 <button onClick={() => setShowSettings(false)}>✕</button>
                             </div>
                             <div className={styles.dropdownContent}>
+                                {/* TODO: Replace 'me' with actual user ID from session context if available, or fetch it */}
                                 <button
-                                    onClick={() => handleSettingClick('/settings')}
+                                    onClick={() => handleSettingClick('/employees/me')}
                                     className={styles.settingItem}
                                 >
                                     <span>👤</span> My Profile
                                 </button>
                                 <button
-                                    onClick={() => handleSettingClick('/settings')}
+                                    onClick={() => handleSettingClick('/forgot-password')}
                                     className={styles.settingItem}
                                 >
                                     <span>🔐</span> Change Password
                                 </button>
-                                <div className="px-4 py-2">
-                                    <p className="text-xs font-semibold text-slate-500 mb-2 uppercase">Theme</p>
-                                    <div className="flex gap-2">
+
+                                <div className="px-4 py-3 border-t border-slate-100">
+                                    <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Interface Theme</p>
+                                    <div className="flex gap-2 bg-slate-100 p-1 rounded-lg">
                                         <button
                                             onClick={() => setTheme("light")}
-                                            className={`flex-1 py-1 text-xs rounded border ${theme === 'light' ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-slate-50 border-slate-200'}`}
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${theme === 'light' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            title="Light Mode"
                                         >
                                             ☀️ Light
                                         </button>
                                         <button
                                             onClick={() => setTheme("dark")}
-                                            className={`flex-1 py-1 text-xs rounded border ${theme === 'dark' ? 'bg-indigo-900 border-indigo-700 text-white' : 'bg-slate-50 border-slate-200'}`}
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${theme === 'dark' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            title="Dark Mode"
                                         >
                                             🌙 Dark
                                         </button>
                                         <button
                                             onClick={() => setTheme("system")}
-                                            className={`flex-1 py-1 text-xs rounded border ${theme === 'system' ? 'bg-slate-200 border-slate-300' : 'bg-slate-50 border-slate-200'}`}
+                                            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${theme === 'system' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            title="System Preference"
                                         >
                                             💻 Auto
                                         </button>
                                     </div>
                                 </div>
+
                                 <button
                                     onClick={() => handleSettingClick('/settings')}
                                     className={styles.settingItem}
+                                    style={{ borderTop: '1px solid var(--slate-100)' }}
                                 >
                                     <span>🔔</span> Notification Preferences
                                 </button>
