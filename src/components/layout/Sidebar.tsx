@@ -5,8 +5,8 @@ import HelpTrigger from '@/components/support/HelpTrigger';
 
 const menuItems = [
   { label: 'Dashboard', href: '/', icon: '📊' },
-  { label: 'Recruitment (ATS)', href: '/ats', icon: '📝', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'DEPT_HEAD'], subItems: [{ label: 'Analytics', href: '/ats/analytics' }] },
-  { label: 'Employees', href: '/employees', icon: '👥', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'DEPT_HEAD'], subItems: [{ label: 'Analytics', href: '/employees/analytics' }] },
+  { label: 'Recruitment (ATS)', href: '/ats', icon: '📝', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'DEPT_HEAD'] },
+  { label: 'Employees', href: '/employees', icon: '👥', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'DEPT_HEAD'] },
   { label: 'Leave Management', href: '/leave', icon: '🏖️' },
   { label: 'Attendance', href: '/attendance', icon: '⏰' },
   { label: 'Payroll', href: '/payroll', icon: '💰', roles: ['ADMIN', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
