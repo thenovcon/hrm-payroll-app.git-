@@ -11,9 +11,12 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+import { getMessaging } from 'firebase/messaging';
+
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const storage = getStorage(app);
+const messaging = typeof window !== 'undefined' ? getMessaging(app) : null;
 
-export { app, auth, storage };    
+export { app, auth, storage, messaging };    

@@ -21,9 +21,9 @@ export default function SocialFeed({ initialPosts, userId }: { initialPosts: any
         // Safe check for useOptimistic in case of older React version, though package.json says 19
         try {
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            return require('react').useOptimistic(posts, (state: Post[], newPost: Post) => [newPost, ...state]);
+            return require('react').useOptimistic(initialPosts, (state: Post[], newPost: Post) => [newPost, ...state]);
         } catch (e) {
-            return [posts, () => { }];
+            return [initialPosts, () => { }];
         }
     })();
 
