@@ -116,6 +116,9 @@ model User {
   assignedTickets Ticket[]  @relation("TicketAssignee")
   ticketComments  TicketComment[]
 
+  // Push Notifications
+  fcmToken        String?   // Latest device token
+
   // Engagement & Communication
   // Engagement & Communication
   sentMessages      ChatMessage[] @relation("SentMessages")

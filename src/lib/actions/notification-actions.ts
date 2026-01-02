@@ -53,4 +53,35 @@ export async function createNotification(userId: string, title: string, message:
             link
         }
     });
+
+    // TRIGGER PUSH NOTIFICATION (FCM)
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { fcmToken: true }
+        });
+
+        if (user?.fcmToken) {
+            // Lazy load admin to avoid init issues if not configured
+            const { adminMessaging } = await import('@/lib/firebase-admin');
+
+            await adminMessaging.send({
+                token: user.fcmToken,
+                notification: {
+                    title,
+                    body: message,
+                },
+                webpush: {
+                    fcmOptions: {
+                        link: link ?? '/'
+                    }
+                },
+                data: {
+                    url: link ?? '/'
+                }
+            });
+        }
+    } catch (error) {
+        console.error("FCM Push Error:", error);
+    }
 }

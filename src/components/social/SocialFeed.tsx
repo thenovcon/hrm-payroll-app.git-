@@ -17,9 +17,15 @@ type Post = {
 };
 
 export default function SocialFeed({ initialPosts, userId }: { initialPosts: any[], userId: string }) {
-    const [posts, setPosts] = useState<Post[]>(initialPosts);
-
-    // Optimistic UI updates could go here, but for simplicity relying on server revalidation
+    const [optimisticPosts, addOptimisticPost] = (settings => {
+        // Safe check for useOptimistic in case of older React version, though package.json says 19
+        try {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            return require('react').useOptimistic(posts, (state: Post[], newPost: Post) => [newPost, ...state]);
+        } catch (e) {
+            return [posts, () => { }];
+        }
+    })();
 
     return (
         <div className="space-y-6">
@@ -28,8 +34,23 @@ export default function SocialFeed({ initialPosts, userId }: { initialPosts: any
                 <form action={async (formData) => {
                     const content = formData.get('content') as string;
                     if (!content) return;
+
+                    // 1. Optimistic Update
+                    addOptimisticPost({
+                        id: Math.random().toString(), // Temp ID
+                        content,
+                        imageUrl: null,
+                        author: {
+                            username: 'Me',
+                            employee: { firstName: 'You', lastName: '(Posting...)', position: '' }
+                        },
+                        createdAt: new Date(),
+                        _count: { likes: 0, comments: 0 },
+                        isLiked: false
+                    });
+
+                    // 2. Server Action
                     await createPost(content);
-                    // Reset form logic would require JS hook
                 }}>
                     <div className="flex gap-3">
                         <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">
@@ -53,7 +74,7 @@ export default function SocialFeed({ initialPosts, userId }: { initialPosts: any
             </div>
 
             {/* Feed */}
-            {posts.map(post => (
+            {optimisticPosts.map((post: Post) => (
                 <div key={post.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">

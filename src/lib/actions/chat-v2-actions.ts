@@ -115,29 +115,38 @@ export async function sendChatMessage(conversationId: string, content: string) {
 // --- AI Real Implementation ---
 
 async function generateAIResponse(conversationId: string, userPrompt: string) {
-    // 1. Fetch all policies (In-memory Vector Store for Demo)
-    // In production, use PGVector or Pinecone
-    const allPolicies = await prisma.hRPolicy.findMany();
-
     let contextText = "";
 
-    if (allPolicies.length > 0) {
-        try {
-            const queryEmbedding = await generateEmbedding(userPrompt);
+    try {
+        const queryEmbedding = await generateEmbedding(userPrompt);
 
-            // Convert DB strings to arrays
-            const docs = allPolicies.map(p => ({
+        // Hybrid Search: Pinecone (if config) OR In-Memory (Fallback)
+        // Note: For in-memory fallback to work without fetching ALL policies, we would need 
+        // to pass all docs here. But since vector-store.ts handles the fallback logic 
+        // by accepting 'documents', we need to decide:
+        // A) If Pinecone, we pass empty array as fallback docs (and Pinecone handles it)
+        // B) If no Pinecone, we must fetch all policies.
+
+        let retrievalDocs: any[] = [];
+
+        // Check if Pinecone environment is set (heuristic check, ideally vector-store exports a flag)
+        const isPineconeEnabled = process.env.PINECONE_API_KEY;
+
+        if (!isPineconeEnabled) {
+            // FALLBACK LEGACY MODE: Fetch all for in-memory scan (Only efficient for <100 docs)
+            const allPolicies = await prisma.hRPolicy.findMany();
+            retrievalDocs = allPolicies.map(p => ({
                 id: p.id,
                 content: `${p.title}: ${p.content}`,
                 embedding: JSON.parse(p.embedding || "[]")
             })).filter(d => d.embedding.length > 0);
-
-            const relevantDocs = findMostSimilarDocuments(queryEmbedding, docs, 2);
-            contextText = relevantDocs.map(d => d.doc.content).join("\n\n");
-
-        } catch (e) {
-            console.error("RAG Error:", e);
         }
+
+        const relevantDocs = await findMostSimilarDocuments(queryEmbedding, retrievalDocs, 2);
+        contextText = relevantDocs.map(d => d.doc.content).join("\n\n");
+
+    } catch (e) {
+        console.error("RAG Error:", e);
     }
 
     const systemPrompt = `You are a helpful HR Assistant for Novcon Ghana.

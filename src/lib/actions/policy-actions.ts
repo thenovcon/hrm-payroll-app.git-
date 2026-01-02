@@ -21,7 +21,10 @@ export async function createPolicy(formData: FormData) {
         throw new Error('Missing required fields');
     }
 
-    await prisma.hRPolicy.create({
+    const { generateEmbedding } = await import('@/lib/ai/gemini');
+    const { upsertDocument } = await import('@/lib/ai/vector-store');
+
+    const policy = await prisma.hRPolicy.create({
         data: {
             title,
             content,
@@ -29,6 +32,23 @@ export async function createPolicy(formData: FormData) {
             fileUrl: fileUrl || null
         }
     });
+
+    // Generate Embedding and Upsert to Vector Store (Async/Fire-and-forget optional but we await for safety)
+    try {
+        const textToEmbed = `${title}: ${content}`;
+        const embedding = await generateEmbedding(textToEmbed);
+
+        // Save to DB (JSON Fallback)
+        await prisma.hRPolicy.update({
+            where: { id: policy.id },
+            data: { embedding: JSON.stringify(embedding) }
+        });
+
+        // Upsert to Pinecone
+        await upsertDocument(policy.id, content, embedding, { title, category });
+    } catch (e) {
+        console.error("Vector Store Sync Error:", e);
+    }
 
     revalidatePath('/policies');
     redirect('/policies');
