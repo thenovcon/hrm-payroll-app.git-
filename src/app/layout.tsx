@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Novcon Ghana HRM & Payroll System",
+  title: "NovCon Ghana HRM+",
   description: "Comprehensive Human Resource Management System for Novcon Ghana",
 };
 

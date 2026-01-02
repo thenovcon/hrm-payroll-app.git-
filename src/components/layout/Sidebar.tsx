@@ -38,7 +38,8 @@ export default async function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
-        <h1 className={styles.logoText}>Novcon Ghana HRM+</h1>
+        {/* <img src="/logo.png" alt="NovCon Logo" style={{ height: '32px', marginRight: '10px' }} /> */}
+        <h1 className={styles.logoText}>NovCon Ghana HRM+</h1>
       </div>
 
       <nav className={styles.nav}>

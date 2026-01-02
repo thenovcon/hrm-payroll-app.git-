@@ -7,7 +7,12 @@ export default async function PoliciesPage() {
     const session = await auth();
     if (!session) redirect('/login');
 
-    const policies = await getPolicies();
+    let policies: any[] = [];
+    try {
+        policies = await getPolicies();
+    } catch (error) {
+        console.error("Failed to fetch policies:", error);
+    }
     const canEdit = (session.user as any)?.role === 'ADMIN' || (session.user as any)?.role === 'HR_MANAGER';
 
     return (

@@ -65,6 +65,11 @@ export default function LoginForm() {
                     {errorMessage}
                 </div>
             )}
+
+            <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: '#94a3b8' }}>
+                <p>&copy; {new Date().getFullYear()} Novelty Concepts Ltd.</p>
+                <p>All rights reserved.</p>
+            </div>
         </form>
     );
 }

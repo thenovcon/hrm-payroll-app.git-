@@ -10,7 +10,13 @@ export default async function DashboardLayout({
     children: React.ReactNode;
 }) {
     const session = await auth();
-    const notifications = await getNotifications();
+    let notifications: any[] = [];
+    try {
+        notifications = await getNotifications();
+    } catch (e) {
+        console.error("Failed to fetch notifications in layout:", e);
+        // Continue without notifications to prevent 500 Page Crash
+    }
 
     return (
         <>

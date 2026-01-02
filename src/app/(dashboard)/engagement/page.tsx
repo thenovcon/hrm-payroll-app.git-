@@ -11,13 +11,23 @@ export default async function EngagementPage() {
     const session = await auth();
     const user = session?.user;
 
-    // Parallel Data Fetching
-    const [upcomingSessions, birthdays, newsletters, posts] = await Promise.all([
-        user ? getUpcomingOneOnOnes(user.id as string, (user as any).role) : [],
-        getUpcomingBirthdays(),
-        getNewsletters(),
-        getPosts(1, 20)
-    ]);
+    // Parallel Data Fetching with Safety
+    let upcomingSessions: any[] = [];
+    let birthdays: any[] = [];
+    let newsletters: any[] = [];
+    let posts: any[] = [];
+
+    try {
+        [upcomingSessions, birthdays, newsletters, posts] = await Promise.all([
+            user ? getUpcomingOneOnOnes(user.id as string, (user as any).role) : [],
+            getUpcomingBirthdays(),
+            getNewsletters(),
+            getPosts(1, 20)
+        ]);
+    } catch (error) {
+        console.error("Failed to fetch engagement data:", error);
+        // Fallback to empty arrays so page renders
+    }
 
     const isManager = (user as any)?.role === 'ADMIN' || (user as any)?.role === 'HR_MANAGER' || (user as any)?.role === 'DEPT_HEAD';
 
