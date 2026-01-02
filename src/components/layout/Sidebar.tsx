@@ -5,15 +5,16 @@ import HelpTrigger from '@/components/support/HelpTrigger';
 
 const menuItems = [
   { label: 'Dashboard', href: '/', icon: '📊' },
-  { label: 'Recruitment (ATS)', href: '/ats', icon: '📝', roles: ['ADMIN', 'HR'], subItems: [{ label: 'Analytics', href: '/ats/analytics' }] },
-  { label: 'Employees', href: '/employees', icon: '👥', roles: ['ADMIN', 'HR'], subItems: [{ label: 'Analytics', href: '/employees/analytics' }] },
-  { label: 'Leave Management', href: '/leave', icon: '🏖️' }, // All can see Leave
-  { label: 'Attendance', href: '/attendance', icon: '⏰' },   // All can see Attendance (views differ)
-  { label: 'Payroll', href: '/payroll', icon: '💰', roles: ['ADMIN', 'ACCOUNTANT'] },
-  { label: 'Performance', href: '/performance', icon: '📈' }, // All? Usually yes for self-review.
-  { label: 'Training', href: '/training', icon: '🎓' },       // All for LMS
-  { label: 'Reports', href: '/reports', icon: '📑', roles: ['ADMIN', 'HR', 'ACCOUNTANT'] },
-  { label: 'Settings', href: '/settings', icon: '⚙️', roles: ['ADMIN'] },
+  { label: 'Recruitment (ATS)', href: '/ats', icon: '📝', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'DEPT_HEAD'], subItems: [{ label: 'Analytics', href: '/ats/analytics' }] },
+  { label: 'Employees', href: '/employees', icon: '👥', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'DEPT_HEAD'], subItems: [{ label: 'Analytics', href: '/employees/analytics' }] },
+  { label: 'Leave Management', href: '/leave', icon: '🏖️' },
+  { label: 'Attendance', href: '/attendance', icon: '⏰' },
+  { label: 'Payroll', href: '/payroll', icon: '💰', roles: ['ADMIN', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
+  { label: 'Performance', href: '/performance', icon: '📈' },
+  { label: 'Engagement', href: '/engagement', icon: '🤝' },
+  { label: 'Training', href: '/training', icon: '🎓' },
+  { label: 'Reports', href: '/reports', icon: '📑', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
+  { label: 'Settings', href: '/settings', icon: '⚙️', roles: ['ADMIN', 'HR_MANAGER'] },
 ];
 
 import { auth, signOut } from '@/auth';

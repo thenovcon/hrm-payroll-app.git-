@@ -69,6 +69,13 @@ model Employee {
   certifications  Certification[]
   
   departmentsHeaded Department[] @relation("DepartmentHead")
+  
+  // Engagement
+  conductedOneOnOnes OneOnOne[] @relation("ManagerOneOnOne")
+  participatedOneOnOnes OneOnOne[] @relation("EmployeeOneOnOne")
+  
+  // Preferences
+  enableBirthdayNotifs Boolean @default(true)
 }
 
 model Department {
@@ -94,7 +101,7 @@ model User {
   id            String    @id @default(uuid())
   username      String    @unique
   password      String    // Hashed
-  role          String    @default("EMPLOYEE") // ADMIN, HR, ACCOUNTANT, EMPLOYEE
+  role          String    @default("EMPLOYEE") // ADMIN, HR_MANAGER, DEPT_HEAD, PAYROLL_OFFICER, ACCOUNTANT, EMPLOYEE
   status        String    @default("ACTIVE")
   
   employeeId    String?   @unique
@@ -107,6 +114,14 @@ model User {
   createdTickets  Ticket[]
   assignedTickets Ticket[]  @relation("TicketAssignee")
   ticketComments  TicketComment[]
+
+  // Engagement & Communication
+  sentMessages      ChatMessage[] @relation("SentMessages")
+  receivedMessages  ChatMessage[] @relation("ReceivedMessages")
+  createdNewsletters Newsletter[]
+  
+  // Security
+  auditLogs         AuditLog[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -789,4 +804,80 @@ model TicketComment {
   content         String
   
   createdAt       DateTime  @default(now())
+}
+
+// --- ENGAGEMENT & ADVANCED FEATURES ---
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String   // CREATE, UPDATE, DELETE, VIEW_SENSITIVE
+  resource  String   // e.g. "PayrollRun:123"
+  details   String?  // JSON
+  ipAddress String?
+  
+  createdAt DateTime @default(now())
+}
+
+model OneOnOne {
+  id          String   @id @default(uuid())
+  managerId   String
+  manager     Employee @relation("ManagerOneOnOne", fields: [managerId], references: [id])
+  employeeId  String
+  employee    Employee @relation("EmployeeOneOnOne", fields: [employeeId], references: [id])
+  
+  scheduledAt DateTime
+  status      String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  
+  meetingNotes String? // Shared notes
+  privateNotes String? // Manager private notes
+  rating       Int?    // Manager rating of employee (1-5)
+  
+  actionItems OneOnOneActionItem[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model OneOnOneActionItem {
+  id          String   @id @default(uuid())
+  sessionId   String
+  session     OneOnOne @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  content     String
+  status      String   @default("PENDING") // PENDING, DONE
+  assigneeId  String?  // Optional specific assignee
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  
+  recipientId String?
+  recipient   User?    @relation("ReceivedMessages", fields: [recipientId], references: [id])
+  
+  channel     String?  // e.g. "GENERAL", "HR", "DEPT_{ID}"
+  content     String
+  isRead      Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+}
+
+model Newsletter {
+  id          String   @id @default(uuid())
+  title       String
+  content     String   // HTML/Markdown
+  status      String   @default("DRAFT") // DRAFT, PUBLISHED
+  publishedAt DateTime?
+  
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
