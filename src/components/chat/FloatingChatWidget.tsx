@@ -81,7 +81,7 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
     if (!userId) return null;
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div className="fixed bottom-10 right-10 z-[9999] flex flex-col items-end">
             {/* Chat Window */}
             {isOpen && (
                 <div className="mb-4 w-80 md:w-96 h-[500px] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5">
