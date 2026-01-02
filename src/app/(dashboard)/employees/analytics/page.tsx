@@ -6,8 +6,11 @@ export default async function WorkforceAnalyticsPage() {
     const session = await auth();
     if (!session?.user) return notFound();
 
-    // TODO: Dept restriction
-    const { byGender, byTenure } = await getWorkforceComposition();
+    const user = session.user as any;
+    const isDeptHead = user.role === 'DEPT_HEAD';
+    const deptFilter = isDeptHead ? user.departmentId : undefined;
+
+    const { byGender, byTenure } = await getWorkforceComposition(deptFilter);
 
     const DemographicsCharts = (await import('@/components/employees/DemographicsCharts')).default;
 
@@ -16,7 +19,14 @@ export default async function WorkforceAnalyticsPage() {
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Workforce Composition</h1>
-                    <p className="text-slate-500">Demographics and diversity insights.</p>
+                    <div className="flex items-center gap-2 text-slate-500">
+                        <p>Demographics and diversity insights.</p>
+                        {isDeptHead && (
+                            <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold">
+                                Limited to My Department
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 

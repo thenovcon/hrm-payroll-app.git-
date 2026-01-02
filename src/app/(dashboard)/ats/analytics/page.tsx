@@ -6,9 +6,11 @@ export default async function RecruitmentAnalyticsPage() {
     const session = await auth();
     if (!session?.user) return notFound();
 
-    // TODO: Actual Dept Check logic (placeholder for now)
-    // const userDeptId = (session.user as any).departmentId;
-    const metrics = await getRecruitmentFunnel();
+    const user = session.user as any;
+    const isDeptHead = user.role === 'DEPT_HEAD';
+    const deptFilter = isDeptHead ? user.departmentId : undefined;
+
+    const metrics = await getRecruitmentFunnel(deptFilter);
 
     const FunnelChart = (await import('@/components/ats/FunnelChart')).default;
 
@@ -17,7 +19,14 @@ export default async function RecruitmentAnalyticsPage() {
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Recruitment Analytics</h1>
-                    <p className="text-slate-500">Pipeline health and conversion rates.</p>
+                    <div className="flex items-center gap-2 text-slate-500">
+                        <p>Pipeline health and conversion rates.</p>
+                        {isDeptHead && (
+                            <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold">
+                                Limited to My Department
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 

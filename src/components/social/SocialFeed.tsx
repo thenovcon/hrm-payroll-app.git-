@@ -2,6 +2,7 @@
 
 import { createPost, toggleLike, addComment } from '@/lib/actions/social-actions';
 import { useState } from 'react';
+import confetti from 'canvas-confetti';
 
 type Post = {
     id: string;
@@ -18,7 +19,7 @@ type Post = {
 
 export default function SocialFeed({ initialPosts, userId }: { initialPosts: any[], userId: string }) {
     const [optimisticPosts, addOptimisticPost] = (settings => {
-        // Safe check for useOptimistic in case of older React version, though package.json says 19
+        // Safe check for useOptimistic in case of older React version
         try {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             return require('react').useOptimistic(initialPosts, (state: Post[], newPost: Post) => [newPost, ...state]);
@@ -26,6 +27,17 @@ export default function SocialFeed({ initialPosts, userId }: { initialPosts: any
             return [initialPosts, () => { }];
         }
     })();
+
+    const handleLike = async (postId: string) => {
+        // Trigger confetti
+        confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.7 },
+            colors: ['#FF0000', '#FFD700', '#FF69B4']
+        });
+        await toggleLike(postId);
+    };
 
     return (
         <div className="space-y-6">
@@ -99,9 +111,9 @@ export default function SocialFeed({ initialPosts, userId }: { initialPosts: any
                     )}
 
                     <div className="flex items-center gap-6 border-t border-gray-100 pt-3">
-                        <form action={async () => await toggleLike(post.id)}>
-                            <button className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 transition">
-                                <span>❤️</span>
+                        <form action={async () => await handleLike(post.id)}>
+                            <button className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 transition active:scale-125 duration-150 group">
+                                <span className="group-hover:scale-110 transition-transform">❤️</span>
                                 <span className="text-sm font-medium">{post._count.likes} Likes</span>
                             </button>
                         </form>
