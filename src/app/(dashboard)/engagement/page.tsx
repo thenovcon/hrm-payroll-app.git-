@@ -2,33 +2,61 @@ import { auth } from '@/auth';
 import { getUpcomingOneOnOnes } from '@/lib/engagement';
 import { getUpcomingBirthdays } from '@/lib/birthdays';
 import { getNewsletters } from '@/lib/actions/newsletter-actions';
-import NewsletterFeed from '@/components/engagement/NewsletterFeed'; // We'll create this client component
+import { getPosts } from '@/lib/actions/social-actions';
+import NewsletterFeed from '@/components/engagement/NewsletterFeed';
+import SocialFeed from '@/components/social/SocialFeed';
+import Link from 'next/link';
 
 export default async function EngagementPage() {
     const session = await auth();
     const user = session?.user;
 
-    // Data Fetching
-    const [upcomingSessions, birthdays, newsletters] = await Promise.all([
+    // Parallel Data Fetching
+    const [upcomingSessions, birthdays, newsletters, posts] = await Promise.all([
         user ? getUpcomingOneOnOnes(user.id as string, (user as any).role) : [],
         getUpcomingBirthdays(),
-        getNewsletters()
+        getNewsletters(),
+        getPosts(1, 20)
     ]);
 
-    return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-slate-800">Engagement Center</h1>
+    const isManager = (user as any)?.role === 'ADMIN' || (user as any)?.role === 'HR_MANAGER' || (user as any)?.role === 'DEPT_HEAD';
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Left Col: 1:1 and Birthdays */}
-                <div className="space-y-6 md:col-span-1">
+    return (
+        <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6 text-slate-800">Engagement & Community</h1>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left: Social Feed (Living stream of updates) */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Social Feed Component */}
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h2 className="text-lg font-semibold text-slate-700 mb-3 px-2">Community Feed</h2>
+                        <SocialFeed initialPosts={posts} userId={user?.id as string} />
+                    </div>
+
+                    {/* Newsletters Block */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-semibold text-slate-800">Official Company News</h2>
+                            {isManager && (
+                                <Link href="/engagement/newsletter/new" className="text-sm bg-primary-100 text-primary-700 px-3 py-1 rounded hover:bg-primary-200">
+                                    + Post News
+                                </Link>
+                            )}
+                        </div>
+                        <NewsletterFeed newsletters={newsletters} />
+                    </div>
+                </div>
+
+                {/* Right: Widgets (Birthdays, 1:1s, Quick Links) */}
+                <div className="space-y-6">
                     {/* Birthdays */}
                     <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm overflow-hidden relative">
                         <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl">🎂</div>
-                        <h2 className="text-lg font-semibold text-slate-800 mb-4">Birthdays This Month</h2>
+                        <h2 className="text-lg font-semibold text-slate-800 mb-4">Celebrations</h2>
                         <div className="space-y-3">
                             {birthdays.length === 0 ? (
-                                <p className="text-sm text-slate-500">No upcoming birthdays.</p>
+                                <p className="text-sm text-slate-500">No birthdays this month.</p>
                             ) : (
                                 birthdays.map((b, i) => (
                                     <div key={i} className="flex items-center gap-3">
@@ -47,39 +75,24 @@ export default async function EngagementPage() {
 
                     {/* 1:1s */}
                     <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold text-slate-800">Your 1:1s</h2>
-                            {/* Link to full booking page if needed */}
-                        </div>
+                        <h2 className="text-lg font-semibold text-slate-800 mb-4">Your 1:1 Sessions</h2>
                         <div className="space-y-3">
                             {upcomingSessions.length === 0 ? (
-                                <p className="text-slate-500 text-sm">No sessions scheduled.</p>
+                                <p className="text-slate-500 text-sm">No upcoming sessions.</p>
                             ) : (
                                 upcomingSessions.map(session => (
-                                    <div key={session.id} className="p-3 bg-slate-50 rounded-lg">
-                                        <p className="font-medium text-slate-700 text-sm">
-                                            {session.managerId === (user as any).employeeId ? session.employee.firstName : session.manager.firstName}
-                                        </p>
-                                        <p className="text-xs text-slate-500">{new Date(session.scheduledAt).toLocaleDateString()}</p>
-                                        <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded mt-1 inline-block">Scheduled</span>
+                                    <div key={session.id} className="p-3 bg-slate-50 rounded-lg flex justify-between items-center">
+                                        <div>
+                                            <p className="font-medium text-slate-700 text-sm">
+                                                {session.managerId === (user as any).employeeId ? session.employee.firstName : session.manager.firstName}
+                                            </p>
+                                            <p className="text-xs text-slate-500">{new Date(session.scheduledAt).toLocaleDateString()}</p>
+                                        </div>
+                                        <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Upcoming</span>
                                     </div>
                                 ))
                             )}
                         </div>
-                    </div>
-                </div>
-
-                {/* Middle/Right Col: Newsletters & Updates */}
-                <div className="md:col-span-2 space-y-6">
-                    <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-lg font-semibold text-slate-800">Company News & Updates</h2>
-                            {/* Only Admin/HR should see this - check role in component or suppress button */}
-                            {['ADMIN', 'HR_MANAGER', 'HR'].includes((user as any)?.role) && (
-                                <a href="/engagement/newsletter/new" className="text-sm bg-primary-600 text-white px-3 py-1.5 rounded-lg">Post Update</a>
-                            )}
-                        </div>
-                        <NewsletterFeed newsletters={newsletters} />
                     </div>
                 </div>
             </div>

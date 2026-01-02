@@ -11,6 +11,7 @@ const tabs = [
     { name: 'HR Operations', icon: '👥' },
     { name: 'Payroll & Cost', icon: '💰' },
     { name: 'Compliance & Audit', icon: '⚖️' },
+    { name: 'Performance & Goals', icon: '📈' },
 ];
 
 export default function ReportsPage() {
@@ -66,8 +67,12 @@ export default function ReportsPage() {
                     {activeTab === 'HR Operations' && <HRAnalytics />}
                     {activeTab === 'Payroll & Cost' && <PayrollAnalytics />}
                     {activeTab === 'Compliance & Audit' && <ComplianceAudit />}
+                    {activeTab === 'Performance & Goals' && <PerformanceAnalytics />}
                 </Suspense>
             </div>
         </div>
     );
 }
+
+// Lazy load Performance Chart to avoid huge bundle
+const PerformanceAnalytics = React.lazy(() => import('@/components/reports/PerformanceAnalytics'));

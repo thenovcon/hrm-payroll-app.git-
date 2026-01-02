@@ -12,6 +12,8 @@ const menuItems = [
   { label: 'Payroll', href: '/payroll', icon: '💰', roles: ['ADMIN', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
   { label: 'Performance', href: '/performance', icon: '📈' },
   { label: 'Engagement', href: '/engagement', icon: '🤝' },
+
+  { label: 'Policies', href: '/policies', icon: '📚', roles: ['ADMIN', 'HR_MANAGER', 'DEPT_HEAD'] },
   { label: 'Training', href: '/training', icon: '🎓' },
   { label: 'Reports', href: '/reports', icon: '📑', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
   { label: 'Settings', href: '/settings', icon: '⚙️', roles: ['ADMIN', 'HR_MANAGER'] },

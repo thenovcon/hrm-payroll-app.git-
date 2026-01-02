@@ -2,12 +2,12 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import styles from './MainLayout.module.css';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default function MainLayout({ children, header }: { children: React.ReactNode; header?: React.ReactNode }) {
     return (
         <div className={styles.container}>
             <Sidebar />
             <div className={styles.mainWrapper}>
-                <Header />
+                {header || <Header />}
                 <main className={styles.content}>
                     {children}
                 </main>

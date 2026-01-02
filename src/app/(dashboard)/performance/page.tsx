@@ -1,75 +1,84 @@
-'use client';
+import { auth } from '@/auth';
+import { getMyGoals } from '@/lib/actions/goal-actions';
+import { getReceivedFeedback, getFeedbackRequests } from '@/lib/actions/feedback-actions';
+import GoalCard from '@/components/performance/GoalCard';
 
-import React, { useState, Suspense } from 'react';
-import PerformanceOverview from '@/components/performance/PerformanceOverview';
-import GoalTracker from '@/components/performance/GoalTracker';
-import ReviewCycles from '@/components/performance/ReviewCycles';
-import AppraisalEngine from '@/components/performance/AppraisalEngine';
-import PIPManager from '@/components/performance/PIPManager';
-import FeedbackCenter from '@/components/performance/FeedbackCenter';
-import PerformanceCalibration from '@/components/performance/PerformanceCalibration';
-
-const tabs = [
-    { name: 'Dashboard', icon: '📊' },
-    { name: 'Goals', icon: '🎯' },
-    { name: 'Review Cycles', icon: '🗓️' },
-    { name: 'Appraisal Engine', icon: '📝' },
-    { name: '360 Feedback', icon: '🔄' },
-    { name: 'Calibration', icon: '⚖️' },
-    { name: 'PIP', icon: '🛡️' },
-];
-
-export default function PerformancePage() {
-    const [activeTab, setActiveTab] = useState('Dashboard');
+export default async function PerformancePage() {
+    const session = await auth();
+    const [goals, feedback, requests] = await Promise.all([
+        getMyGoals(),
+        getReceivedFeedback(),
+        getFeedbackRequests()
+    ]);
 
     return (
-        <div className="container" style={{ paddingBottom: '2rem' }}>
-            <div style={{ marginBottom: '2rem' }}>
-                <h1 className="text-2xl font-bold" style={{ color: 'var(--primary-900)' }}>Performance Management</h1>
-                <p className="text-gray-500">Continuous feedback and objective-driven performance tracking.</p>
-            </div>
+        <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6 text-slate-800">Performance & Development</h1>
 
-            {/* Sub-navigation */}
-            <div className="card" style={{ padding: '0.5rem', marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', overflowX: 'auto', background: 'white' }}>
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.name}
-                        onClick={() => setActiveTab(tab.name)}
-                        style={{
-                            padding: '0.75rem 1.25rem',
-                            border: 'none',
-                            borderRadius: 'var(--radius-md)',
-                            background: activeTab === tab.name ? 'var(--primary-50)' : 'transparent',
-                            color: activeTab === tab.name ? 'var(--primary-700)' : 'var(--slate-600)',
-                            fontWeight: activeTab === tab.name ? 600 : 500,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            whiteSpace: 'nowrap',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <span>{tab.icon}</span>
-                        {tab.name}
-                    </button>
-                ))}
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            {/* Tab Content */}
-            <div className="card" style={{ minHeight: '600px', background: 'white' }}>
-                <Suspense fallback={<div style={{ padding: '2rem' }}>Loading performance module...</div>}>
-                    {activeTab === 'Dashboard' && <PerformanceOverview />}
-                    {activeTab === 'Goals' && <GoalTracker />}
-                    {activeTab === 'Review Cycles' && <ReviewCycles />}
-                    {activeTab === 'Appraisal Engine' && <AppraisalEngine />}
-                    {activeTab === '360 Feedback' && <FeedbackCenter />}
-                    {activeTab === 'Calibration' && <PerformanceCalibration />}
-                    {activeTab === 'PIP' && <PIPManager />}
-                </Suspense>
+                {/* Left: Goals (My Objectives) */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-lg font-semibold text-slate-700">My Goals</h2>
+                        <button className="text-sm bg-primary-600 text-white px-3 py-1.5 rounded-lg">+ New Goal</button>
+                    </div>
+
+                    <div className="space-y-4">
+                        {goals.length === 0 ? (
+                            <div className="text-center p-8 bg-slate-50 rounded-lg text-slate-500">
+                                You haven't set any goals yet.
+                            </div>
+                        ) : (
+                            goals.map(goal => <GoalCard key={goal.id} goal={goal} />)
+                        )}
+                    </div>
+                </div>
+
+                {/* Right: Feedback 360 */}
+                <div className="space-y-6">
+                    {/* Pending Requests */}
+                    {requests.length > 0 && (
+                        <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                            <h3 className="font-semibold text-amber-800 mb-2">Feedback Requests</h3>
+                            <div className="space-y-2">
+                                {requests.map(req => (
+                                    <div key={req.id} className="bg-white p-3 rounded border border-amber-100 text-sm">
+                                        <p className="font-medium">{req.employee.firstName} asked for feedback.</p>
+                                        <button className="mt-2 text-xs bg-amber-600 text-white px-2 py-1 rounded">Give Feedback</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Received Feedback */}
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h2 className="text-lg font-semibold text-slate-800 mb-4">Feedback Received</h2>
+                        <div className="space-y-4">
+                            {feedback.length === 0 ? (
+                                <p className="text-sm text-slate-500">No feedback received yet.</p>
+                            ) : (
+                                feedback.map(item => (
+                                    <div key={item.id} className="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <span className="font-medium text-slate-700 text-sm">
+                                                {item.anonymous ? 'Anonymous Peer' : `${item.provider.firstName} ${item.provider.lastName}`}
+                                            </span>
+                                            <span className="text-[10px] text-slate-400">{new Date(item.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                        <p className="text-sm text-slate-600 italic">"{item.content}"</p>
+                                        {item.rating && (
+                                            <div className="text-yellow-500 text-xs mt-1">{'★'.repeat(item.rating)}</div>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
 }
-
-

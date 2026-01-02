@@ -91,3 +91,56 @@ export async function getPayrollAnalytics() {
         return { success: false, error: 'Failed to fetch payroll analytics' };
     }
 }
+
+// --- PERFORMANCE ANALYTICS ---
+
+export async function getGoalStatsByDepartment() {
+    try {
+        const goals = await prisma.performanceGoal.findMany({
+            where: {
+                status: 'ACHIEVED',
+                departmentId: { not: null } // Only Dept-linked goals
+            },
+            include: { department: true }
+        });
+
+        // Group by department
+        const deptCounts: Record<string, number> = {};
+        goals.forEach(g => {
+            const deptName = g.department?.name || 'Unknown';
+            deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
+        });
+
+        // Also get total goals per department specifically to calc %
+        // For simplicity now, just returning Raw Count of Achieved Goals
+        // ideally we want (Achieved / Total) * 100
+
+        const allGoals = await prisma.performanceGoal.findMany({
+            where: { departmentId: { not: null } },
+            include: { department: true }
+        });
+
+        // Map: DeptName -> { total: number, achieved: number }
+        const stats: Record<string, { total: number, achieved: number }> = {};
+
+        allGoals.forEach(g => {
+            const name = g.department?.name || 'Unknown';
+            if (!stats[name]) stats[name] = { total: 0, achieved: 0 };
+            stats[name].total++;
+            if (g.status === 'ACHIEVED') stats[name].achieved++;
+        });
+
+        const chartData = Object.entries(stats).map(([name, val]) => ({
+            name,
+            completionRate: val.total > 0 ? Math.round((val.achieved / val.total) * 100) : 0,
+            totalGoals: val.total
+        }));
+
+        return {
+            success: true,
+            data: chartData
+        };
+    } catch (error) {
+        return { success: false, error: 'Failed to fetch goal stats' };
+    }
+}

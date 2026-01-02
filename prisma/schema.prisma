@@ -92,6 +92,7 @@ model Department {
   subDepartments  Department[] @relation("DepartmentHierarchy")
   
   employees       Employee[]
+  goals           PerformanceGoal[]
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -116,15 +117,159 @@ model User {
   ticketComments  TicketComment[]
 
   // Engagement & Communication
+  // Engagement & Communication
   sentMessages      ChatMessage[] @relation("SentMessages")
   receivedMessages  ChatMessage[] @relation("ReceivedMessages")
+  
+  participatedConversations ConversationParticipant[]
+  
   createdNewsletters Newsletter[]
   
+  // Social
+  posts             SocialPost[]
+  likes             SocialLike[]
+  comments          SocialComment[]
+  notifications     Notification[]
+
   // Security
   auditLogs         AuditLog[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+// --- CHAT & AI MODULE ---
+
+model Conversation {
+  id              String    @id @default(uuid())
+  type            String    @default("AIGENT") // DIRECT, GROUP, SUPPORT_BOT, AI_ASSISTANT
+  name            String?   // For groups
+  
+  participants    ConversationParticipant[]
+  messages        ChatMessage[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model ConversationParticipant {
+  id              String    @id @default(uuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  lastReadAt      DateTime?
+  
+  joinedAt        DateTime  @default(now())
+  
+  @@unique([conversationId, userId])
+}
+
+model ChatMessage {
+  id              String    @id @default(uuid())
+  
+  conversationId  String?   // Make optional for transition or legacy global chat
+  conversation    Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  senderId        String
+  sender          User      @relation("SentMessages", fields: [senderId], references: [id])
+  
+  // Legacy or Direct Target (deprecated in favor of Conversation, but useful for quick DMs)
+  receiverId      String?   
+  receiver        User?     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  channel         String?   // Legacy: GENERAL, DEPT_IT
+  
+  content         String
+  isRead          Boolean   @default(false)
+  
+  // AI Metadata
+  isAiGenerated   Boolean   @default(false)
+  relatedPolicyId String?   
+  relatedPolicy   HRPolicy? @relation(fields: [relatedPolicyId], references: [id])
+
+  createdAt       DateTime  @default(now())
+}
+
+model HRPolicy {
+  id              String    @id @default(uuid())
+  title           String
+  content         String    // Full text
+  category        String    // LEAVE, CONDUCT, BENEFITS
+  
+  // Basic Vector implementation: we might store JSON embedding here if using generic DB,
+  // or just use this table for text retrieval.
+  embedding       String?   // JSON string of vector if needed manually
+  
+  tags            String?   // JSON string array
+  
+  messages        ChatMessage[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Newsletter {
+  id              String    @id @default(uuid())
+  title           String
+  content         String
+  status          String    @default("DRAFT")
+  publishedAt     DateTime?
+  
+  createdById     String
+  createdBy       User      @relation(fields: [createdById], references: [id])
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model OneOnOne {
+  id              String    @id @default(uuid())
+  managerId       String
+  manager         Employee  @relation("ManagerOneOnOne", fields: [managerId], references: [id])
+  employeeId      String
+  employee        Employee  @relation("EmployeeOneOnOne", fields: [employeeId], references: [id])
+  
+  scheduledAt     DateTime
+  status          String    @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  
+  managerNotes    String?
+  employeeNotes   String?
+  
+  rating          Int?      // 1-5
+  
+  actionItems     OneOnOneActionItem[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model OneOnOneActionItem {
+  id              String    @id @default(uuid())
+  oneOnOneId      String
+  oneOnOne        OneOnOne  @relation(fields: [oneOnOneId], references: [id], onDelete: Cascade)
+  
+  description     String
+  status          String    @default("PENDING") // PENDING, DONE
+  assignee        String    // MANAGER or EMPLOYEE
+  
+  createdAt       DateTime  @default(now())
+}
+
+model AuditLog {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  
+  action          String    // CREATE, UPDATE, DELETE, VIEW_SENSITIVE
+  resource        String    // Employee, Payroll, etc.
+  details         String?   // JSON
+  
+  ipAddress       String?
+  userAgent       String?
+  
+  createdAt       DateTime  @default(now())
 }
 
 model SalaryStructure {
@@ -545,6 +690,7 @@ model PerformanceCycle {
   
   goals           PerformanceGoal[]
   appraisals      Appraisal[]
+  feedback        PerformanceFeedback[]
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -552,13 +698,27 @@ model PerformanceCycle {
 
 model PerformanceGoal {
   id              String    @id @default(uuid())
-  employeeId      String
-  employee        Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  cycleId         String
-  cycle           PerformanceCycle @relation(fields: [cycleId], references: [id])
   
-  title           String
-  description     String?
+  // Hierarchy & Ownership
+  level           String    @default("EMPLOYEE") // EMPLOYEE, UNIT, DEPARTMENT, COMPANY
+  
+  employeeId      String?   
+  employee        Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  departmentId    String?   // For Dept/Unit goals
+  department      Department? @relation(fields: [departmentId], references: [id])
+  
+  cycleId         String?
+  cycle           PerformanceCycle? @relation(fields: [cycleId], references: [id])
+  
+  // Content (What, Why, When, How)
+  title           String    // What
+  description     String?   // Details
+  relevance       String?   // Why (Strategic Alignment)
+  strategy        String?   // How (Action Plan)
+  dueDate         DateTime? // When
+  
+  // Metrics
   category        String    @default("OPERATIONAL") // OPERATIONAL, STRATEGIC, LEARNING, BEHAVIORAL
   weight          Float     @default(0) // Percentage (0-100)
   
@@ -567,6 +727,12 @@ model PerformanceGoal {
   currentValue    Float     @default(0)
   
   status          String    @default("IN_PROGRESS") // NOT_STARTED, IN_PROGRESS, ACHIEVED, MISSED
+  progress        Int       @default(0)
+  
+  // Hierarchy Linkage
+  parentId        String?
+  parent          PerformanceGoal? @relation("GoalHierarchy", fields: [parentId], references: [id])
+  children        PerformanceGoal[] @relation("GoalHierarchy")
   
   checkins        GoalCheckIn[]
   
@@ -617,16 +783,26 @@ model Appraisal {
 
 model PerformanceFeedback {
   id              String    @id @default(uuid())
+  
+  cycleId         String?
+  cycle           PerformanceCycle? @relation(fields: [cycleId], references: [id])
+
   employeeId      String
   employee        Employee  @relation("EmployeeFeedback", fields: [employeeId], references: [id], onDelete: Cascade)
+  
   providerId      String
   provider        Employee  @relation("FeedbackProvider", fields: [providerId], references: [id])
   
   content         String
-  type            String    @default("PEER") // PEER, MANAGER, DIRECT_REPORT
+  rating          Int?      // 1-5
+  
+  type            String    @default("PEER") // PEER, MANAGER, DIRECT_REPORT, 360_REQUEST
+  status          String    @default("PENDING") // PENDING, SUBMITTED
+  
   anonymous       Boolean   @default(false)
   
   createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model PIPPlan {
@@ -806,78 +982,59 @@ model TicketComment {
   createdAt       DateTime  @default(now())
 }
 
-// --- ENGAGEMENT & ADVANCED FEATURES ---
 
-model AuditLog {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  action    String   // CREATE, UPDATE, DELETE, VIEW_SENSITIVE
-  resource  String   // e.g. "PayrollRun:123"
-  details   String?  // JSON
-  ipAddress String?
-  
-  createdAt DateTime @default(now())
-}
+// --- SOCIAL MODULE ---
 
-model OneOnOne {
+model SocialPost {
   id          String   @id @default(uuid())
-  managerId   String
-  manager     Employee @relation("ManagerOneOnOne", fields: [managerId], references: [id])
-  employeeId  String
-  employee    Employee @relation("EmployeeOneOnOne", fields: [employeeId], references: [id])
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
   
-  scheduledAt DateTime
-  status      String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  content     String
+  imageUrl    String?
   
-  meetingNotes String? // Shared notes
-  privateNotes String? // Manager private notes
-  rating       Int?    // Manager rating of employee (1-5)
-  
-  actionItems OneOnOneActionItem[]
+  likes       SocialLike[]
+  comments    SocialComment[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-model OneOnOneActionItem {
+model SocialLike {
   id          String   @id @default(uuid())
-  sessionId   String
-  session     OneOnOne @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  postId      String
+  post        SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  
+  @@unique([postId, userId])
+}
+
+model SocialComment {
+  id          String   @id @default(uuid())
+  postId      String
+  post        SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
   
   content     String
-  status      String   @default("PENDING") // PENDING, DONE
-  assigneeId  String?  // Optional specific assignee
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-model ChatMessage {
+model Notification {
   id          String   @id @default(uuid())
-  senderId    String
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  recipientId String?
-  recipient   User?    @relation("ReceivedMessages", fields: [recipientId], references: [id])
-  
-  channel     String?  // e.g. "GENERAL", "HR", "DEPT_{ID}"
-  content     String
+  title       String
+  message     String
+  type        String   @default("INFO") // INFO, WARNING, SUCCESS, ERROR
+  link        String?
   isRead      Boolean  @default(false)
   
   createdAt   DateTime @default(now())
-}
-
-model Newsletter {
-  id          String   @id @default(uuid())
-  title       String
-  content     String   // HTML/Markdown
-  status      String   @default("DRAFT") // DRAFT, PUBLISHED
-  publishedAt DateTime?
-  
-  createdById String
-  createdBy   User     @relation(fields: [createdById], references: [id])
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 }

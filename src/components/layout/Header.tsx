@@ -8,7 +8,13 @@ import { logout } from '@/lib/actions/auth-actions';
 
 import { useTheme } from "next-themes";
 
-export default function Header() {
+import NotificationBell from '@/components/common/NotificationBell';
+
+interface HeaderProps {
+    notifications?: any[]; // Loose type for now to avoid duplications
+}
+
+export default function Header({ notifications = [] }: HeaderProps) {
     const router = useRouter();
     const { setTheme, theme } = useTheme();
 
@@ -16,23 +22,17 @@ export default function Header() {
         console.log(`App Version: ${FULL_VERSION}`);
     }, []);
 
-    const [showNotifications, setShowNotifications] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
 
-    // Removing manual dark mode state
-    // const [darkMode, setDarkMode] = useState(false);
+    // Removed manual dark mode state
 
-    const notifRef = useRef<HTMLDivElement>(null);
     const settingsRef = useRef<HTMLDivElement>(null);
     const helpRef = useRef<HTMLDivElement>(null);
 
     // Close dropdowns when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
-                setShowNotifications(false);
-            }
             if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
                 setShowSettings(false);
             }
@@ -52,8 +52,6 @@ export default function Header() {
         router.push(path);
     };
 
-
-
     return (
         <header className={styles.header}>
             <div className={styles.searchContainer}>
@@ -66,52 +64,7 @@ export default function Header() {
 
             <div className={styles.actions}>
                 {/* Notifications */}
-                <div ref={notifRef} style={{ position: 'relative' }}>
-                    <button
-                        className={styles.actionBtn}
-                        aria-label="Notifications"
-                        title="Notifications"
-                        onClick={() => setShowNotifications(!showNotifications)}
-                    >
-                        <span className={styles.icon}>🔔</span>
-                        <span className={styles.badge}>3</span>
-                    </button>
-
-                    {showNotifications && (
-                        <div className={styles.dropdown}>
-                            <div className={styles.dropdownHeader}>
-                                <h3>Notifications</h3>
-                                <button onClick={() => setShowNotifications(false)}>✕</button>
-                            </div>
-                            <div className={styles.dropdownContent}>
-                                <div className={styles.notificationItem}>
-                                    <span className={styles.notifIcon}>📋</span>
-                                    <div>
-                                        <p className={styles.notifTitle}>Leave Request Approved</p>
-                                        <p className={styles.notifTime}>2 hours ago</p>
-                                    </div>
-                                </div>
-                                <div className={styles.notificationItem}>
-                                    <span className={styles.notifIcon}>💰</span>
-                                    <div>
-                                        <p className={styles.notifTitle}>Payslip Available</p>
-                                        <p className={styles.notifTime}>1 day ago</p>
-                                    </div>
-                                </div>
-                                <div className={styles.notificationItem}>
-                                    <span className={styles.notifIcon}>📚</span>
-                                    <div>
-                                        <p className={styles.notifTitle}>New Training Assigned</p>
-                                        <p className={styles.notifTime}>3 days ago</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={styles.dropdownFooter}>
-                                <button className={styles.viewAllBtn}>View All Notifications</button>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                <NotificationBell notifications={notifications} />
 
                 {/* Settings */}
                 <div ref={settingsRef} style={{ position: 'relative' }}>
