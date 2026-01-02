@@ -1,15 +1,20 @@
-'use client';
-
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { requestPasswordReset } from '@/lib/actions/email-actions';
 
 export default function ForgotPasswordPage() {
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+        const formData = new FormData(e.currentTarget as HTMLFormElement);
+        const email = formData.get('email') as string;
+
+        await requestPasswordReset(email);
         setSubmitted(true);
-        // Mock server action
+        setLoading(false);
     };
 
     return (
@@ -28,6 +33,7 @@ export default function ForgotPasswordPage() {
                             <input
                                 type="email"
                                 id="email"
+                                name="email"
                                 required
                                 style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--slate-300)' }}
                                 placeholder="you@company.com"
@@ -36,9 +42,10 @@ export default function ForgotPasswordPage() {
 
                         <button
                             type="submit"
-                            style={{ padding: '0.75rem', borderRadius: '6px', fontWeight: 600, background: 'var(--primary-600)', color: 'white', border: 'none', cursor: 'pointer' }}
+                            disabled={loading}
+                            style={{ padding: '0.75rem', borderRadius: '6px', fontWeight: 600, background: loading ? '#ccc' : 'var(--primary-600)', color: 'white', border: 'none', cursor: loading ? 'not-allowed' : 'pointer' }}
                         >
-                            Send Reset Link
+                            {loading ? 'Sending...' : 'Reset Password'}
                         </button>
 
                         <Link href="/login" style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--primary-600)', textDecoration: 'none' }}>

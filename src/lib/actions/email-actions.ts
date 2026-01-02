@@ -23,15 +23,57 @@ export async function sendWelcomeEmail(email: string, firstName: string, usernam
     return await sendEmail({ to: email, subject, html });
 }
 
-export async function sendPasswordResetEmail(email: string, resetLink: string) {
-    const subject = "Reset Your Password";
+export async function sendPasswordResetEmail(email: string, tempPass: string) {
+    const subject = "Password Reset Successful";
     const html = `
     <div style="font-family: sans-serif; color: #333;">
-        <h1>Password Reset Request</h1>
-        <p>Click the link below to reset your password:</p>
-        <p><a href="${resetLink}">Reset Password</a></p>
-        <p>If you didn't request this, ignore this email.</p>
+        <h1>Your Password Has Been Reset</h1>
+        <p>You requested a password reset. Here is your new temporary password:</p>
+        <p style="font-size: 18px; font-weight: bold; background: #eee; padding: 10px; display: inline-block;">${tempPass}</p>
+        <p>Please login and change it immediately.</p>
     </div>
     `;
     return await sendEmail({ to: email, subject, html });
+}
+
+import { prisma } from '@/lib/db/prisma';
+import bcrypt from 'bcryptjs';
+
+export async function requestPasswordReset(email: string) {
+    try {
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { employee: { email: email } },
+                    // Fallback if we stored email on user directly, but schema says user->employee->email
+                ]
+            },
+            include: { employee: true }
+        });
+
+        if (!user) {
+            // Return success even if not found to prevent enumeration
+            return { success: true, message: 'If an account exists, an email has been sent.' };
+        }
+
+        const tempPassword = `Reset${Math.floor(1000 + Math.random() * 9000)}!`;
+        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { password: hashedPassword }
+        });
+
+        // Use the email found on employee relation
+        const targetEmail = user.employee?.email;
+        if (targetEmail) {
+            await sendPasswordResetEmail(targetEmail, tempPassword);
+        }
+
+        return { success: true, message: 'Password reset email sent.' };
+
+    } catch (error) {
+        console.error("Reset error:", error);
+        return { success: false, error: "Failed to process request" };
+    }
 }

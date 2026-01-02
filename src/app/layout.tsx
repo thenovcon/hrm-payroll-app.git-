@@ -6,8 +6,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NovCon Ghana HRM+",
-  description: "Comprehensive Human Resource Management System for Novcon Ghana",
+  title: "NovCon HRM+ Solutions",
+  description: "Advanced HR Management System",
+  manifest: "/manifest.json",
 };
 
 import { auth } from '@/auth';

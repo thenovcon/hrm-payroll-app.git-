@@ -9,7 +9,18 @@
     left: 0;
     top: 0;
     z-index: 50;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
 }
 
 .logoContainer {
@@ -19,7 +30,6 @@
     padding: 0 1.5rem;
     border-bottom: 1px solid var(--border-light);
     background: white;
-    /* Maintain contrast */
 }
 
 .logoText {
@@ -199,4 +209,26 @@
 .activeSubLink {
     color: var(--primary-700);
     font-weight: 600;
+}
+
+.mobileOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

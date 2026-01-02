@@ -10,13 +10,16 @@ import { useTheme } from "next-themes";
 
 import NotificationBell from '@/components/common/NotificationBell';
 
+import { useSidebar } from './SidebarContext';
+
 interface HeaderProps {
-    notifications?: any[]; // Loose type for now to avoid duplications
+    notifications?: any[];
 }
 
 export default function Header({ notifications = [] }: HeaderProps) {
     const router = useRouter();
     const { setTheme, theme } = useTheme();
+    const { toggleSidebar } = useSidebar();
 
     useEffect(() => {
         console.log(`App Version: ${FULL_VERSION}`);
@@ -54,6 +57,14 @@ export default function Header({ notifications = [] }: HeaderProps) {
 
     return (
         <header className={styles.header}>
+            <button
+                className={styles.hamburger}
+                onClick={toggleSidebar}
+                aria-label="Toggle Menu"
+            >
+                ☰
+            </button>
+
             <div className={styles.searchContainer}>
                 <input
                     type="text"
