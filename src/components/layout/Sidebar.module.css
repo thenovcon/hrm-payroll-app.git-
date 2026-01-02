@@ -77,6 +77,16 @@
     font-weight: 600;
 }
 
+.sectionHeader {
+    padding: 1rem 1rem 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--slate-500);
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+}
+
 .icon {
     margin-right: 0.75rem;
     font-size: 1.25rem;

@@ -49,6 +49,11 @@ export default function LoginForm() {
                     required
                     minLength={6}
                 />
+                <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
+                    <a href="/forgot-password" style={{ fontSize: '0.875rem', color: 'var(--primary-600)', textDecoration: 'none' }}>
+                        Forgot Password?
+                    </a>
+                </div>
             </div>
 
             <div style={{ marginBottom: '1rem' }}>

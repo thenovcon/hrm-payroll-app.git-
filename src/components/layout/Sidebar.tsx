@@ -1,19 +1,19 @@
 import Link from 'next/link';
 import styles from './Sidebar.module.css';
 import SidebarMenu from './SidebarMenu';
+import HelpTrigger from '@/components/support/HelpTrigger';
 
 const menuItems = [
   { label: 'Dashboard', href: '/', icon: '📊' },
-  { label: 'Recruitment (ATS)', href: '/ats', icon: '📝' },
-
-  { label: 'Employees', href: '/employees', icon: '👥' },
-  { label: 'Leave Management', href: '/leave', icon: '🏖️' },
-  { label: 'Attendance', href: '/attendance', icon: '⏰' },
-  { label: 'Payroll', href: '/payroll', icon: '💰' },
-  { label: 'Performance', href: '/performance', icon: '📈' },
-  { label: 'Training', href: '/training', icon: '🎓' },
-  { label: 'Reports', href: '/reports', icon: '📑' },
-  { label: 'Settings', href: '/settings', icon: '⚙️' },
+  { label: 'Recruitment (ATS)', href: '/ats', icon: '📝', roles: ['ADMIN', 'HR'], subItems: [{ label: 'Analytics', href: '/ats/analytics' }] },
+  { label: 'Employees', href: '/employees', icon: '👥', roles: ['ADMIN', 'HR'], subItems: [{ label: 'Analytics', href: '/employees/analytics' }] },
+  { label: 'Leave Management', href: '/leave', icon: '🏖️' }, // All can see Leave
+  { label: 'Attendance', href: '/attendance', icon: '⏰' },   // All can see Attendance (views differ)
+  { label: 'Payroll', href: '/payroll', icon: '💰', roles: ['ADMIN', 'ACCOUNTANT'] },
+  { label: 'Performance', href: '/performance', icon: '📈' }, // All? Usually yes for self-review.
+  { label: 'Training', href: '/training', icon: '🎓' },       // All for LMS
+  { label: 'Reports', href: '/reports', icon: '📑', roles: ['ADMIN', 'HR', 'ACCOUNTANT'] },
+  { label: 'Settings', href: '/settings', icon: '⚙️', roles: ['ADMIN'] },
 ];
 
 import { auth, signOut } from '@/auth';
@@ -25,6 +25,13 @@ export default async function Sidebar() {
 
   if (!user) return null;
 
+  const userRole = (user as any).role || 'EMPLOYEE';
+
+  const filteredItems = menuItems.filter(item => {
+    if (!item.roles) return true; // Accessible to all if no roles defined
+    return item.roles.includes(userRole);
+  });
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
@@ -32,10 +39,10 @@ export default async function Sidebar() {
       </div>
 
       <nav className={styles.nav}>
-        <SidebarMenu items={menuItems} />
+        <SidebarMenu items={filteredItems} />
 
-        {/* Admin Only Link */}
-        {(user as any).role === 'ADMIN' && (
+        {/* Admin Only Link - Super Admin specific if needed, or redundant now */}
+        {(userRole === 'ADMIN') && (
           <ul className={styles.navList} style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--slate-100)' }}>
             <li className={styles.navItem}>
               <Link href="/admin/users" className={styles.navLink}>
@@ -47,6 +54,8 @@ export default async function Sidebar() {
         )}
       </nav>
 
+      {/* Help & Support Trigger */}
+      <HelpTrigger />
 
       <div className={styles.footer}>
         <div className={styles.userProfile} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
