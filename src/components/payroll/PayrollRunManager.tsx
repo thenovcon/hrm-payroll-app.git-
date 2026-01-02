@@ -4,7 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { getPayrollRuns, createPayrollRun, updatePayrollStatus } from '@/lib/actions/payroll-actions';
 import { format } from 'date-fns';
 
+import { useRouter } from 'next/navigation';
+
 export default function PayrollRunManager() {
+    const router = useRouter();
     const [runs, setRuns] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
@@ -98,16 +101,14 @@ export default function PayrollRunManager() {
         <div style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <div>
-                    <h3 className="text-xl font-bold">Payroll Runs</h3>
-                    <p className="text-sm text-gray-500">Process and approve monthly salary distributions.</p>
+                    <h2 className="text-lg font-semibold text-slate-800">Payroll Runs</h2>
+                    <p className="text-sm text-slate-500">History of all payroll generation cycles.</p>
                 </div>
                 <button
-                    onClick={handleCreateRun}
-                    disabled={processing}
-                    className="btn btn-primary"
-                    style={{ padding: '0.75rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    onClick={() => router.push('/payroll/run')}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-2"
                 >
-                    {processing ? 'Processing Engine...' : '+ New Payroll Run'}
+                    <span>+</span> Run Payroll
                 </button>
             </div>
 
