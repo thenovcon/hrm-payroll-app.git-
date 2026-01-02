@@ -87,17 +87,27 @@ async function main() {
         console.log('Created Admin User');
     }
 
-    // 3. Generate 50 Employees
-    for (let i = 0; i < 50; i++) {
+    // 3. Generate 200 Employees (Scaled for Demo)
+    const jobTitles = [
+        'HR Assistant', 'HR Manager', 'Talent Acquisition',
+        'Accountant', 'Financial Analyst', 'Payroll Officer',
+        'Software Engineer', 'System Administrator', 'IT Support',
+        'Sales Representative', 'Sales Manager', 'Business Development',
+        'Marketing Exec', 'Digital Specialist', 'Brand Manager',
+        'Operations Manager', 'Facilities Manager', 'Driver', 'Mechanic', 'Security Officer'
+    ];
+
+    for (let i = 0; i < 200; i++) {
         const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
         const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
         const departmentName = departments[Math.floor(Math.random() * departments.length)].name;
-        const position = positions[Math.floor(Math.random() * positions.length)];
+        // Basic logic to pick a somewhat relevant job title or just random
+        const position = jobTitles[Math.floor(Math.random() * jobTitles.length)];
 
         // Ensure unique email and username
         const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@novcon.com`;
         const username = `${firstName.toLowerCase()}${i}`;
-        const employeeId = `EMP-${2024000 + i}`;
+        const employeeId = `EMP-${2025000 + i}`;
 
         // Check if user exists
         const exists = await prisma.user.findUnique({ where: { username } });
@@ -105,13 +115,19 @@ async function main() {
 
         const dateOfBirth = new Date(1970 + Math.floor(Math.random() * 30), 0, 1);
         const gender = Math.random() > 0.5 ? 'MALE' : 'FEMALE';
-        const basicSalary = 2000 + Math.floor(Math.random() * 15000);
+        const basicSalary = 2000 + Math.floor(Math.random() * 25000); // Higher operational ceiling
+
+        // Determine Role based on Position keywords
+        let userRole = 'EMPLOYEE';
+        if (position.includes('Manager') || position.includes('Director') || position.includes('Head')) userRole = 'DEPT_HEAD';
+        if (position.includes('HR') || position.includes('Talent')) userRole = 'HR_MANAGER';
+        if (position.includes('Payroll') || position.includes('Accountant')) userRole = 'PAYROLL_OFFICER';
 
         await prisma.user.create({
             data: {
                 username,
                 password: hashedPassword,
-                role: position === 'Director' || position === 'Manager' ? 'DEPT_HEAD' : 'EMPLOYEE',
+                role: userRole, // Mapped role
                 employee: {
                     create: {
                         firstName,
@@ -119,7 +135,7 @@ async function main() {
                         email,
                         position,
                         departmentId: deptMap.get(departmentName),
-                        dateJoined: new Date(Date.now() - Math.floor(Math.random() * 10000000000)), // Random past date
+                        dateJoined: new Date(Date.now() - Math.floor(Math.random() * 31536000000 * 5)), // Joined within last 5 years
                         status: 'ACTIVE',
 
                         // New Required Fields
@@ -140,9 +156,12 @@ async function main() {
                 }
             }
         });
+
+        // Log progress every 20 users
+        if (i % 20 === 0) console.log(`Created user ${i}/200: ${firstName} ${lastName}`);
     }
 
-    console.log('✅ Seeding complete: 50 Ghanaian employees created.');
+    console.log('✅ Seeding complete: 200 Ghanaian employees created.');
 }
 
 main()
