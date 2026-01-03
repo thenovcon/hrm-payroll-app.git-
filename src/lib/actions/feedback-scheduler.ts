@@ -1,3 +1,4 @@
+'use server';
 
 import { prisma } from '@/lib/db/prisma';
 import { sendEmail } from '@/lib/email';

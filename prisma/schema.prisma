@@ -335,6 +335,9 @@ model Payslip {
   
   tier2Employee   Float     // Tier 2
   tier2Employer   Float     // Tier 2
+
+  tier3Employee   Float     @default(0) // Provident Fund
+  tier3Employer   Float     @default(0) // Provident Fund
   
   totalDeductions Float
   netPay          Float
@@ -635,6 +638,11 @@ model PayrollSettings {
   ssnitEmployerRate Float   @default(13.0)
   tier2EmployeeRate Float   @default(5.0)
   tier2EmployerRate Float   @default(5.0)
+  
+  // Tier 3 (Provident Fund - Optional)
+  tier3Enabled      Boolean @default(false)
+  tier3EmployeeRate Float   @default(0)
+  tier3EmployerRate Float   @default(0)
   
   taxBrackets     TaxBracket[]
   

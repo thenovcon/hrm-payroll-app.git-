@@ -22,46 +22,48 @@ export default function PayslipView({ payslip }: { payslip: any }) {
                 </div>
             </div>
 
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
-                <thead>
-                    <tr style={{ borderBottom: '1px solid #000' }}>
-                        <th style={{ textAlign: 'left', padding: '0.5rem' }}>Description</th>
-                        <th style={{ textAlign: 'right', padding: '0.5rem' }}>Earnings</th>
-                        <th style={{ textAlign: 'right', padding: '0.5rem' }}>Deductions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style={{ padding: '0.5rem' }}>Basic Salary</td>
-                        <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.basicSalary)}</td>
-                        <td></td>
-                    </tr>
-                    {payslip.totalAllowances > 0 && (
+            <div style={{ width: '100%', overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem', minWidth: '600px' }}>
+                    <thead>
+                        <tr style={{ borderBottom: '1px solid #000' }}>
+                            <th style={{ textAlign: 'left', padding: '0.5rem' }}>Description</th>
+                            <th style={{ textAlign: 'right', padding: '0.5rem' }}>Earnings</th>
+                            <th style={{ textAlign: 'right', padding: '0.5rem' }}>Deductions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <tr>
-                            <td style={{ padding: '0.5rem' }}>Total Allowances</td>
-                            <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.totalAllowances)}</td>
+                            <td style={{ padding: '0.5rem' }}>Basic Salary</td>
+                            <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.basicSalary)}</td>
                             <td></td>
                         </tr>
-                    )}
-                    <tr>
-                        <td style={{ padding: '0.5rem' }}>SSNIT (5.5%)</td>
-                        <td></td>
-                        <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.ssnitEmployee)}</td>
-                    </tr>
-                    <tr>
-                        <td style={{ padding: '0.5rem' }}>Income Tax (PAYE)</td>
-                        <td></td>
-                        <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.incomeTax)}</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr style={{ borderTop: '2px solid #000', fontWeight: 'bold' }}>
-                        <td style={{ padding: '0.5rem' }}>Totals</td>
-                        <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.grossSalary)}</td>
-                        <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.totalDeductions)}</td>
-                    </tr>
-                </tfoot>
-            </table>
+                        {payslip.totalAllowances > 0 && (
+                            <tr>
+                                <td style={{ padding: '0.5rem' }}>Total Allowances</td>
+                                <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.totalAllowances)}</td>
+                                <td></td>
+                            </tr>
+                        )}
+                        <tr>
+                            <td style={{ padding: '0.5rem' }}>SSNIT (5.5%)</td>
+                            <td></td>
+                            <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.ssnitEmployee)}</td>
+                        </tr>
+                        <tr>
+                            <td style={{ padding: '0.5rem' }}>Income Tax (PAYE)</td>
+                            <td></td>
+                            <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.incomeTax)}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style={{ borderTop: '2px solid #000', fontWeight: 'bold' }}>
+                            <td style={{ padding: '0.5rem' }}>Totals</td>
+                            <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.grossSalary)}</td>
+                            <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.totalDeductions)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
 
             <div style={{ borderTop: '2px dashed #ccc', paddingTop: '1rem', textAlign: 'right' }}>
                 <span style={{ fontSize: '1.25rem', fontWeight: 'bold', marginRight: '1rem' }}>NET PAY:</span>

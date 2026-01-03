@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
+import { TAX_BRACKETS } from '@/lib/payroll/taxRates';
 
 // --- STATUTORY CALCULATION HELPERS ---
 
@@ -13,17 +14,7 @@ export async function calculateGhanaPAYE(taxableIncome: number): Promise<number>
     let tax = 0;
     let remaining = taxableIncome;
 
-    const brackets = [
-        { limit: 490, rate: 0 },
-        { limit: 110, rate: 0.05 },
-        { limit: 130, rate: 0.10 },
-        { limit: 3165, rate: 0.175 },
-        { limit: 16105, rate: 0.25 },
-        { limit: 35000, rate: 0.30 },
-        { limit: Infinity, rate: 0.35 }
-    ];
-
-    for (const bracket of brackets) {
+    for (const bracket of TAX_BRACKETS) {
         if (remaining <= 0) break;
         const amountInBracket = Math.min(remaining, bracket.limit);
         tax += amountInBracket * bracket.rate;
@@ -32,6 +23,8 @@ export async function calculateGhanaPAYE(taxableIncome: number): Promise<number>
 
     return parseFloat(tax.toFixed(2));
 }
+
+
 
 // --- PAYROLL ACTIONS ---
 
@@ -51,6 +44,9 @@ export async function getPayrollSettings() {
                     ssnitEmployerRate: 13.0,
                     tier2EmployeeRate: 5.0,
                     tier2EmployerRate: 5.0,
+                    tier3Enabled: false,
+                    tier3EmployeeRate: 0,
+                    tier3EmployerRate: 0
                 },
                 include: { taxBrackets: true }
             });
@@ -58,6 +54,26 @@ export async function getPayrollSettings() {
         return { success: true, data: settings };
     } catch (error) {
         return { success: false, error: 'Failed to fetch payroll settings' };
+    }
+}
+
+export async function updatePayrollSettings(data: {
+    ssnitEmployeeRate?: number;
+    ssnitEmployerRate?: number;
+    tier3Enabled?: boolean;
+    tier3EmployeeRate?: number;
+    tier3EmployerRate?: number;
+}) {
+    try {
+        const settings = await prisma.payrollSettings.update({
+            where: { id: 'GLOBAL' },
+            data: data
+        });
+        revalidatePath('/settings');
+        revalidatePath('/payroll');
+        return { success: true, data: settings };
+    } catch (error) {
+        return { success: false, error: 'Failed to update payroll settings' };
     }
 }
 
@@ -102,6 +118,11 @@ export async function createPayrollRun(month: number, year: number) {
         const ssnitRate = settings?.ssnitEmployeeRate || 5.5;
         const ssnitEmployerRate = settings?.ssnitEmployerRate || 13.0;
 
+        // Tier 3 Config
+        const tier3Enabled = settings?.tier3Enabled || false;
+        const tier3Rate = settings?.tier3EmployeeRate || 0;
+        const tier3EmployerRate = settings?.tier3EmployerRate || 0;
+
         let totalRunNetPay = 0;
         let totalRunCost = 0;
 
@@ -123,17 +144,31 @@ export async function createPayrollRun(month: number, year: number) {
 
             const grossSalary = basicSalary + allowancesAmount + inputsAmount;
 
-            // Statutory Deductions
+            // Statutory Deductions (Tier 1 & 2)
             const ssnitEmployee = parseFloat((basicSalary * (ssnitRate / 100)).toFixed(2));
             const ssnitEmployer = parseFloat((basicSalary * (ssnitEmployerRate / 100)).toFixed(2));
 
-            const taxableIncome = grossSalary - ssnitEmployee;
+            // Tier 3 (Provident Fund) - Calculated on Basic
+            let tier3Employee = 0;
+            let tier3Employer = 0;
+
+            if (tier3Enabled) {
+                tier3Employee = parseFloat((basicSalary * (tier3Rate / 100)).toFixed(2));
+                tier3Employer = parseFloat((basicSalary * (tier3EmployerRate / 100)).toFixed(2));
+            }
+
+            // Taxable Income = Gross - (SSNIT Employee + Tier 3 Employee)
+            // Note: Tier 3 is tax exempt up to 16.5% of basic salary fully.
+            // Assumption: The configured rate is within the tax-exempt limit.
+            const totalTaxExempt = ssnitEmployee + tier3Employee;
+            const taxableIncome = Math.max(0, grossSalary - totalTaxExempt);
+
             const incomeTax = await calculateGhanaPAYE(taxableIncome);
 
             // Other Deductions (Loans, etc.)
             const otherDeductions = emp.deductions.reduce((sum: number, d: any) => sum + d.monthlyAmount, 0);
 
-            const totalDeductions = ssnitEmployee + incomeTax + otherDeductions;
+            const totalDeductions = ssnitEmployee + tier3Employee + incomeTax + otherDeductions;
             const netPay = grossSalary - totalDeductions;
 
             await prisma.payslip.create({
@@ -147,8 +182,10 @@ export async function createPayrollRun(month: number, year: number) {
                     incomeTax,
                     ssnitEmployee,
                     ssnitEmployer,
-                    tier2Employee: 0, // Simplified for now
+                    tier2Employee: 0,
                     tier2Employer: 0,
+                    tier3Employee,
+                    tier3Employer,
                     totalDeductions,
                     netPay
                 }
@@ -156,7 +193,7 @@ export async function createPayrollRun(month: number, year: number) {
 
             // Update deduction balances if this was a final run (but we are in DRAFT, so we'll do it on LOCK)
             totalRunNetPay += netPay;
-            totalRunCost += (grossSalary + ssnitEmployer);
+            totalRunCost += (grossSalary + ssnitEmployer + tier3Employer);
         }
 
         // 5. Update run totals

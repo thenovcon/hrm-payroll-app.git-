@@ -15,13 +15,14 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
 
     // Auto-init AI chat if needed
     useEffect(() => {
+        console.log("FloatingChatWidget Mounted. UserId:", userId);
         if (isOpen && activeTab === 'AI' && !activeConvId) {
             initAIChat();
         }
         if (isOpen && activeTab === 'CHATS') {
             loadConversations();
         }
-    }, [isOpen, activeTab]);
+    }, [isOpen, activeTab, userId]);
 
     // Poll messages if active conv
     useEffect(() => {
@@ -81,10 +82,10 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
     if (!userId) return null;
 
     return (
-        <div className="fixed bottom-10 right-10 z-[9999] flex flex-col items-end">
+        <div className="fixed bottom-4 right-4 md:bottom-10 md:right-10 z-[9999] flex flex-col items-end">
             {/* Chat Window */}
             {isOpen && (
-                <div className="mb-4 w-80 md:w-96 h-[500px] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5">
+                <div className="mb-4 w-[calc(100vw-2rem)] md:w-96 h-[500px] max-h-[80vh] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5">
                     {/* Header */}
                     <div className="bg-slate-900 text-white p-3 flex justify-between items-center">
                         <div className="flex gap-2 text-sm font-medium">

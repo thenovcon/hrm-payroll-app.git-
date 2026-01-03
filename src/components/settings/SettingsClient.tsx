@@ -7,6 +7,7 @@ import ApprovalWorkflows from '@/components/settings/ApprovalWorkflows';
 import PolicyConfig from '@/components/settings/PolicyConfig';
 import NotificationSettings from '@/components/settings/NotificationSettings';
 import SystemJobs from '@/components/settings/SystemJobs';
+import StatutorySetup from '@/components/payroll/StatutorySetup';
 
 const tabs = [
     { name: 'Company Setup', icon: '🏢' },
@@ -60,6 +61,7 @@ export default function SettingsClient({ user }: { user: any }) {
                     {activeTab === 'Company Setup' && <CompanySetup />}
                     {activeTab === 'Users & Roles' && <UserRoles />}
                     {activeTab === 'Approval Workflows' && <ApprovalWorkflows />}
+                    {activeTab === 'Payroll & Tax' && <StatutorySetup />}
                     {activeTab === 'HR Policies' && <PolicyConfig />}
                     {activeTab === 'Notifications' && <NotificationSettings user_id={user?.id} />}
                     {activeTab === 'System Jobs' && <SystemJobs />}

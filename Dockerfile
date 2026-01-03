@@ -6,7 +6,7 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm install
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -19,6 +19,8 @@ RUN npx prisma generate
 
 # Build Next.js
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV DATABASE_URL "postgresql://dummy:dummy@localhost:5432/dummy"
+ENV AUTH_SECRET "dummy_secret_for_build"
 RUN npm run build
 
 # Production image
