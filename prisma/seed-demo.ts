@@ -77,6 +77,32 @@ async function main() {
         }
     });
 
+    // 2b. Create Michael Duodu (Requested Admin)
+    const michaelAdmin = await prisma.user.upsert({
+        where: { username: 'mduodu' },
+        update: {
+            role: 'ADMIN',
+            password: await hash('admin123', 10) // Ensure password is set
+        },
+        create: {
+            username: 'mduodu',
+            password: await hash('admin123', 10),
+            role: 'ADMIN',
+            status: 'ACTIVE',
+            employee: {
+                create: {
+                    firstName: 'Michael', lastName: 'Duodu', email: 'michael.duodu@novcon.com',
+                    position: 'System Administrator', departmentId: deptMap.get('Human Resources'),
+                    dateJoined: new Date(), employeeId: 'ADM-002',
+                    dateOfBirth: new Date('1990-01-01'), gender: 'MALE', phone: '0500000000',
+                    employmentType: 'Permanent', status: 'ACTIVE',
+                    salaryStructure: { create: { basicSalary: 18000 } }
+                }
+            }
+        }
+    });
+    console.log('✅ Admins Synced (System + Michael)');
+
     // 3. Generate 50 Random Employees for Volume
     const employees = [];
     const firstNames = ['Kwame', 'Ama', 'Kofi', 'Abena', 'Yaw', 'Akosua', 'Kojo', 'Adwoa', 'Emmanuel', 'Sarah'];
