@@ -38,8 +38,8 @@ export default async function EngagementPage({ searchParams }: { searchParams: {
 
     // Mock Data Injection
     const mockPosts = [
-        { id: 'p1', content: 'Just finished a great team lunch! 🍕', author: { firstName: 'Sarah', lastName: 'Jenkins', image: null }, likes: 12, comments: 4, createdAt: new Date(Date.now() - 3600000) },
-        { id: 'p2', content: 'Welcome to the team, @Kofi! Excited to have you on board. 🚀', author: { firstName: 'David', lastName: 'Boateng', image: null }, likes: 25, comments: 8, createdAt: new Date(Date.now() - 86400000) },
+        { id: 'p1', content: 'Just finished a great team lunch! 🍕', author: { username: 'sarah.jenkins', employee: { firstName: 'Sarah', lastName: 'Jenkins', position: 'Product Manager', image: null } }, likes: 12, comments: 4, createdAt: new Date(Date.now() - 3600000).toISOString(), _count: { likes: 12, comments: 4 } },
+        { id: 'p2', content: 'Welcome to the team, @Kofi! Excited to have you on board. 🚀', author: { username: 'david.b', employee: { firstName: 'David', lastName: 'Boateng', position: 'Software Engineer', image: null } }, likes: 25, comments: 8, createdAt: new Date(Date.now() - 86400000).toISOString(), _count: { likes: 25, comments: 8 } },
     ];
     const finalPosts = posts.length > 0 ? posts : mockPosts;
 

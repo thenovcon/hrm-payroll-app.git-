@@ -18,17 +18,15 @@ type Post = {
 };
 
 export default function SocialFeed({ initialPosts, userId }: { initialPosts: any[], userId: string }) {
-    const [optimisticPosts, addOptimisticPost] = (settings => {
-        // Safe check for useOptimistic in case of older React version
-        try {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            return require('react').useOptimistic(initialPosts, (state: Post[], newPost: Post) => [newPost, ...state]);
-        } catch (e) {
-            return [initialPosts, () => { }];
-        }
-    })();
+    // Use standard state for stability instead of risky useOptimistic require() hack
+    const [posts, setPosts] = useState(initialPosts);
 
     const handleLike = async (postId: string) => {
+        // Optimistic UI update
+        setPosts(prev => prev.map(p =>
+            p.id === postId ? { ...p, _count: { ...p._count, likes: p._count.likes + 1 } } : p
+        ));
+
         // Trigger confetti
         confetti({
             particleCount: 50,
@@ -39,31 +37,36 @@ export default function SocialFeed({ initialPosts, userId }: { initialPosts: any
         await toggleLike(postId);
     };
 
+    const addPost = async (formData: FormData) => {
+        const content = formData.get('content') as string;
+        if (!content) return;
+
+        // Optimistic Add
+        const newPost: Post = {
+            id: Math.random().toString(),
+            content,
+            imageUrl: null,
+            author: {
+                username: 'Me',
+                employee: { firstName: 'You', lastName: '(Posting...)', position: '' }
+            },
+            createdAt: new Date(),
+            _count: { likes: 0, comments: 0 },
+            isLiked: false
+        };
+
+        setPosts(prev => [newPost, ...prev]);
+
+        // Server Action
+        await createPost(content);
+    };
+
     return (
         <div className="space-y-6">
             {/* Create Post */}
+            {/* Create Post */}
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <form action={async (formData) => {
-                    const content = formData.get('content') as string;
-                    if (!content) return;
-
-                    // 1. Optimistic Update
-                    addOptimisticPost({
-                        id: Math.random().toString(), // Temp ID
-                        content,
-                        imageUrl: null,
-                        author: {
-                            username: 'Me',
-                            employee: { firstName: 'You', lastName: '(Posting...)', position: '' }
-                        },
-                        createdAt: new Date(),
-                        _count: { likes: 0, comments: 0 },
-                        isLiked: false
-                    });
-
-                    // 2. Server Action
-                    await createPost(content);
-                }}>
+                <form action={addPost}>
                     <div className="flex gap-3">
                         <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">
                             Me
@@ -86,7 +89,7 @@ export default function SocialFeed({ initialPosts, userId }: { initialPosts: any
             </div>
 
             {/* Feed */}
-            {optimisticPosts.map((post: Post) => (
+            {posts.map((post: Post) => (
                 <div key={post.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
@@ -111,12 +114,13 @@ export default function SocialFeed({ initialPosts, userId }: { initialPosts: any
                     )}
 
                     <div className="flex items-center gap-6 border-t border-gray-100 pt-3">
-                        <form action={async () => await handleLike(post.id)}>
-                            <button className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 transition active:scale-125 duration-150 group">
-                                <span className="group-hover:scale-110 transition-transform">❤️</span>
-                                <span className="text-sm font-medium">{post._count.likes} Likes</span>
-                            </button>
-                        </form>
+                        <button
+                            onClick={() => handleLike(post.id)}
+                            className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 transition active:scale-125 duration-150 group"
+                        >
+                            <span className="group-hover:scale-110 transition-transform">❤️</span>
+                            <span className="text-sm font-medium">{post._count.likes} Likes</span>
+                        </button>
                         <button className="flex items-center gap-1.5 text-gray-500 hover:text-blue-500 transition">
                             <span>💬</span>
                             <span className="text-sm font-medium">{post._count.comments} Comments</span>

@@ -19,9 +19,39 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
 
     // Mock Data Fallback
     const demoGoals = [
-        { id: 'g1', title: 'Complete Advanced React Certification', description: 'Finish the lvl 2 course', progress: 100, status: 'COMPLETED', dueDate: new Date(2024, 11, 31) },
-        { id: 'g2', title: 'Reduce API Latency by 20%', description: 'Optimize database queries', progress: 65, status: 'IN_PROGRESS', dueDate: new Date(2025, 2, 30) },
-        { id: 'g3', title: 'Mentor 2 Junior Devs', description: 'Weekly code reviews', progress: 40, status: 'IN_PROGRESS', dueDate: new Date(2025, 5, 30) },
+        {
+            id: 'g1',
+            title: 'Complete Advanced React Certification',
+            description: 'Finish the lvl 2 course to improve frontend architecture skills.',
+            progress: 100,
+            status: 'COMPLETED',
+            dueDate: new Date(2024, 11, 31),
+            relevance: 'Crucial for upcoming dashboard refactor requiring optimized state management.',
+            strategy: 'Dedicate 2 hours every Tuesday/Thursday evening. Build a capstone project.',
+            feedback: 'Excellent dedication! The new optimizations are noticeable.'
+        },
+        {
+            id: 'g2',
+            title: 'Reduce API Latency by 20%',
+            description: 'Optimize database queries and implement Redis caching.',
+            progress: 65,
+            status: 'IN_PROGRESS',
+            dueDate: new Date(2025, 2, 30),
+            relevance: 'Directly impacts user retention and system scalability during peak hours.',
+            strategy: 'Profile slow endpoints, index high-traffic tables, and cache static responses.',
+            feedback: 'Good progress on the caching layer, but query optimization needs more focus.'
+        },
+        {
+            id: 'g3',
+            title: 'Mentor 2 Junior Devs',
+            description: 'Conduct weekly code reviews and pair programming sessions.',
+            progress: 40,
+            status: 'IN_PROGRESS',
+            dueDate: new Date(2025, 5, 30),
+            relevance: 'Builds team capacity and ensures knowledge transfer for legacy systems.',
+            strategy: 'Schedule recurring 1:1s. Assign distinct modules for them to own with supervision.',
+            feedback: 'The juniors are improving fast. Keep up the structured guidance.'
+        },
     ];
     const finalGoals = goals.length > 0 ? goals : demoGoals;
 
