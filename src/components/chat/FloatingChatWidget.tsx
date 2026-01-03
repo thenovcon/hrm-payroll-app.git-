@@ -79,10 +79,12 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
         }
     };
 
-    if (!userId) return null;
+    // DEBUG: Removed check to force render
+    // if (!userId) return null;
 
     return (
-        <div className="fixed bottom-4 right-4 md:bottom-10 md:right-10 z-[9999] flex flex-col items-end">
+        <div className="fixed bottom-20 right-10 md:bottom-24 md:right-12 z-[2147483647] flex flex-col items-end border-4 border-red-500 bg-white p-2 rounded-xl">
+            <div className="text-xs font-bold text-red-600 mb-1">User: {userId || 'None'}</div>
             {/* Chat Window */}
             {isOpen && (
                 <div className="mb-4 w-[calc(100vw-2rem)] md:w-96 h-[500px] max-h-[80vh] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5">
@@ -169,6 +171,7 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
             {/* Trigger Button */}
             {!isOpen && (
                 <button
+                    id="chat-trigger-btn"
                     onClick={() => setIsOpen(true)}
                     className="w-14 h-14 bg-gradient-to-tr from-primary-600 to-indigo-600 text-white rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-110 flex items-center justify-center"
                 >

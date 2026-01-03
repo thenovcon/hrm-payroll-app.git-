@@ -33,14 +33,17 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          {/* Duplicate ChatWidget removed. Handled in DashboardLayout. */}
+          {/* 
           {user && (
             <ChatWidget user={{
               id: user.id || '',
               name: user.name,
-              username: (user as any).username || user.name, // Handle potential type diffs
+              username: (user as any).username || user.name,
               role: (user as any).role
             }} />
-          )}
+          )} 
+*/}
         </ThemeProvider>
       </body>
     </html>

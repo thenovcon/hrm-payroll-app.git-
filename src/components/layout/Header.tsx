@@ -78,6 +78,14 @@ export default function Header({ notifications = [] }: HeaderProps) {
                 <NotificationBell notifications={notifications} />
 
                 {/* Settings */}
+                <button
+                    onClick={() => { const el = document.getElementById('chat-trigger-btn'); if (el) el.click(); else alert('Chat widget not found!'); }}
+                    className="p-2 mr-2 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors"
+                    title="Force Open Chat"
+                >
+                    💬
+                </button>
+
                 <div ref={settingsRef} style={{ position: 'relative' }}>
                     <button
                         className={styles.actionBtn}
