@@ -38,7 +38,7 @@ export default function ExceptionManagement() {
             <div style={{ overflowX: 'auto' }} className="card">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                        <tr style={{ background: 'var(--slate-50)', borderBottom: '1px solid var(--slate-200)' }}>
+                        <tr style={{ background: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-light)' }}>
                             <th style={{ padding: '1rem', fontSize: '0.875rem' }}>Date</th>
                             <th style={{ padding: '1rem', fontSize: '0.875rem' }}>Employee</th>
                             <th style={{ padding: '1rem', fontSize: '0.875rem' }}>Type</th>
@@ -54,7 +54,7 @@ export default function ExceptionManagement() {
                             <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center' }}>No pending exceptions. Everything is clean!</td></tr>
                         ) : (
                             exceptions.map((ex) => (
-                                <tr key={ex.id} style={{ borderBottom: '1px solid var(--slate-100)' }}>
+                                <tr key={ex.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                     <td style={{ padding: '1rem' }}>{format(new Date(ex.record.date), 'MMM dd, yyyy')}</td>
                                     <td style={{ padding: '1rem' }}>
                                         <div style={{ fontWeight: 600 }}>{ex.record.employee?.firstName} {ex.record.employee?.lastName}</div>
@@ -81,7 +81,7 @@ export default function ExceptionManagement() {
                                                 <button onClick={() => handleResolve(ex.id, 'REJECTED')} className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: '#fee2e2', color: '#dc2626' }}>Reject</button>
                                             </div>
                                         ) : (
-                                            <span style={{ fontSize: '0.75rem', color: 'var(--slate-400)' }}>Resolved</span>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Resolved</span>
                                         )}
                                     </td>
                                 </tr>

@@ -26,7 +26,7 @@ export default async function DashboardLayout({
             {/* <div className="fixed bottom-0 left-0 bg-yellow-300 text-black text-xs px-2 z-[9999] opacity-75 pointer-events-none">
                 {session?.user?.id ? ('Session OK: ' + session.user.id.substring(0, 4)) : 'NO SESSION - CHAT HIDDEN'}
             </div> */}
-            <FloatingChatWidget userId={session?.user?.id || ''} />
+            {/* <FloatingChatWidget userId={session?.user?.id || ''} /> Moved to RootLayout */}
         </>
     );
 }

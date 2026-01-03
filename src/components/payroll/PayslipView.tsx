@@ -5,7 +5,7 @@ export default function PayslipView({ payslip }: { payslip: any }) {
 
     return (
         <div className="card" style={{ maxWidth: '800px', margin: '0 auto', fontFamily: 'Courier New, monospace' }}>
-            <div style={{ textAlign: 'center', borderBottom: '2px dashed #ccc', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+            <div style={{ textAlign: 'center', borderBottom: '2px dashed var(--border-light)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
                 <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>COMPANY NAME LTD</h1>
                 <p>PAYSLIP - {payslip.payrollRun?.month} / {payslip.payrollRun?.year}</p>
             </div>
@@ -25,7 +25,7 @@ export default function PayslipView({ payslip }: { payslip: any }) {
             <div style={{ width: '100%', overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem', minWidth: '600px' }}>
                     <thead>
-                        <tr style={{ borderBottom: '1px solid #000' }}>
+                        <tr style={{ borderBottom: '1px solid var(--text-primary)' }}>
                             <th style={{ textAlign: 'left', padding: '0.5rem' }}>Description</th>
                             <th style={{ textAlign: 'right', padding: '0.5rem' }}>Earnings</th>
                             <th style={{ textAlign: 'right', padding: '0.5rem' }}>Deductions</th>
@@ -56,7 +56,7 @@ export default function PayslipView({ payslip }: { payslip: any }) {
                         </tr>
                     </tbody>
                     <tfoot>
-                        <tr style={{ borderTop: '2px solid #000', fontWeight: 'bold' }}>
+                        <tr style={{ borderTop: '2px solid var(--text-primary)', fontWeight: 'bold' }}>
                             <td style={{ padding: '0.5rem' }}>Totals</td>
                             <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.grossSalary)}</td>
                             <td style={{ textAlign: 'right', padding: '0.5rem' }}>{currency(payslip.totalDeductions)}</td>
@@ -65,9 +65,9 @@ export default function PayslipView({ payslip }: { payslip: any }) {
                 </table>
             </div>
 
-            <div style={{ borderTop: '2px dashed #ccc', paddingTop: '1rem', textAlign: 'right' }}>
+            <div style={{ borderTop: '2px dashed var(--border-light)', paddingTop: '1rem', textAlign: 'right' }}>
                 <span style={{ fontSize: '1.25rem', fontWeight: 'bold', marginRight: '1rem' }}>NET PAY:</span>
-                <span style={{ fontSize: '1.5rem', fontWeight: 'bold', border: '2px solid #000', padding: '0.5rem' }}>
+                <span style={{ fontSize: '1.5rem', fontWeight: 'bold', border: '2px solid var(--text-primary)', padding: '0.5rem' }}>
                     {currency(payslip.netPay)}
                 </span>
             </div>

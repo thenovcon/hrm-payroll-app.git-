@@ -24,10 +24,10 @@ export default function ApprovalWorkflows() {
                 {workflows.map((w, i) => (
                     <div key={i} className="card" style={{ padding: '1.5rem', borderTop: `4px solid ${w.status === 'Active' ? 'var(--accent-teal)' : 'var(--slate-300)'}` }}>
                         <div style={{ marginBottom: '1rem' }}>
-                            <span style={{ fontSize: '0.65rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'var(--slate-100)', fontWeight: 700 }}>{w.module}</span>
+                            <span style={{ fontSize: '0.65rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'var(--primary-50)', fontWeight: 700 }}>{w.module}</span>
                         </div>
                         <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>{w.name}</h4>
-                        <p style={{ margin: '0.5rem 0 1.5rem 0', fontSize: '0.875rem', color: 'var(--slate-500)' }}>{w.levels} Step Approval Chain</p>
+                        <p style={{ margin: '0.5rem 0 1.5rem 0', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{w.levels} Step Approval Chain</p>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
                             <span style={{ fontSize: '0.75rem', color: w.status === 'Active' ? 'var(--accent-teal)' : 'var(--slate-400)', fontWeight: 700 }}>● {w.status}</span>

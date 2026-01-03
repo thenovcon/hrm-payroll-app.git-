@@ -34,7 +34,7 @@ export default function ReportsPage() {
             </div>
 
             {/* Sub-navigation */}
-            <div className="card" style={{ padding: '0.5rem', marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', overflowX: 'auto', background: 'white' }}>
+            <div className="card" style={{ padding: '0.5rem', marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', overflowX: 'auto', background: 'var(--bg-card)' }}>
                 {tabs.map((tab) => (
                     <button
                         key={tab.name}
@@ -43,8 +43,8 @@ export default function ReportsPage() {
                             padding: '0.75rem 1.25rem',
                             border: 'none',
                             borderRadius: 'var(--radius-md)',
-                            background: activeTab === tab.name ? 'var(--primary-50)' : 'transparent',
-                            color: activeTab === tab.name ? 'var(--primary-700)' : 'var(--slate-600)',
+                            background: activeTab === tab.name ? 'var(--bg-active-tab)' : 'transparent',
+                            color: activeTab === tab.name ? 'var(--text-active-tab)' : 'var(--text-secondary)',
                             fontWeight: activeTab === tab.name ? 600 : 500,
                             cursor: 'pointer',
                             display: 'flex',
@@ -61,7 +61,7 @@ export default function ReportsPage() {
             </div>
 
             {/* Tab Content */}
-            <div className="card" style={{ minHeight: '600px', background: 'white' }}>
+            <div className="card" style={{ minHeight: '600px', background: 'var(--bg-card)' }}>
                 <Suspense fallback={<div style={{ padding: '2rem' }}>Loading report module...</div>}>
                     {activeTab === 'Executive Insights' && <ExecutiveDashboard />}
                     {activeTab === 'HR Operations' && <HRAnalytics />}

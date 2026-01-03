@@ -34,10 +34,10 @@ export default function BankDisbursement() {
                 <p className="text-sm text-gray-500">Export payment files for bank transfers and Mobile Money (MoMo) bulk payments.</p>
             </div>
 
-            <div className="card" style={{ padding: '2rem', textAlign: 'center', background: 'var(--slate-50)' }}>
+            <div className="card" style={{ padding: '2rem', textAlign: 'center', background: 'var(--bg-subtle)' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏦</div>
                 <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Generate Bulk Payment File</h4>
-                <p style={{ color: 'var(--slate-500)', maxWidth: '400px', margin: '0 auto 1.5rem auto', fontSize: '0.875rem' }}>
+                <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto 1.5rem auto', fontSize: '0.875rem' }}>
                     Select a finalized payroll run to generate the CSV file compatible with Standard Chartered, Ecobank, and Mobile Money portals.
                 </p>
 
@@ -49,7 +49,7 @@ export default function BankDisbursement() {
                         placeholder="Enter Run UUID..."
                         value={runId}
                         onChange={(e) => setRunId(e.target.value)}
-                        style={{ background: 'white' }}
+                        style={{ background: 'var(--bg-card)' }}
                     />
                 </div>
 
@@ -57,7 +57,7 @@ export default function BankDisbursement() {
                     <button onClick={handleDownload} className="btn btn-primary" style={{ padding: '0.75rem 2rem' }}>
                         {loading ? 'Generating...' : 'Download CSV (Standard)'}
                     </button>
-                    <button className="btn" style={{ padding: '0.75rem 2rem', background: 'white', border: '1px solid var(--slate-200)' }}>
+                    <button className="btn" style={{ padding: '0.75rem 2rem', background: 'var(--bg-card)', border: '1px solid var(--border-light)' }}>
                         Request API Integration
                     </button>
                 </div>
@@ -66,13 +66,13 @@ export default function BankDisbursement() {
             <div style={{ marginTop: '2rem' }}>
                 <h5 style={{ fontWeight: 600, marginBottom: '1rem' }}>Supported Formats</h5>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                    <div style={{ padding: '1rem', border: '1px solid var(--slate-100)', borderRadius: '8px', fontSize: '0.75rem' }}>
+                    <div style={{ padding: '1rem', border: '1px solid var(--border-light)', borderRadius: '8px', fontSize: '0.75rem' }}>
                         <strong>Bank CSV</strong>: Standard format for multi-bank processing.
                     </div>
-                    <div style={{ padding: '1rem', border: '1px solid var(--slate-100)', borderRadius: '8px', fontSize: '0.75rem' }}>
+                    <div style={{ padding: '1rem', border: '1px solid var(--border-light)', borderRadius: '8px', fontSize: '0.75rem' }}>
                         <strong>MoMo XML</strong>: Direct upload for MTN and Telecel bulk payment.
                     </div>
-                    <div style={{ padding: '1rem', border: '1px solid var(--slate-100)', borderRadius: '8px', fontSize: '0.75rem' }}>
+                    <div style={{ padding: '1rem', border: '1px solid var(--border-light)', borderRadius: '8px', fontSize: '0.75rem' }}>
                         <strong>SWIFT/MT103</strong>: International wire transfer compatibility.
                     </div>
                 </div>

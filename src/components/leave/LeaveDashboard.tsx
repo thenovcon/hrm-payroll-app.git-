@@ -59,7 +59,7 @@ export default function LeaveDashboard({
             </div>
 
             {/* Tab Navigation */}
-            <div className="card" style={{ padding: '0.5rem', marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', background: 'white' }}>
+            <div className="card" style={{ padding: '0.5rem', marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', background: 'var(--bg-card)' }}>
                 {tabs.map((tab) => (
                     <button
                         key={tab.name}
@@ -97,7 +97,7 @@ export default function LeaveDashboard({
             </div>
 
             {/* Tab Content */}
-            <div className="card" style={{ minHeight: '400px', background: 'white' }}>
+            <div className="card" style={{ minHeight: '400px', background: 'var(--bg-card)' }}>
                 {activeTab === 'My Requests' && (
                     <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>

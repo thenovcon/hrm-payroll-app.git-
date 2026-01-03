@@ -54,6 +54,10 @@
 
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Tab States */
+  --text-active-tab: var(--primary-700);
+  --bg-active-tab: var(--primary-50);
 }
 
 /* Reset & Base Styles */
@@ -85,10 +89,49 @@ a {
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+
+  --text-active-tab: var(--primary-300);
+  --bg-active-tab: rgba(129, 140, 248, 0.15);
+  /* primary-500 @ 15% */
 }
 
+/* Ensure body uses the variables */
 /* Ensure body uses the variables */
 body {
   background-color: var(--bg-body);
   color: var(--text-primary);
+}
+
+/* Utility Components */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.input,
+.select,
+.textarea {
+  background-color: var(--bg-card);
+  /* was slate-50 but card is safer for inputs in dark mode */
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 2px var(--primary-100);
+}
+
+/* Fix slate-50 backgrounds in dark mode for specific elements if needed */
+.dark .bg-slate-50 {
+  background-color: var(--slate-900);
 }

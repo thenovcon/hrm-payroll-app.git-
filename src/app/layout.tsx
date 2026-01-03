@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 import { auth } from '@/auth';
-import ChatWidget from '@/components/chat/ChatWidget';
+import FloatingChatWidget from '@/components/chat/FloatingChatWidget';
 
 export default async function RootLayout({
   children,
@@ -33,17 +33,8 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          {/* Duplicate ChatWidget removed. Handled in DashboardLayout. */}
-          {/* 
-          {user && (
-            <ChatWidget user={{
-              id: user.id || '',
-              name: user.name,
-              username: (user as any).username || user.name,
-              role: (user as any).role
-            }} />
-          )} 
-*/}
+          {/* Global Chat Widget - Forced Render for Debugging */}
+          <FloatingChatWidget userId={user?.id || ''} />
         </ThemeProvider>
       </body>
     </html>

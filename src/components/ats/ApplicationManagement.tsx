@@ -51,7 +51,7 @@ export default function ApplicationManagement() {
             <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                        <tr style={{ borderBottom: '1px solid var(--slate-200)' }}>
+                        <tr style={{ borderBottom: '1px solid var(--border-light)' }}>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Candidate</th>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Position</th>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Status</th>
@@ -66,7 +66,7 @@ export default function ApplicationManagement() {
                             <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>No applications received yet.</td></tr>
                         ) : (
                             applications.map((app) => (
-                                <tr key={app.id} style={{ borderBottom: '1px solid var(--slate-100)' }}>
+                                <tr key={app.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                     <td style={{ padding: '1rem' }}>
                                         <div style={{ fontWeight: 600 }}>{app.candidate?.name}</div>
                                         <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>{app.candidate?.email}</div>

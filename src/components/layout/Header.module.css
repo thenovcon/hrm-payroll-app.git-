@@ -1,6 +1,6 @@
 .header {
     height: var(--header-height);
-    background: white;
+    background: var(--bg-card);
     border-bottom: 1px solid var(--border-light);
     display: flex;
     align-items: center;
@@ -11,6 +11,31 @@
     z-index: 40;
 }
 
+.hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-right: 1rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+}
+
+.hamburger:hover {
+    background: var(--slate-100);
+    color: var(--primary-600);
+}
+
+@media (min-width: 1024px) {
+    .hamburger {
+        display: none;
+    }
+}
+
 .searchContainer {
     flex: 1;
     max-width: 480px;
@@ -19,7 +44,7 @@
 .searchInput {
     width: 100%;
     padding: 0.625rem 1rem;
-    border: 1px solid var(--slate-200);
+    border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
     background: var(--slate-50);
     color: var(--text-primary);
@@ -29,7 +54,7 @@
 
 .searchInput:focus {
     outline: none;
-    background: white;
+    background: var(--bg-card);
     border-color: var(--primary-400);
     box-shadow: 0 0 0 3px var(--primary-100);
 }
@@ -126,8 +151,8 @@
     top: calc(100% + 0.5rem);
     right: 0;
     width: 320px;
-    background: white;
-    border: 1px solid var(--slate-200);
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     z-index: 50;
@@ -151,7 +176,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    border-bottom: 1px solid var(--slate-200);
+    border-bottom: 1px solid var(--border-light);
 }
 
 .dropdownHeader h3 {
@@ -189,14 +214,14 @@
 
 .dropdownFooter {
     padding: 0.75rem 1rem;
-    border-top: 1px solid var(--slate-200);
+    border-top: 1px solid var(--border-light);
 }
 
 .viewAllBtn {
     width: 100%;
     padding: 0.5rem;
     background: transparent;
-    border: 1px solid var(--slate-200);
+    border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
     color: var(--primary-600);
     font-size: 0.875rem;

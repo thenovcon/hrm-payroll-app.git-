@@ -26,7 +26,7 @@ export default function TrainingAssignments() {
             <div className="card" style={{ padding: 0 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
-                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--slate-100)', background: 'var(--slate-50)' }}>
+                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-subtle)' }}>
                             <th style={{ padding: '1rem' }}>Employee</th>
                             <th style={{ padding: '1rem' }}>Course</th>
                             <th style={{ padding: '1rem' }}>Progress</th>
@@ -36,12 +36,12 @@ export default function TrainingAssignments() {
                     </thead>
                     <tbody>
                         {assignments.map((a, i) => (
-                            <tr key={i} style={{ borderBottom: '1px solid var(--slate-50)' }}>
+                            <tr key={i} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                 <td style={{ padding: '1rem', fontWeight: 600 }}>{a.name}</td>
                                 <td style={{ padding: '1rem' }}>{a.course}</td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <div style={{ flex: 1, height: '6px', background: 'var(--slate-100)', borderRadius: '3px', overflow: 'hidden' }}>
+                                        <div style={{ flex: 1, height: '6px', background: 'var(--bg-subtle)', borderRadius: '3px', overflow: 'hidden' }}>
                                             <div style={{ width: `${a.progress}%`, height: '100%', background: a.status === 'Overdue' ? '#ef4444' : 'var(--primary-500)' }}></div>
                                         </div>
                                         <span style={{ fontSize: '0.75rem', minWidth: '30px' }}>{a.progress}%</span>
@@ -53,8 +53,8 @@ export default function TrainingAssignments() {
                                         borderRadius: '4px',
                                         fontSize: '0.65rem',
                                         fontWeight: 700,
-                                        background: a.status === 'Completed' ? 'var(--accent-teal)10' : a.status === 'Overdue' ? '#ef444410' : 'var(--slate-100)',
-                                        color: a.status === 'Completed' ? 'var(--accent-teal)' : a.status === 'Overdue' ? '#ef4444' : 'var(--slate-600)',
+                                        background: a.status === 'Completed' ? 'var(--accent-teal)10' : a.status === 'Overdue' ? '#ef444410' : 'var(--bg-subtle)',
+                                        color: a.status === 'Completed' ? 'var(--accent-teal)' : a.status === 'Overdue' ? '#ef4444' : 'var(--text-secondary)',
                                     }}>{a.status}</span>
                                 </td>
                                 <td style={{ padding: '1rem', fontSize: '0.875rem' }}>{a.deadline}</td>

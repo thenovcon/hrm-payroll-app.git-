@@ -55,7 +55,7 @@ export default function PayrollRunManager() {
                     {selectedRun.status === 'DRAFT' && (
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <button onClick={() => handleUpdateStatus(selectedRun.id, 'APPROVED')} className="btn btn-primary" style={{ background: 'var(--accent-teal)' }}>Approve Run</button>
-                            <button className="btn" style={{ background: '#fee2e2', color: '#dc2626' }}>Rollback</button>
+                            <button className="btn" style={{ background: 'rgba(220, 38, 38, 0.1)', color: '#dc2626' }}>Rollback</button>
                         </div>
                     )}
                 </div>
@@ -63,7 +63,7 @@ export default function PayrollRunManager() {
                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr style={{ background: 'var(--slate-50)', textAlign: 'left' }}>
+                            <tr style={{ background: 'var(--bg-subtle)', textAlign: 'left' }}>
                                 <th style={{ padding: '1rem', fontSize: '0.875rem' }}>Employee</th>
                                 <th style={{ padding: '1rem', fontSize: '0.875rem' }}>Basic</th>
                                 <th style={{ padding: '1rem', fontSize: '0.875rem' }}>Allow/Bonus</th>
@@ -75,7 +75,7 @@ export default function PayrollRunManager() {
                         </thead>
                         <tbody>
                             {selectedRun.payslips.map((slip: any) => (
-                                <tr key={slip.id} style={{ borderBottom: '1px solid var(--slate-100)' }}>
+                                <tr key={slip.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                     <td style={{ padding: '1rem' }}>
                                         <div style={{ fontWeight: 600 }}>{slip.employee?.firstName} {slip.employee?.lastName}</div>
                                         <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>{slip.employee?.employeeId}</div>

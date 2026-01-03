@@ -22,8 +22,8 @@ export default function PayrollDashboard() {
                                 fontWeight: 700,
                                 padding: '0.25rem 0.5rem',
                                 borderRadius: '9999px',
-                                background: stat.change.startsWith('+') ? 'var(--accent-teal)20' : 'var(--error-50)',
-                                color: stat.change.startsWith('+') ? 'var(--accent-teal)' : 'var(--error-600)'
+                                background: stat.change.startsWith('+') ? 'rgba(20, 184, 166, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                color: stat.change.startsWith('+') ? 'var(--accent-teal)' : '#ef4444'
                             }}>
                                 {stat.change}
                             </span>
@@ -45,12 +45,12 @@ export default function PayrollDashboard() {
                             { item: 'Allowances', prev: '45k', curr: '45k', diff: '0', reason: '-' },
                             { item: 'Deductions', prev: '12k', curr: '18k', diff: '+6k', reason: 'Staff loans' },
                         ].map((v) => (
-                            <div key={v.item} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1.5fr', alignItems: 'center', fontSize: '0.875rem', padding: '0.75rem', background: 'var(--slate-50)', borderRadius: '8px' }}>
+                            <div key={v.item} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1.5fr', alignItems: 'center', fontSize: '0.875rem', padding: '0.75rem', background: 'var(--bg-body)', borderRadius: '8px' }}>
                                 <span style={{ fontWeight: 600 }}>{v.item}</span>
-                                <span style={{ color: 'var(--slate-500)' }}>{v.prev}</span>
-                                <span style={{ color: 'var(--slate-800)', fontWeight: 600 }}>{v.curr}</span>
+                                <span style={{ color: 'var(--text-secondary)' }}>{v.prev}</span>
+                                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{v.curr}</span>
                                 <span style={{ color: v.diff.startsWith('+') ? '#ef4444' : 'inherit' }}>{v.diff}</span>
-                                <span style={{ fontSize: '0.75rem', color: 'var(--slate-500)', fontStyle: 'italic' }}>{v.reason}</span>
+                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{v.reason}</span>
                             </div>
                         ))}
                     </div>
@@ -65,7 +65,7 @@ export default function PayrollDashboard() {
                                 <span style={{ fontWeight: 600 }}>GRA PAYE Data</span>
                                 <span style={{ color: 'var(--accent-teal)' }}>Ready</span>
                             </div>
-                            <div style={{ height: '8px', background: 'var(--slate-100)', borderRadius: '4px' }}>
+                            <div style={{ height: '8px', background: 'var(--border-light)', borderRadius: '4px' }}>
                                 <div style={{ width: '100%', height: '100%', background: 'var(--accent-teal)', borderRadius: '4px' }}></div>
                             </div>
                         </div>
@@ -74,7 +74,7 @@ export default function PayrollDashboard() {
                                 <span style={{ fontWeight: 600 }}>SSNIT Tier 1 & 2</span>
                                 <span style={{ color: 'var(--accent-teal)' }}>Ready</span>
                             </div>
-                            <div style={{ height: '8px', background: 'var(--slate-100)', borderRadius: '4px' }}>
+                            <div style={{ height: '8px', background: 'var(--border-light)', borderRadius: '4px' }}>
                                 <div style={{ width: '100%', height: '100%', background: 'var(--accent-teal)', borderRadius: '4px' }}></div>
                             </div>
                         </div>
@@ -83,7 +83,7 @@ export default function PayrollDashboard() {
                                 <span style={{ fontWeight: 600 }}>Bank Disbursement File</span>
                                 <span style={{ color: '#f59e0b' }}>75% (8 pending)</span>
                             </div>
-                            <div style={{ height: '8px', background: 'var(--slate-100)', borderRadius: '4px' }}>
+                            <div style={{ height: '8px', background: 'var(--border-light)', borderRadius: '4px' }}>
                                 <div style={{ width: '75%', height: '100%', background: '#f59e0b', borderRadius: '4px' }}></div>
                             </div>
                         </div>

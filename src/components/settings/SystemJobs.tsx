@@ -28,7 +28,7 @@ export default function SystemJobs() {
             <p className="text-slate-500 mb-6">Manually trigger background jobs that usually run via cron.</p>
 
             <div className="grid gap-4">
-                <div className="border p-4 rounded-lg bg-white shadow-sm flex justify-between items-center">
+                <div className="card p-4 flex justify-between items-center">
                     <div>
                         <h3 className="font-medium">360 Feedback Reminders</h3>
                         <p className="text-sm text-slate-500"> Checks active cycles and emails providers with pending feedback.</p>

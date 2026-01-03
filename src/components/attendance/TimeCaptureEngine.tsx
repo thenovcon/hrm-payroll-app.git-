@@ -68,14 +68,14 @@ export default function TimeCaptureEngine() {
                     </button>
                 </div>
 
-                <div style={{ padding: '1rem', background: 'var(--slate-50)', borderRadius: '12px', textAlign: 'left', marginBottom: '1.5rem' }}>
+                <div style={{ padding: '1rem', background: 'var(--bg-subtle)', borderRadius: '12px', textAlign: 'left', marginBottom: '1.5rem' }}>
                     <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>📍 Detected Location:</p>
                     <p style={{ fontWeight: 600 }}>{location.name}</p>
                     <p style={{ fontSize: '0.75rem', color: 'var(--slate-400)' }}>5.6037° N, 0.1870° W</p>
                 </div>
 
                 {status !== 'IDLE' && (
-                    <div style={{ padding: '1rem', borderRadius: '8px', background: status === 'SUCCESS' ? 'var(--accent-teal)15' : 'var(--error-50)', color: status === 'SUCCESS' ? 'var(--accent-teal)' : 'var(--error-600)', fontWeight: 600 }}>
+                    <div style={{ padding: '1rem', borderRadius: '8px', background: status === 'SUCCESS' ? 'var(--accent-teal)15' : 'rgba(239, 68, 68, 0.1)', color: status === 'SUCCESS' ? 'var(--accent-teal)' : 'var(--error-600)', fontWeight: 600 }}>
                         {status === 'LOADING' ? 'Processing...' : msg}
                     </div>
                 )}
@@ -85,7 +85,7 @@ export default function TimeCaptureEngine() {
                 <h4 style={{ marginBottom: '1rem' }}>Clock-In History</h4>
                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead style={{ background: 'var(--slate-50)' }}>
+                        <thead style={{ background: 'var(--bg-subtle)' }}>
                             <tr>
                                 <th style={{ padding: '1rem', textAlign: 'left' }}>Date</th>
                                 <th style={{ padding: '1rem', textAlign: 'left' }}>In</th>

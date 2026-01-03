@@ -33,7 +33,7 @@ export default function TrainingOverview() {
                             { title: 'Advanced React Patterns', category: 'Technical', progress: 40, learners: 12 },
                             { title: 'Leadership & Emotional Intelligence', category: 'Behavioral', progress: 20, learners: 8 },
                         ].map((c, i) => (
-                            <div key={i} style={{ padding: '1rem', background: 'var(--slate-50)', borderRadius: '8px' }}>
+                            <div key={i} style={{ padding: '1rem', background: 'var(--bg-body)', borderRadius: '8px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                     <div>
                                         <p style={{ fontWeight: 700, margin: 0 }}>{c.title}</p>
@@ -58,7 +58,7 @@ export default function TrainingOverview() {
                             { skill: 'Strategic Planning', dept: 'Management', gap: 'Medium', color: '#f59e0b' },
                             { skill: 'Data Privacy', dept: 'Operations', gap: 'Urgent', color: '#ef4444' },
                         ].map((g, i) => (
-                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', border: '1px solid var(--slate-100)', borderRadius: '8px' }}>
+                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', border: '1px solid var(--border-light)', borderRadius: '8px' }}>
                                 <div>
                                     <p style={{ fontWeight: 600, fontSize: '0.875rem', margin: 0 }}>{g.skill}</p>
                                     <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', margin: 0 }}>{g.dept}</p>

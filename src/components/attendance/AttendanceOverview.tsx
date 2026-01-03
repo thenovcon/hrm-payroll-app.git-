@@ -70,9 +70,9 @@ export default function AttendanceOverview() {
                     </div>
                 </div>
 
-                <div className="card" style={{ padding: '1.5rem', background: '#fffbeb', border: '1px solid #fde68a' }}>
-                    <h4 style={{ marginBottom: '1rem', fontWeight: 600, color: '#92400e' }}>🚨 Payroll Alerts</h4>
-                    <ul style={{ fontSize: '0.875rem', color: '#92400e', listStyle: 'none', padding: 0 }}>
+                <div className="card" style={{ padding: '1.5rem', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid var(--accent-amber)' }}>
+                    <h4 style={{ marginBottom: '1rem', fontWeight: 600, color: 'var(--accent-amber)' }}>🚨 Payroll Alerts</h4>
+                    <ul style={{ fontSize: '0.875rem', color: 'var(--text-primary)', listStyle: 'none', padding: 0 }}>
                         <li style={{ marginBottom: '0.5rem' }}>• 12 Missed Punches detected</li>
                         <li style={{ marginBottom: '0.5rem' }}>• 4 Unapproved Overtime claims</li>
                         <li>• 2 Shift Mismatches found</li>

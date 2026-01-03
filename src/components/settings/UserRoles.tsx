@@ -24,7 +24,7 @@ export default function UserRoles() {
             <div className="card" style={{ padding: 0 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
-                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--slate-100)', background: 'var(--slate-50)' }}>
+                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-subtle)' }}>
                             <th style={{ padding: '1rem' }}>Role Name</th>
                             <th style={{ padding: '1rem' }}>Assigned Users</th>
                             <th style={{ padding: '1rem' }}>Visibility Scope</th>
@@ -34,7 +34,7 @@ export default function UserRoles() {
                     </thead>
                     <tbody>
                         {roles.map((r, i) => (
-                            <tr key={i} style={{ borderBottom: '1px solid var(--slate-50)' }}>
+                            <tr key={i} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                 <td style={{ padding: '1rem', fontWeight: 700 }}>{r.name}</td>
                                 <td style={{ padding: '1rem' }}>{r.users} Users</td>
                                 <td style={{ padding: '1rem' }}>{r.scopes}</td>
@@ -43,8 +43,8 @@ export default function UserRoles() {
                                         fontSize: '0.65rem',
                                         padding: '0.2rem 0.5rem',
                                         borderRadius: '4px',
-                                        background: r.status === 'System' ? 'var(--primary-100)' : 'var(--slate-100)',
-                                        color: r.status === 'System' ? 'var(--primary-700)' : 'var(--slate-600)',
+                                        background: r.status === 'System' ? 'var(--primary-100)' : 'var(--bg-subtle)',
+                                        color: r.status === 'System' ? 'var(--primary-700)' : 'var(--text-secondary)',
                                         fontWeight: 700
                                     }}>{r.status}</span>
                                 </td>
@@ -57,7 +57,7 @@ export default function UserRoles() {
                 </table>
             </div>
 
-            <div className="card" style={{ padding: '1.5rem', marginTop: '2rem', border: '1px dashed var(--slate-200)' }}>
+            <div className="card" style={{ padding: '1.5rem', marginTop: '2rem', border: '1px dashed var(--border-light)' }}>
                 <h4 className="text-sm font-bold text-gray-400" style={{ textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>Advanced Security Settings</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
                     {[
@@ -65,7 +65,7 @@ export default function UserRoles() {
                         { label: 'Password Expiry', status: '90 Days' },
                         { label: 'Session Timeout', status: '30 Mins' },
                     ].map((s, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'var(--slate-50)', borderRadius: '8px' }}>
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'var(--bg-subtle)', borderRadius: '8px' }}>
                             <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{s.label}</span>
                             <span style={{ fontSize: '0.75rem', color: 'var(--primary-600)', fontWeight: 700 }}>{s.status}</span>
                         </div>

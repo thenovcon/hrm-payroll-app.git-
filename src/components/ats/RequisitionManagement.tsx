@@ -65,7 +65,7 @@ export default function RequisitionManagement() {
             </div>
 
             {showForm && (
-                <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--slate-50)' }}>
+                <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-card)' }}>
                     <h4 className="font-bold" style={{ marginBottom: '1rem' }}>Create New Requisition</h4>
                     <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <div className="form-group">
@@ -122,7 +122,7 @@ export default function RequisitionManagement() {
             <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                        <tr style={{ borderBottom: '1px solid var(--slate-200)' }}>
+                        <tr style={{ borderBottom: '1px solid var(--border-light)' }}>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Req #</th>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Title</th>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Department</th>
@@ -138,7 +138,7 @@ export default function RequisitionManagement() {
                             <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center' }}>No requisitions found. Create your first request.</td></tr>
                         ) : (
                             requisitions.map((req) => (
-                                <tr key={req.id} style={{ borderBottom: '1px solid var(--slate-100)' }}>
+                                <tr key={req.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                     <td style={{ padding: '1rem', fontWeight: 600 }}>{req.reqNumber}</td>
                                     <td style={{ padding: '1rem' }}>{req.title}</td>
                                     <td style={{ padding: '1rem' }}>{req.department}</td>
@@ -147,8 +147,8 @@ export default function RequisitionManagement() {
                                             padding: '0.25rem 0.5rem',
                                             borderRadius: '4px',
                                             fontSize: '0.75rem',
-                                            background: req.priority === 'URGENT' ? '#fee2e2' : '#f1f5f9',
-                                            color: req.priority === 'URGENT' ? '#991b1b' : '#475569'
+                                            background: req.priority === 'URGENT' ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-subtle)',
+                                            color: req.priority === 'URGENT' ? '#ef4444' : 'var(--text-secondary)'
                                         }}>
                                             {req.priority}
                                         </span>

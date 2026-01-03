@@ -43,7 +43,7 @@ export default function DailyRegister() {
             <div style={{ overflowX: 'auto' }} className="card">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                        <tr style={{ background: 'var(--slate-50)', borderBottom: '1px solid var(--slate-200)' }}>
+                        <tr style={{ background: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-light)' }}>
                             <th style={{ padding: '1rem', fontSize: '0.875rem' }}>Employee</th>
                             <th style={{ padding: '1rem', fontSize: '0.875rem' }}>Shift</th>
                             <th style={{ padding: '1rem', fontSize: '0.875rem' }}>First In</th>
@@ -62,7 +62,7 @@ export default function DailyRegister() {
                             <tr><td colSpan={9} style={{ padding: '2rem', textAlign: 'center' }}>No attendance records found for this date.</td></tr>
                         ) : (
                             records.map((rec) => (
-                                <tr key={rec.id} style={{ borderBottom: '1px solid var(--slate-100)' }}>
+                                <tr key={rec.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                     <td style={{ padding: '1rem' }}>
                                         <div style={{ fontWeight: 600 }}>{rec.employee?.firstName} {rec.employee?.lastName}</div>
                                         <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>{rec.employee?.employeeId}</div>

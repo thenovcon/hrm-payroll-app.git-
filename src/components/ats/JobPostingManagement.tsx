@@ -60,14 +60,14 @@ export default function JobPostingManagement() {
             </div>
 
             {showCreate && (
-                <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--slate-50)' }}>
+                <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-card)' }}>
                     <h4 className="font-bold" style={{ marginBottom: '1rem' }}>Select Approved Requisition</h4>
                     {approvedReqs.length === 0 ? (
                         <p className="text-sm text-gray-500">No approved requisitions available to post.</p>
                     ) : (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                             {approvedReqs.map(req => (
-                                <div key={req.id} className="card" style={{ padding: '1rem', background: 'white' }}>
+                                <div key={req.id} className="card" style={{ padding: '1rem', background: 'var(--bg-card)' }}>
                                     <p className="font-bold text-sm">{req.title}</p>
                                     <p className="text-xs text-gray-500">{req.reqNumber} • {req.department}</p>
                                     <button
@@ -87,7 +87,7 @@ export default function JobPostingManagement() {
             <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                        <tr style={{ borderBottom: '1px solid var(--slate-200)' }}>
+                        <tr style={{ borderBottom: '1px solid var(--border-light)' }}>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Job Title</th>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Req #</th>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Status</th>
@@ -102,7 +102,7 @@ export default function JobPostingManagement() {
                             <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>No job postings yet.</td></tr>
                         ) : (
                             postings.map((post) => (
-                                <tr key={post.id} style={{ borderBottom: '1px solid var(--slate-100)' }}>
+                                <tr key={post.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                     <td style={{ padding: '1rem', fontWeight: 600 }}>{post.title}</td>
                                     <td style={{ padding: '1rem' }}>{post.requisition?.reqNumber}</td>
                                     <td style={{ padding: '1rem' }}>

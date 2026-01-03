@@ -49,7 +49,7 @@ export default function InterviewManagement() {
             </div>
 
             {showSchedule && (
-                <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--slate-50)' }}>
+                <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-subtle)' }}>
                     <h4 className="font-bold" style={{ marginBottom: '1rem' }}>Schedule New Interview</h4>
                     <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <div className="form-group" style={{ gridColumn: 'span 2' }}>
@@ -90,7 +90,7 @@ export default function InterviewManagement() {
             <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                        <tr style={{ borderBottom: '1px solid var(--slate-200)' }}>
+                        <tr style={{ borderBottom: '1px solid var(--border-light)' }}>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Candidate</th>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Type</th>
                             <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Date & Time</th>
@@ -104,7 +104,7 @@ export default function InterviewManagement() {
                             <tr><td colSpan={4} style={{ padding: '2rem', textAlign: 'center' }}>No interviews scheduled.</td></tr>
                         ) : (
                             interviews.map((int) => (
-                                <tr key={int.id} style={{ borderBottom: '1px solid var(--slate-100)' }}>
+                                <tr key={int.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                                     <td style={{ padding: '1rem' }}>
                                         <div style={{ fontWeight: 600 }}>{int.application.candidate.name}</div>
                                         <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>{int.application.jobPosting.title}</div>

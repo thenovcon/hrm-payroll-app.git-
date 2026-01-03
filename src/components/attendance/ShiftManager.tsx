@@ -42,7 +42,7 @@ export default function ShiftManager() {
             </div>
 
             {showCreate && (
-                <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--slate-50)' }}>
+                <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-subtle)' }}>
                     <h4 style={{ marginBottom: '1rem' }}>Define Shift</h4>
                     <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
                         <div>
@@ -102,7 +102,7 @@ export default function ShiftManager() {
                 <h4 style={{ marginBottom: '1rem' }}>Active Roster Assignments</h4>
                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead style={{ background: 'var(--slate-50)' }}>
+                        <thead style={{ background: 'var(--bg-subtle)' }}>
                             <tr>
                                 <th style={{ padding: '1rem', textAlign: 'left' }}>Employee</th>
                                 <th style={{ padding: '1rem', textAlign: 'left' }}>Current Shift</th>
