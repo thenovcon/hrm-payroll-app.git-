@@ -9,6 +9,13 @@ export default function JobPostingManagement() {
     const [loading, setLoading] = useState(true);
     const [showCreate, setShowCreate] = useState(false);
 
+    const MOCK_POSTINGS = [
+        { id: 'p1', title: 'Senior Frontend Engineer', requisition: { reqNumber: 'REQ-24-001' }, status: 'ACTIVE', createdAt: new Date(2024, 11, 10) },
+        { id: 'p2', title: 'Sales Associate (Kumasi)', requisition: { reqNumber: 'REQ-24-003' }, status: 'ACTIVE', createdAt: new Date(2024, 11, 15) },
+        { id: 'p3', title: 'HR Generalist', requisition: { reqNumber: 'REQ-24-002' }, status: 'DRAFT', createdAt: new Date(2024, 11, 28) },
+        { id: 'p4', title: 'DevOps Engineer', requisition: { reqNumber: 'REQ-24-006' }, status: 'CLOSED', createdAt: new Date(2024, 10, 5) },
+    ];
+
     const fetchData = async () => {
         setLoading(true);
         const [postingsRes, reqsRes] = await Promise.all([
@@ -16,7 +23,9 @@ export default function JobPostingManagement() {
             getRequisitions()
         ]);
 
-        if (postingsRes.success) setPostings(postingsRes.data || []);
+        if (postingsRes.success) {
+            setPostings(postingsRes.data && postingsRes.data.length > 0 ? postingsRes.data : MOCK_POSTINGS);
+        }
         if (reqsRes.success) {
             // Only show reqs that are APPROVED and don't have a posting yet
             setApprovedReqs(reqsRes.data?.filter((r: any) => r.status === 'APPROVED' && !r.jobPosting) || []);

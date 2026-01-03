@@ -25,11 +25,15 @@ export default async function LeavePage({ searchParams }: { searchParams: { seed
     const result = await getLeaveRequests(); // Fetches all for filtering in dashboard (simplified for demo)
 
     // Force Mock Data for Demo
+    // Force Mock Data for Demo
     const mockRequests = [
-        { id: 'm1', type: 'ANNUAL', startDate: new Date(2025, 5, 10), endDate: new Date(2025, 5, 15), status: 'APPROVED', reason: 'Summer Vacation', employee: { firstName: 'Kwame', lastName: 'Mensah' } },
-        { id: 'm2', type: 'SICK', startDate: new Date(2025, 8, 2), endDate: new Date(2025, 8, 3), status: 'PENDING', reason: 'Malaria Treatment', employee: { firstName: 'Abena', lastName: 'Osei' } },
-        { id: 'm3', type: 'CASUAL', startDate: new Date(2025, 9, 20), endDate: new Date(2025, 9, 20), status: 'REJECTED', reason: 'Personal errands', employee: { firstName: 'Kojo', lastName: 'Antwi' } },
-        { id: 'm4', type: 'MATERNITY', startDate: new Date(2025, 10, 1), endDate: new Date(2026, 1, 1), status: 'APPROVED', reason: 'Maternity Leave', employee: { firstName: 'Ama', lastName: 'Sarpong' } },
+        // My Requests
+        { id: 'm1', type: 'ANNUAL', startDate: new Date(2025, 5, 10), endDate: new Date(2025, 5, 15), status: 'APPROVED', managerApprovalStatus: 'APPROVED', hrApprovalStatus: 'APPROVED', reason: 'Summer Vacation', employeeId: employeeId, employee: { firstName: 'Kwame', lastName: 'Mensah' } },
+        { id: 'm2', type: 'SICK', startDate: new Date(2025, 8, 2), endDate: new Date(2025, 8, 3), status: 'PENDING', managerApprovalStatus: 'PENDING', hrApprovalStatus: 'PENDING', reason: 'Malaria Treatment', employeeId: employeeId, employee: { firstName: 'Kwame', lastName: 'Mensah' } },
+
+        // Admin Queue (HR Pending)
+        { id: 'm3', type: 'MATERNITY', startDate: new Date(2025, 10, 1), endDate: new Date(2026, 1, 1), status: 'PENDING', managerApprovalStatus: 'APPROVED', hrApprovalStatus: 'PENDING', reason: 'Maternity Leave', employeeId: 'emp_other', employee: { firstName: 'Ama', lastName: 'Sarpong' } },
+        { id: 'm4', type: 'CASUAL', startDate: new Date(2025, 9, 20), endDate: new Date(2025, 9, 22), status: 'PENDING', managerApprovalStatus: 'APPROVED', hrApprovalStatus: 'PENDING', reason: 'Emergency Family Issue', employeeId: 'emp_other_2', employee: { firstName: 'Kojo', lastName: 'Antwi' } },
     ];
 
     // Use real data if available, else mock
@@ -44,10 +48,11 @@ export default async function LeavePage({ searchParams }: { searchParams: { seed
         } else {
             // Mock Balances
             balances = [
-                { leaveType: { name: 'Annual Leave' }, used: 5, allowance: 20 },
-                { leaveType: { name: 'Sick Leave' }, used: 2, allowance: 10 },
-                { leaveType: { name: 'Casual Leave' }, used: 3, allowance: 5 },
-                { leaveType: { name: 'Study Leave' }, used: 0, allowance: 10 },
+                { id: 'b1', year: 2025, daysAllocated: 20, daysUsed: 5, leaveType: { name: 'Annual Leave' } },
+                { id: 'b2', year: 2025, daysAllocated: 10, daysUsed: 2, leaveType: { name: 'Sick Leave' } },
+                { id: 'b3', year: 2025, daysAllocated: 5, daysUsed: 3, leaveType: { name: 'Casual Leave' } },
+                { id: 'b4', year: 2024, daysAllocated: 20, daysUsed: 18, leaveType: { name: 'Annual Leave' } }, // History
+                { id: 'b5', year: 2024, daysAllocated: 10, daysUsed: 4, leaveType: { name: 'Sick Leave' } }, // History
             ];
         }
     }

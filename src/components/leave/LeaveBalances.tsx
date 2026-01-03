@@ -97,8 +97,9 @@ export default function LeaveBalances({ balances }: { balances: any[] }) {
                                     <td className="p-4 text-center text-slate-600">{b.daysUsed}</td>
                                     <td className="p-4 text-center font-bold text-slate-800">{b.daysAllocated - b.daysUsed}</td>
                                     <td className="p-4 text-right">
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                                            <CheckCircle2 className="w-3 h-3" /> Active
+                                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${b.year === currentYear ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
+                                            {b.year === currentYear ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                                            {b.year === currentYear ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                 </tr>
