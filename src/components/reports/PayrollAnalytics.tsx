@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function PayrollAnalytics() {
     return (
@@ -19,22 +20,44 @@ export default function PayrollAnalytics() {
             <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '1.5rem' }}>
                 <div className="card" style={{ padding: '1.5rem' }}>
                     <h4 className="text-lg font-bold" style={{ marginBottom: '1.5rem' }}>Budget vs. Actual Payroll (6 Months)</h4>
-                    <div style={{ height: '250px', position: 'relative', display: 'flex', alignItems: 'flex-end', gap: '1.5rem', padding: '1rem' }}>
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} style={{ flex: 1, display: 'flex', gap: '4px', alignItems: 'flex-end' }}>
-                                <div style={{ flex: 1, height: '80%', background: 'var(--primary-200)', borderRadius: '2px' }} title="Budget"></div>
-                                <div style={{ flex: 1, height: `${Math.random() * 40 + 50}%`, background: 'var(--primary-600)', borderRadius: '2px' }} title="Actual"></div>
-                            </div>
-                        ))}
+                    <div style={{ height: '250px', position: 'relative', padding: '0.5rem' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                                data={[
+                                    { month: 'Jan', budget: 50000, actual: 48000 },
+                                    { month: 'Feb', budget: 50000, actual: 51000 },
+                                    { month: 'Mar', budget: 52000, actual: 52500 },
+                                    { month: 'Apr', budget: 52000, actual: 51000 },
+                                    { month: 'May', budget: 55000, actual: 54000 },
+                                    { month: 'Jun', budget: 55000, actual: 58000 },
+                                ]}
+                                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                            >
+                                <defs>
+                                    <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="var(--primary-600)" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="var(--primary-600)" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                    formatter={(value: any) => [`GH₵${Number(value || 0).toLocaleString()}`, '']}
+                                />
+                                <Area type="monotone" dataKey="actual" stroke="var(--primary-600)" fillOpacity={1} fill="url(#colorActual)" name="Actual" />
+                                <Area type="monotone" dataKey="budget" stroke="#cbd5e1" strokeDasharray="5 5" fill="none" name="Budget" />
+                            </AreaChart>
+                        </ResponsiveContainer>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '1rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <div style={{ width: '12px', height: '12px', background: 'var(--primary-200)' }}></div>
-                            <span style={{ fontSize: '0.75rem' }}>Budgeted</span>
+                            <div style={{ width: '12px', height: '12px', background: '#cbd5e1', border: '1px dashed #94a3b8' }}></div>
+                            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Budgeted</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <div style={{ width: '12px', height: '12px', background: 'var(--primary-600)' }}></div>
-                            <span style={{ fontSize: '0.75rem' }}>Actual Spent</span>
+                            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Actual Spent</span>
                         </div>
                     </div>
                 </div>

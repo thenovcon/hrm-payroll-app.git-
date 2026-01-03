@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { createConversation, getConversations, getConversationMessages, sendChatMessage } from '@/lib/actions/chat-v2-actions';
 import { usePathname } from 'next/navigation';
 
+import { getUsers } from '@/lib/actions/users';
+
 export default function FloatingChatWidget({ userId }: { userId: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'AI' | 'CHATS'>('AI');
@@ -12,6 +14,11 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
     const [messages, setMessages] = useState<any[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // New Chat State
+    const [showUserPicker, setShowUserPicker] = useState(false);
+    const [users, setUsers] = useState<any[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(false);
 
     // Auto-init AI chat if needed
     useEffect(() => {
@@ -79,6 +86,35 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
         }
     };
 
+    const handleNewChatClick = async () => {
+        setShowUserPicker(true);
+        setLoadingUsers(true);
+        try {
+            const res = await getUsers();
+            if (res.success && res.data) {
+                // Filter out self
+                setUsers(res.data.filter((u: any) => u.id !== userId));
+            }
+        } catch (e) {
+            console.error("Failed to fetch users", e);
+        } finally {
+            setLoadingUsers(false);
+        }
+    };
+
+    const startDirectChat = async (otherUserId: string, otherUserName: string) => {
+        try {
+            // Create conversation
+            const newChat = await createConversation([otherUserId], 'DIRECT', otherUserName);
+            setActiveConvId(newChat.id);
+            setShowUserPicker(false);
+            // Refresh conversation list in background
+            loadConversations();
+        } catch (e) {
+            console.error("Failed to start chat", e);
+        }
+    };
+
     // DEBUG: Removed check to force render
     // if (!userId) return null;
 
@@ -91,13 +127,13 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
                     <div className="bg-slate-900 text-white p-3 flex justify-between items-center">
                         <div className="flex gap-2 text-sm font-medium">
                             <button
-                                onClick={() => { setActiveTab('AI'); setActiveConvId(null); }}
+                                onClick={() => { setActiveTab('AI'); setActiveConvId(null); setShowUserPicker(false); }}
                                 className={`px-3 py-1 rounded-full transition ${activeTab === 'AI' ? 'bg-primary-600' : 'hover:bg-slate-800'}`}
                             >
                                 🤖 Ask AI
                             </button>
                             <button
-                                onClick={() => { setActiveTab('CHATS'); setActiveConvId(null); }}
+                                onClick={() => { setActiveTab('CHATS'); setActiveConvId(null); setShowUserPicker(false); }}
                                 className={`px-3 py-1 rounded-full transition ${activeTab === 'CHATS' ? 'bg-primary-600' : 'hover:bg-slate-800'}`}
                             >
                                 💬 Chats
@@ -108,7 +144,30 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
 
                     {/* Content */}
                     <div className="flex-1 overflow-hidden flex flex-col bg-slate-50">
-                        {activeTab === 'CHATS' && !activeConvId ? (
+                        {showUserPicker ? (
+                            <div className="p-3 overflow-y-auto h-full">
+                                <div className="flex justify-between items-center mb-2">
+                                    <h3 className="font-bold text-slate-700">Select User</h3>
+                                    <button onClick={() => setShowUserPicker(false)} className="text-xs text-slate-500 hover:text-red-500">Cancel</button>
+                                </div>
+                                {loadingUsers ? (
+                                    <p className="text-xs text-center text-slate-400">Loading users...</p>
+                                ) : (
+                                    <div className="space-y-1">
+                                        {users.map((u: any) => (
+                                            <button
+                                                key={u.id}
+                                                onClick={() => startDirectChat(u.id, u.username || 'User')}
+                                                className="w-full text-left p-2 rounded hover:bg-white hover:shadow-sm transition flex items-center justify-between group"
+                                            >
+                                                <span className="text-sm font-medium text-slate-700">{u.username}</span>
+                                                <span className="text-xs text-slate-400 group-hover:text-primary-600">Start Chat</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ) : activeTab === 'CHATS' && !activeConvId ? (
                             <div className="p-2 overflow-y-auto h-full">
                                 {conversations.length === 0 && <p className="text-xs text-slate-500 text-center mt-4">No active conversations.</p>}
                                 {conversations.map(chat => (
@@ -121,7 +180,10 @@ export default function FloatingChatWidget({ userId }: { userId: string }) {
                                         <p className="text-xs text-slate-500 truncate">{chat.messages[0]?.content || 'No messages'}</p>
                                     </div>
                                 ))}
-                                <button className="w-full mt-2 py-2 text-xs text-primary-600 border border-primary-200 rounded hover:bg-primary-50">
+                                <button
+                                    onClick={handleNewChatClick}
+                                    className="w-full mt-2 py-2 text-xs text-primary-600 border border-primary-200 rounded hover:bg-primary-50"
+                                >
                                     + New Chat
                                 </button>
                             </div>

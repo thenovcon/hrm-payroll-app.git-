@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function HRAnalytics() {
     return (
@@ -68,13 +69,29 @@ export default function HRAnalytics() {
 
             <div className="card" style={{ padding: '1.5rem' }}>
                 <h4 className="text-lg font-bold" style={{ marginBottom: '1rem' }}>Recruitment Velocity (Time-to-Hire)</h4>
-                <div style={{ height: '200px', background: 'var(--slate-50)', borderRadius: '8px', padding: '1rem', display: 'flex', alignItems: 'flex-end', gap: '2rem' }}>
-                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((m) => (
-                        <div key={m} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
-                            <div style={{ width: '20px', height: `${Math.random() * 80 + 20}%`, background: 'var(--accent-teal)', borderRadius: '10px' }}></div>
-                            <span style={{ fontSize: '0.65rem', color: 'var(--slate-400)' }}>{m}</span>
-                        </div>
-                    ))}
+                <div style={{ height: '250px', background: 'white', borderRadius: '8px', padding: '1rem' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                            layout="vertical"
+                            data={[
+                                { role: 'Senior Engineer', days: 45 },
+                                { role: 'Product Manager', days: 38 },
+                                { role: 'Marketing Specialist', days: 25 },
+                                { role: 'Sales Rep', days: 20 },
+                                { role: 'Customer Support', days: 12 },
+                            ]}
+                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
+                            <XAxis type="number" hide />
+                            <YAxis dataKey="role" type="category" width={100} tick={{ fontSize: 11, fill: '#64748b' }} />
+                            <Tooltip
+                                cursor={{ fill: '#f8fafc' }}
+                                contentStyle={{ borderRadius: '8px', padding: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                            />
+                            <Bar dataKey="days" name="Days to Hire" fill="var(--accent-teal)" radius={[0, 4, 4, 0]} barSize={24} />
+                        </BarChart>
+                    </ResponsiveContainer>
                 </div>
             </div>
         </div>
