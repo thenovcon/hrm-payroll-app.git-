@@ -1,19 +1,23 @@
 'use client';
 
 import { createEmployee } from '@/lib/actions/createEmployee';
-import { useState } from 'react';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 
 export default function EmployeeForm() {
-    const [loading, setLoading] = useState(false);
+    const [state, formAction] = useActionState(createEmployee, null);
 
-    // Client-side validation for Ghana Card can be added here
-
-    const handleSubmit = async (formData: FormData) => {
-        await createEmployee(formData);
-    };
+    // Show alert on error or success (if not redirected)
+    useEffect(() => {
+        if (state?.error) {
+            alert(`Error: ${state.error}`);
+        }
+        // Success usually redirects, but if we want a toast before redirect, we'd need client side logic
+        // For now, reliance on redirect is okay for success, but errors MUST be shown.
+    }, [state]);
 
     return (
-        <form action={handleSubmit} className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <form action={formAction} className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
             <h2 className="text-xl font-bold" style={{ marginBottom: '1.5rem' }}>Personal Information</h2>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
@@ -94,11 +98,18 @@ export default function EmployeeForm() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
-                <button type="button" className="btn" style={{ border: '1px solid var(--slate-300)' }}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Employee'}
-                </button>
+                <button type="button" className="btn" style={{ border: '1px solid var(--slate-300)' }} onClick={() => window.history.back()}>Cancel</button>
+                <SubmitButton />
             </div>
         </form>
+    );
+}
+
+function SubmitButton() {
+    const { pending } = useFormStatus();
+    return (
+        <button type="submit" className="btn btn-primary" disabled={pending}>
+            {pending ? 'Saving & Creating User...' : 'Save Employee'}
+        </button>
     );
 }

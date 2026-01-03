@@ -4,14 +4,33 @@ import React, { useState } from 'react';
 
 export default function SkillsCompetencies() {
     const [view, setView] = useState('library'); // library, mapping, gaps
+    const [editingSkill, setEditingSkill] = useState<string | null>(null);
 
     const skills = [
-        { name: 'JavaScript / TypeScript', category: 'Technical', level: 'Expert', roles: 'Engineering' },
-        { name: 'Financial Modeling', category: 'Technical', level: 'Advanced', roles: 'Finance' },
-        { name: 'Conflict Resolution', category: 'Behavioral', level: 'Intermediate', roles: 'All' },
-        { name: 'Strategic Leadership', category: 'Leadership', level: 'Advanced', roles: 'Management' },
-        { name: 'GDPR / Data Privacy', category: 'Compliance', level: 'Advanced', roles: 'All' },
+        { id: 1, name: 'JavaScript / TypeScript', category: 'Technical', level: 'Expert', roles: 'Engineering', gap: false },
+        { id: 2, name: 'Financial Modeling', category: 'Technical', level: 'Advanced', roles: 'Finance', gap: false },
+        { id: 3, name: 'Conflict Resolution', category: 'Behavioral', level: 'Intermediate', roles: 'All', gap: true },
+        { id: 4, name: 'Strategic Leadership', category: 'Leadership', level: 'Advanced', roles: 'Management', gap: false },
+        { id: 5, name: 'GDPR / Data Privacy', category: 'Compliance', level: 'Advanced', roles: 'All', gap: true },
     ];
+
+    // Filter logic to solve "showing same info" issue
+    const filteredSkills = skills.filter(s => {
+        if (view === 'library') return true;
+        if (view === 'rolemapping') return s.roles !== 'All'; // Show specific mappings
+        if (view === 'skillgaps') return s.gap; // Show only gaps
+        return true;
+    });
+
+    const handleEdit = (skill: any) => {
+        setEditingSkill(skill.name);
+        // Simulate edit
+        const newValue = window.prompt(`Edit Skill Name for ${skill.name}:`, skill.name);
+        if (newValue) {
+            alert(`Skill updated to: ${newValue}`); // Demo feedback
+            setEditingSkill(null);
+        }
+    };
 
     return (
         <div style={{ padding: '1.5rem' }}>
@@ -21,7 +40,7 @@ export default function SkillsCompetencies() {
                     <p className="text-sm text-gray-500">Define, measure, and map skills across your organization.</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn btn-primary">+ Add New Skill</button>
+                    <button className="btn btn-primary" onClick={() => alert('Add Skill Modal would open here')}>+ Add New Skill</button>
                 </div>
             </div>
 
@@ -50,24 +69,38 @@ export default function SkillsCompetencies() {
                             <th style={{ padding: '1rem' }}>Skill Name</th>
                             <th style={{ padding: '1rem' }}>Category</th>
                             <th style={{ padding: '1rem' }}>Proficiency Level</th>
-                            <th style={{ padding: '1rem' }}>Applicable Roles</th>
+                            {view !== 'library' && <th style={{ padding: '1rem' }}>{view === 'skillgaps' ? 'Gap Analysis' : 'Applicable Roles'}</th>}
                             <th style={{ padding: '1rem' }}>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {skills.map((s, i) => (
-                            <tr key={i} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                                <td style={{ padding: '1rem', fontWeight: 600 }}>{s.name}</td>
-                                <td style={{ padding: '1rem' }}>
-                                    <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '4px', background: 'var(--bg-subtle)' }}>{s.category}</span>
-                                </td>
-                                <td style={{ padding: '1rem' }}>{s.level}</td>
-                                <td style={{ padding: '1rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{s.roles}</td>
-                                <td style={{ padding: '1rem' }}>
-                                    <button className="btn" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>Edit</button>
-                                </td>
-                            </tr>
-                        ))}
+                        {filteredSkills.length === 0 ? (
+                            <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No records found for this view.</td></tr>
+                        ) : (
+                            filteredSkills.map((s, i) => (
+                                <tr key={i} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                                    <td style={{ padding: '1rem', fontWeight: 600 }}>{s.name}</td>
+                                    <td style={{ padding: '1rem' }}>
+                                        <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '4px', background: 'var(--bg-subtle)' }}>{s.category}</span>
+                                    </td>
+                                    <td style={{ padding: '1rem' }}>{s.level}</td>
+                                    {view !== 'library' && (
+                                        <td style={{ padding: '1rem', fontSize: '0.875rem', color: view === 'skillgaps' ? '#ef4444' : 'var(--text-secondary)' }}>
+                                            {view === 'skillgaps' ? 'Missing (Target: Expert)' : s.roles}
+                                        </td>
+                                    )}
+                                    <td style={{ padding: '1rem' }}>
+                                        <button
+                                            className="btn"
+                                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', cursor: 'pointer' }}
+                                            onClick={() => handleEdit(s)}
+                                        >
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>

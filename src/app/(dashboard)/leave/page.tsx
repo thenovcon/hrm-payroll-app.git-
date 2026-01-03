@@ -1,18 +1,38 @@
 import LeaveDashboard from '@/components/leave/LeaveDashboard';
 import { seedLeaveTypes } from '@/lib/actions/seedLeave';
-import { getLeaveRequests } from '@/lib/actions/leave';
+import { getLeaveRequests, getLeaveBalances } from '@/lib/actions/leave';
 import { auth } from '@/auth';
+import { prisma } from '@/lib/db/prisma';
 
 export default async function LeavePage({ searchParams }: { searchParams: { seed?: string } }) {
     const session = await auth();
+    const userId = session?.user?.id;
+
+    // Fetch User with Employee details
+    const user = userId ? await prisma.user.findUnique({
+        where: { id: userId },
+        include: { employee: true }
+    }) : null;
+
+    const employeeId = user?.employeeId;
+    const role = user?.role || 'EMPLOYEE';
 
     // Simple mechanism to trigger seed via URL query for initial setup
     if (searchParams?.seed === 'true') {
         await seedLeaveTypes();
     }
 
-    const result = await getLeaveRequests();
+    const result = await getLeaveRequests(); // Fetches all for filtering in dashboard (simplified for demo)
     const requests = result.success ? result.data : [];
+
+    // Fetch Balances if employee exists
+    let balances: any[] = [];
+    if (employeeId) {
+        const balanceResult = await getLeaveBalances(employeeId);
+        if (balanceResult.success && balanceResult.data) {
+            balances = balanceResult.data;
+        }
+    }
 
     return (
         <div className="container" style={{ paddingBottom: '2rem' }}>
@@ -28,8 +48,10 @@ export default async function LeavePage({ searchParams }: { searchParams: { seed
 
             <LeaveDashboard
                 requests={requests as any[]}
-                userId={session?.user?.id || ''}
-                role={(session?.user as any)?.role || 'EMPLOYEE'}
+                userId={userId || ''}
+                employeeId={employeeId || ''}
+                role={role}
+                balances={balances}
             />
         </div>
     );

@@ -1,10 +1,16 @@
 import { auth } from '@/auth';
 import { getMyGoals } from '@/lib/actions/goal-actions';
 import { getReceivedFeedback, getFeedbackRequests } from '@/lib/actions/feedback-actions';
+import { seedPerformanceEngagement } from '@/lib/actions/seedPerformanceEngagement';
 import GoalCard from '@/components/performance/GoalCard';
 
-export default async function PerformancePage() {
+export default async function PerformancePage({ searchParams }: { searchParams: { seed?: string } }) {
     const session = await auth();
+
+    if (searchParams?.seed === 'true') {
+        await seedPerformanceEngagement();
+    }
+
     const [goals, feedback, requests] = await Promise.all([
         getMyGoals(),
         getReceivedFeedback(),
@@ -13,7 +19,10 @@ export default async function PerformancePage() {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6 text-slate-800">Performance & Development</h1>
+            <h1 className="text-2xl font-bold mb-6 text-slate-800">
+                Performance & Development
+                <a href="/performance?seed=true" className="text-xs font-normal text-slate-300 ml-3 hover:text-slate-500">(Seed Demo Data)</a>
+            </h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

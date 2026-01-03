@@ -3,7 +3,24 @@
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 
+// ... existing imports
+
+export async function getLeaveBalances(employeeId: string) {
+    try {
+        const balances = await prisma.leaveBalance.findMany({
+            where: { employeeId },
+            include: { leaveType: true },
+            orderBy: { year: 'desc' },
+        });
+        return { success: true, data: balances };
+    } catch (error) {
+        console.error('Failed to fetch leave balances:', error);
+        return { success: false, error: 'Failed to fetch leave balances' };
+    }
+}
+
 export async function getLeaveTypes() {
+    // ... existing getLeaveTypes
     try {
         const types = await prisma.leaveType.findMany({
             orderBy: { name: 'asc' },

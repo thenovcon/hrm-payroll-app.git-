@@ -3,11 +3,19 @@
 import React from 'react';
 
 export default function Certifications() {
+    const [showSignatureModal, setShowSignatureModal] = React.useState(false);
+
     const certs = [
         { id: 'CERT-001', name: 'John Doe', course: 'Occupational Health & Safety', issueDate: '2024-01-15', expiry: '2025-01-15', status: 'Active' },
         { id: 'CERT-042', name: 'Samuel Mensah', course: 'Advanced TypeScript', issueDate: '2024-02-10', expiry: 'None', status: 'Permanent' },
         { id: 'CERT-015', name: 'Jane Smith', course: 'Data Privacy Compliance', issueDate: '2023-03-20', expiry: '2024-03-20', status: 'Expired' },
     ];
+
+    const handleSign = (e: React.FormEvent) => {
+        e.preventDefault();
+        alert('Digital Signature Successfully Added!');
+        setShowSignatureModal(false);
+    };
 
     return (
         <div style={{ padding: '1.5rem' }}>
@@ -16,8 +24,47 @@ export default function Certifications() {
                     <h3 className="text-xl font-bold">Certifications & Compliance</h3>
                     <p className="text-sm text-gray-500">Track professional credentials and mandatory compliance records.</p>
                 </div>
-                <button className="btn btn-primary">Add Digital Signature</button>
+                <button
+                    className="btn btn-primary"
+                    onClick={() => setShowSignatureModal(true)}
+                >
+                    Add Digital Signature
+                </button>
             </div>
+
+            {showSignatureModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50
+                }}>
+                    <div className="card" style={{ padding: '2rem', width: '400px', background: 'var(--bg-card)' }}>
+                        <h4 className="text-lg font-bold mb-4">New Digital Signature</h4>
+                        <form onSubmit={handleSign}>
+                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                <label className="text-sm font-medium">Draw Signature (Type Name)</label>
+                                <input
+                                    className="searchInput"
+                                    style={{ width: '100%', fontFamily: 'cursive', fontSize: '1.25rem' }}
+                                    placeholder="Type to sign..."
+                                    required
+                                />
+                            </div>
+                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                <label className="text-sm font-medium">Provider</label>
+                                <select className="searchInput" style={{ width: '100%' }}>
+                                    <option>Internal e-Sign</option>
+                                    <option>DocuSign Integration</option>
+                                    <option>Adobe Sign</option>
+                                </select>
+                            </div>
+                            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                                <button type="button" className="btn" onClick={() => setShowSignatureModal(false)}>Cancel</button>
+                                <button type="submit" className="btn btn-primary">Save Signature</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
                 {certs.map((c, i) => (

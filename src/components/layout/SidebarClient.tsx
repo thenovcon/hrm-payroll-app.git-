@@ -4,7 +4,7 @@ import Link from 'next/link';
 import styles from './Sidebar.module.css';
 import SidebarMenu from './SidebarMenu';
 import { logout } from '@/lib/actions/auth-actions';
-import { FULL_VERSION } from '@/lib/version';
+import { APP_FULL_VERSION } from '@/lib/version';
 import { useSidebar } from './SidebarContext';
 
 interface SidebarClientProps {
@@ -12,6 +12,7 @@ interface SidebarClientProps {
     menuItems: any[];
 }
 
+// Force update
 export default function SidebarClient({ user, menuItems }: SidebarClientProps) {
     const { isOpen } = useSidebar();
 
@@ -49,14 +50,13 @@ export default function SidebarClient({ user, menuItems }: SidebarClientProps) {
                 </div>
 
                 <div style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--slate-400)', marginBottom: '0.5rem' }}>
-                    {FULL_VERSION}
+                    {APP_FULL_VERSION}
                 </div>
 
                 <div style={{ margin: 0 }}>
                     <button
                         onClick={() => logout()}
-                        className="btn"
-                        style={{ width: '100%', padding: '0.5rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }}
+                        className={`${styles.logoutButton}`}
                     >
                         Logout
                     </button>

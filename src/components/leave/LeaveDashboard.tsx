@@ -3,20 +3,32 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import LeaveApprovalList from './LeaveApprovalList';
+import LeaveBalances from './LeaveBalances';
 
 export default function LeaveDashboard({
     requests,
     userId,
-    role
+    employeeId,
+    role,
+    balances
 }: {
     requests: any[],
     userId: string,
-    role: string
+    employeeId: string,
+    role: string,
+    balances: any[]
 }) {
     const [activeTab, setActiveTab] = useState('My Requests');
 
-    const myRequests = requests.filter(r => r.employeeId === userId);
-    const teamRequests = requests.filter(r => r.lineManagerId === userId);
+    // Filter by EmployeeID for "My Requests", but by LineManagerID (which is likely UserID? Or EmployeeID?)
+    // In seed script: deptMap.get(dept).managerId -> This likely refers to User ID or Employee ID?
+    // User model has role. Employee model has managerId.
+    // Usually managerId in Employee refers to the Manager's Employee ID.
+    const myRequests = requests.filter(r => r.employeeId === employeeId);
+
+    // Team Requests: where lineManagerId matches THIS user's Employee ID (if they are a manager)
+    const teamRequests = requests.filter(r => r.lineManagerId === employeeId);
+
     const allRequests = requests; // For HR
 
     const tabs = [
@@ -24,7 +36,7 @@ export default function LeaveDashboard({
         { name: 'Balance Overview', icon: '⚖️', count: 0 },
     ];
 
-    if ((role as any) === 'MANAGER' || teamRequests.length > 0) {
+    if (role === 'MANAGER' || teamRequests.length > 0) {
         tabs.push({ name: 'Team Approvals', icon: '👥', count: teamRequests.filter(r => r.managerApprovalStatus === 'PENDING').length });
     }
 
@@ -38,7 +50,9 @@ export default function LeaveDashboard({
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '2rem' }}>
                 <div className="card" style={{ borderLeft: '4px solid var(--primary-500)' }}>
                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>Annual Leave Available</p>
-                    <p style={{ margin: '0.25rem 0 0 0', fontSize: '1.5rem', fontWeight: 800 }}>12 Days</p>
+                    <p style={{ margin: '0.25rem 0 0 0', fontSize: '1.5rem', fontWeight: 800 }}>
+                        {balances.find(b => b.leaveType.name.includes('Annual'))?.daysAllocated - balances.find(b => b.leaveType.name.includes('Annual'))?.daysUsed || 0} Days
+                    </p>
                 </div>
                 <div className="card" style={{ borderLeft: '4px solid var(--accent-amber)' }}>
                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>My Pending</p>
@@ -153,9 +167,7 @@ export default function LeaveDashboard({
                 )}
 
                 {activeTab === 'Balance Overview' && (
-                    <div style={{ padding: '2rem', textAlign: 'center' }}>
-                        <p className="text-gray-500">Detailed balance tracking component coming soon.</p>
-                    </div>
+                    <LeaveBalances balances={balances} />
                 )}
 
                 {activeTab === 'Team Approvals' && (

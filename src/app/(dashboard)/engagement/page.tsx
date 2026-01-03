@@ -3,13 +3,18 @@ import { getUpcomingOneOnOnes } from '@/lib/engagement';
 import { getUpcomingBirthdays } from '@/lib/birthdays';
 import { getNewsletters } from '@/lib/actions/newsletter-actions';
 import { getPosts } from '@/lib/actions/social-actions';
+import { seedPerformanceEngagement } from '@/lib/actions/seedPerformanceEngagement';
 import NewsletterFeed from '@/components/engagement/NewsletterFeed';
 import SocialFeed from '@/components/social/SocialFeed';
 import Link from 'next/link';
 
-export default async function EngagementPage() {
+export default async function EngagementPage({ searchParams }: { searchParams: { seed?: string } }) {
     const session = await auth();
     const user = session?.user;
+
+    if (searchParams?.seed === 'true') {
+        await seedPerformanceEngagement();
+    }
 
     // Parallel Data Fetching with Safety
     let upcomingSessions: any[] = [];
@@ -33,7 +38,10 @@ export default async function EngagementPage() {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6 text-slate-800">Engagement & Community</h1>
+            <h1 className="text-2xl font-bold mb-6 text-slate-800">
+                Engagement & Community
+                <a href="/engagement?seed=true" className="text-xs font-normal text-slate-300 ml-3 hover:text-slate-500">(Seed Demo Data)</a>
+            </h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left: Social Feed (Living stream of updates) */}

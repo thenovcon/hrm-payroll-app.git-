@@ -39,8 +39,13 @@ export async function createUser(prevState: any, formData: FormData) {
         });
         revalidatePath('/admin/users');
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Create User Failed:', error);
-        return { success: false, error: 'Failed to create user (Username might be taken)' };
+        if (error.code === 'P2002') {
+            const field = error.meta?.target?.[0];
+            if (field === 'username') return { success: false, error: 'Username is already taken.' };
+            if (field === 'employeeId') return { success: false, error: 'This employee is already linked to a user account.' };
+        }
+        return { success: false, error: 'Failed to create user. Please try again.' };
     }
 }

@@ -1,5 +1,5 @@
 'use client';
-import { FULL_VERSION } from '@/lib/version';
+import { APP_FULL_VERSION } from '@/lib/version';
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -22,7 +22,7 @@ export default function Header({ notifications = [] }: HeaderProps) {
     const { toggleSidebar } = useSidebar();
 
     useEffect(() => {
-        console.log(`App Version: ${FULL_VERSION}`);
+        console.log(`App Version: ${APP_FULL_VERSION}`);
     }, []);
 
     const [showSettings, setShowSettings] = useState(false);
@@ -200,7 +200,7 @@ export default function Header({ notifications = [] }: HeaderProps) {
                                 </button>
                             </div>
                             <div className={styles.dropdownFooter} style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--slate-500)' }}>
-                                {FULL_VERSION}
+                                {APP_FULL_VERSION}
                             </div>
                         </div>
                     )}
