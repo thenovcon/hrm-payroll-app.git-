@@ -17,12 +17,46 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
         getFeedbackRequests()
     ]);
 
+    // Mock Data Fallback
+    const demoGoals = [
+        { id: 'g1', title: 'Complete Advanced React Certification', description: 'Finish the lvl 2 course', progress: 100, status: 'COMPLETED', dueDate: new Date(2024, 11, 31) },
+        { id: 'g2', title: 'Reduce API Latency by 20%', description: 'Optimize database queries', progress: 65, status: 'IN_PROGRESS', dueDate: new Date(2025, 2, 30) },
+        { id: 'g3', title: 'Mentor 2 Junior Devs', description: 'Weekly code reviews', progress: 40, status: 'IN_PROGRESS', dueDate: new Date(2025, 5, 30) },
+    ];
+    const finalGoals = goals.length > 0 ? goals : demoGoals;
+
+    // Insights Metrics (Mocked)
+    const insights = {
+        totalAchieved: 142,
+        topDept: 'Engineering',
+        completionRate: 87
+    };
+
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-6 text-slate-800">
                 Performance & Development
                 <a href="/performance?seed=true" className="text-xs font-normal text-slate-300 ml-3 hover:text-slate-500">(Seed Demo Data)</a>
             </h1>
+
+            {/* Performance Overview Widgets */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-5 text-white shadow-lg">
+                    <p className="text-emerald-100 text-sm font-medium mb-1">Total Achieved Goals</p>
+                    <h3 className="text-3xl font-bold">{insights.totalAchieved}</h3>
+                    <p className="text-xs text-emerald-100 mt-2">All time across org</p>
+                </div>
+                <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                    <p className="text-slate-500 text-sm font-medium mb-1">Top Performing Dept</p>
+                    <h3 className="text-2xl font-bold text-slate-800">{insights.topDept}</h3>
+                    <p className="text-xs text-green-600 mt-2">94% Goal Completion Rate</p>
+                </div>
+                <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                    <p className="text-slate-500 text-sm font-medium mb-1">Your Avg. Rating</p>
+                    <h3 className="text-2xl font-bold text-slate-800">4.8 / 5.0</h3>
+                    <p className="text-xs text-slate-400 mt-2">Based on last 3 reviews</p>
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -34,13 +68,7 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
                     </div>
 
                     <div className="space-y-4">
-                        {goals.length === 0 ? (
-                            <div className="text-center p-8 bg-slate-50 rounded-lg text-slate-500">
-                                You haven't set any goals yet.
-                            </div>
-                        ) : (
-                            goals.map(goal => <GoalCard key={goal.id} goal={goal} />)
-                        )}
+                        {finalGoals.map((goal: any) => <GoalCard key={goal.id} goal={goal} />)}
                     </div>
                 </div>
 

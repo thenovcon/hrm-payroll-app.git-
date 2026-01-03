@@ -188,18 +188,64 @@ export default async function MainPage() {
   const OverviewAnalytics = (await import('@/components/dashboard/OverviewAnalytics')).default;
 
   // Format Data for Modern Dashboard
+  // Force Rich Mock Data for Demo Purposes (User Request: "populate some dummy data")
+  const demoMode = true;
+
   const modernMetrics = {
-    headcount: employeeCount,
-    payrollCost: financials.totalCost,
-    attendanceRate: activeJobs > 0 ? 88.5 : 92.4, // Mock calculation for now or user (attendanceToday / employeeCount * 100)
-    openJobs: activeJobs
+    headcount: employeeCount || 142,
+    payrollCost: financials.totalCost || 452000,
+    attendanceRate: 94.2,
+    openJobs: activeJobs || 7
   };
 
   const modernTrends = {
-    payroll: chartPayrollData,
-    headcountByDept: chartHeadcountData,
-    attendance: chartAttendanceData,
-    applications: applicationTrends
+    payroll: chartPayrollData.length > 0 ? chartPayrollData : [
+      { month: 'Jun', cost: 410000 },
+      { month: 'Jul', cost: 415000 },
+      { month: 'Aug', cost: 422000 },
+      { month: 'Sep', cost: 430000 },
+      { month: 'Oct', cost: 445000 },
+      { month: 'Nov', cost: 452000 },
+    ],
+    headcountByDept: chartHeadcountData.length > 0 ? chartHeadcountData : [
+      { name: 'Engineering', value: 45 },
+      { name: 'Sales', value: 32 },
+      { name: 'Marketing', value: 18 },
+      { name: 'HR', value: 12 },
+      { name: 'Finance', value: 15 },
+      { name: 'Product', value: 20 },
+    ],
+    attendance: chartAttendanceData.length > 0 ? chartAttendanceData : Array.from({ length: 14 }).map((_, i) => ({
+      date: new Date(Date.now() - (13 - i) * 86400000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),
+      present: 130 + Math.floor(Math.random() * 10),
+    })),
+    applications: applicationTrends.some(v => v > 0) ? applicationTrends : [
+      12, 19, 3, 5, 2, 3, 15, 22, 28, 35, 42, 50
+    ]
+  };
+
+  // Additional Mock Data for Charts requested by User
+  const extraCharts = {
+    recruitmentVelocity: [
+      { role: 'Senior Dev', days: 45 },
+      { role: 'Product Mgr', days: 38 },
+      { role: 'Sales rep', days: 22 },
+      { role: 'Designer', days: 28 },
+    ],
+    budgetVsActual: [
+      { month: 'Jun', budget: 420, actual: 410 },
+      { month: 'Jul', budget: 420, actual: 415 },
+      { month: 'Aug', budget: 430, actual: 422 },
+      { month: 'Sep', budget: 440, actual: 430 },
+      { month: 'Oct', budget: 450, actual: 445 },
+      { month: 'Nov', budget: 460, actual: 452 },
+    ],
+    goalCompletion: [
+      { dept: 'Eng', completed: 85, total: 100 },
+      { dept: 'Sales', completed: 92, total: 100 },
+      { dept: 'Mkt', completed: 78, total: 100 },
+      { dept: 'HR', completed: 95, total: 100 },
+    ]
   };
 
   // Dynamic Import
@@ -210,6 +256,7 @@ export default async function MainPage() {
       <ModernSaaSDashboard
         metrics={modernMetrics}
         trends={modernTrends}
+        extraCharts={extraCharts}
         recentActivity={[]} // Will use internal mocks for layout
       />
     </div>

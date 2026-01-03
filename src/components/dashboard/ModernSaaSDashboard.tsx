@@ -36,10 +36,15 @@ interface DashboardProps {
         attendance: any[]; // { date, present }
         applications: number[]; // 12 months array
     };
+    extraCharts?: {
+        recruitmentVelocity: any[];
+        budgetVsActual: any[];
+        goalCompletion: any[];
+    };
     recentActivity: any[]; // Mocked for now?
 }
 
-export default function ModernSaaSDashboard({ metrics, trends, recentActivity = [] }: DashboardProps) {
+export default function ModernSaaSDashboard({ metrics, trends, extraCharts, recentActivity = [] }: DashboardProps) {
     return (
         <div className="min-h-screen bg-slate-50/50 p-6 space-y-8 font-sans text-slate-900">
 
@@ -124,7 +129,6 @@ export default function ModernSaaSDashboard({ metrics, trends, recentActivity = 
                                     radius={[6, 6, 6, 6]}
                                     barSize={32}
                                 />
-                                {/* Dummy Shadow Bar for 'Projected' visualization if needed, skipped for clean data */}
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -176,13 +180,79 @@ export default function ModernSaaSDashboard({ metrics, trends, recentActivity = 
                 </div>
             </div>
 
+            {/* Extra Row: Recruitment & Goals (Requested Mock Data) */}
+            {extraCharts && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Time to Hire (Bar) */}
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <h3 className="font-bold text-slate-800 mb-4">Time to Hire (Days)</h3>
+                        <div className="h-[180px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={extraCharts.recruitmentVelocity} layout="vertical">
+                                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="role" type="category" width={80} tick={{ fontSize: 10 }} />
+                                    <Tooltip />
+                                    <Bar dataKey="days" fill="#8b5cf6" radius={[0, 4, 4, 0]} barSize={20} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    {/* Budget vs Actual (Line) */}
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <h3 className="font-bold text-slate-800 mb-4">Budget vs Actual (6 Mo)</h3>
+                        <div className="h-[180px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={extraCharts.budgetVsActual}>
+                                    <defs>
+                                        <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1} />
+                                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                    <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                                    <Tooltip />
+                                    <Area type="monotone" dataKey="actual" stroke="#ef4444" fillOpacity={1} fill="url(#colorActual)" />
+                                    <Area type="monotone" dataKey="budget" stroke="#cbd5e1" fill="transparent" strokeDasharray="5 5" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    {/* Goal Completion (Radial/Pie substitute) */}
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <h3 className="font-bold text-slate-800 mb-4">Goal Completion</h3>
+                        <div className="space-y-4">
+                            {extraCharts.goalCompletion.map((dept: any, i: number) => (
+                                <div key={i}>
+                                    <div className="flex justify-between text-xs mb-1">
+                                        <span className="font-medium text-slate-700">{dept.dept}</span>
+                                        <span className="text-slate-500">{dept.completed}%</span>
+                                    </div>
+                                    <div className="w-full bg-slate-100 rounded-full h-2">
+                                        <div
+                                            className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
+                                            style={{ width: `${dept.completed}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Bottom Row: Detailed Trends & Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* Attendance Trend (Area Chart) - "Total Income" slot */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-slate-800">Attendance Rate</h3>
+                        <h3 className="font-bold text-slate-800">Attendance Trend</h3>
+                        {/* ... (rest of existing components) ... */}
+
                         <select className="text-xs border-none bg-slate-50 rounded-md py-1 px-2 text-slate-600 outline-none">
                             <option>Weekly</option>
                         </select>

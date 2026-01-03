@@ -36,6 +36,30 @@ export default async function EngagementPage({ searchParams }: { searchParams: {
 
     const isManager = (user as any)?.role === 'ADMIN' || (user as any)?.role === 'HR_MANAGER' || (user as any)?.role === 'DEPT_HEAD';
 
+    // Mock Data Injection
+    const mockPosts = [
+        { id: 'p1', content: 'Just finished a great team lunch! 🍕', author: { firstName: 'Sarah', lastName: 'Jenkins', image: null }, likes: 12, comments: 4, createdAt: new Date(Date.now() - 3600000) },
+        { id: 'p2', content: 'Welcome to the team, @Kofi! Excited to have you on board. 🚀', author: { firstName: 'David', lastName: 'Boateng', image: null }, likes: 25, comments: 8, createdAt: new Date(Date.now() - 86400000) },
+    ];
+    const finalPosts = posts.length > 0 ? posts : mockPosts;
+
+    const mockNewsletters = [
+        { id: 'n1', title: 'Q1 All-Hands Meeting Summary', publishedAt: new Date(), author: 'CEO Office' },
+        { id: 'n2', title: 'New Health Insurance Benefits', publishedAt: new Date(Date.now() - 604800000), author: 'HR Dept' },
+    ];
+    const finalNewsletters = newsletters.length > 0 ? newsletters : mockNewsletters;
+
+    const mockBirthdays = [
+        { firstName: 'Emmanuel', lastName: 'Ofori', day: 15, department: { name: 'IT' } },
+        { firstName: 'Jessica', lastName: 'Mensah', day: 22, department: { name: 'Marketing' } },
+    ];
+    const finalBirthdays = birthdays.length > 0 ? birthdays : mockBirthdays;
+
+    const mockSessions = [
+        { id: 's1', managerId: 'mgr1', employee: { firstName: 'Manager' }, manager: { firstName: 'Manager' }, scheduledAt: new Date(Date.now() + 86400000) },
+    ];
+    const finalSessions = upcomingSessions.length > 0 ? upcomingSessions : mockSessions;
+
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-6 text-slate-800">
@@ -49,7 +73,7 @@ export default async function EngagementPage({ searchParams }: { searchParams: {
                     {/* Social Feed Component */}
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <h2 className="text-lg font-semibold text-slate-700 mb-3 px-2">Community Feed</h2>
-                        <SocialFeed initialPosts={posts} userId={user?.id as string} />
+                        <SocialFeed initialPosts={finalPosts as any} userId={user?.id as string} />
                     </div>
 
                     {/* Newsletters Block */}
@@ -62,7 +86,7 @@ export default async function EngagementPage({ searchParams }: { searchParams: {
                                 </Link>
                             )}
                         </div>
-                        <NewsletterFeed newsletters={newsletters} />
+                        <NewsletterFeed newsletters={finalNewsletters} />
                     </div>
                 </div>
 
@@ -73,10 +97,10 @@ export default async function EngagementPage({ searchParams }: { searchParams: {
                         <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl">🎂</div>
                         <h2 className="text-lg font-semibold text-slate-800 mb-4">Celebrations</h2>
                         <div className="space-y-3">
-                            {birthdays.length === 0 ? (
+                            {finalBirthdays.length === 0 ? (
                                 <p className="text-sm text-slate-500">No birthdays this month.</p>
                             ) : (
-                                birthdays.map((b, i) => (
+                                finalBirthdays.map((b, i) => (
                                     <div key={i} className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">
                                             {b.day}
@@ -95,10 +119,10 @@ export default async function EngagementPage({ searchParams }: { searchParams: {
                     <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                         <h2 className="text-lg font-semibold text-slate-800 mb-4">Your 1:1 Sessions</h2>
                         <div className="space-y-3">
-                            {upcomingSessions.length === 0 ? (
+                            {finalSessions.length === 0 ? (
                                 <p className="text-slate-500 text-sm">No upcoming sessions.</p>
                             ) : (
-                                upcomingSessions.map(session => (
+                                finalSessions.map((session: any) => (
                                     <div key={session.id} className="p-3 bg-slate-50 rounded-lg flex justify-between items-center">
                                         <div>
                                             <p className="font-medium text-slate-700 text-sm">

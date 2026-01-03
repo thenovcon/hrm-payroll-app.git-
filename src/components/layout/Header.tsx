@@ -207,17 +207,7 @@ export default function Header({ notifications = [] }: HeaderProps) {
                 </div>
 
                 {/* Logout */}
-                <form action={logout} style={{ margin: 0 }}>
-                    <button
-                        type="submit"
-                        className={styles.logoutBtn}
-                        aria-label="Logout"
-                        title="Logout"
-                    >
-                        <span className={styles.logoutIcon}>🚪</span>
-                        <span className={styles.logoutText}>Logout</span>
-                    </button>
-                </form>
+                {/* Logout removed as per user request (duplicate) */}
             </div>
         </header>
     );
