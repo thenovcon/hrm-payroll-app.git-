@@ -15,58 +15,89 @@ import { Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 export default function DataImport() {
     const [status, setStatus] = useState<'IDLE' | 'IMPORTING' | 'SUCCESS' | 'ERROR'>('IDLE');
     const [report, setReport] = useState<any>(null);
+    const [progress, setProgress] = useState<{ current: number, total: number }>({ current: 0, total: 0 });
 
-    const handleResult = (result: any) => {
-        if (result.success) {
-            setStatus('SUCCESS');
-            setReport(result);
-        } else {
+    const processInBatches = async (data: any[], importFn: (chunk: any[]) => Promise<any>, label: string) => {
+        if (!confirm(`Are you sure you want to import ${data.length} records for ${label}?`)) return;
+
+        setStatus('IMPORTING');
+        setReport(null);
+        setProgress({ current: 0, total: data.length });
+
+        const BATCH_SIZE = 50;
+        let successTotal = 0;
+        let errorsTotal: string[] = [];
+
+        try {
+            for (let i = 0; i < data.length; i += BATCH_SIZE) {
+                const chunk = data.slice(i, i + BATCH_SIZE);
+                setProgress({ current: i, total: data.length }); // Update progress start of batch
+
+                const result = await importFn(chunk);
+
+                if (result.success) {
+                    // Extract number from "Successfully imported X employees" -- simplified logic
+                    // The server returns a message, but we can assume success for the chunk minus specific errors
+                    // But the server action returns `errorCount`. 
+                    // Let's rely on the server returning explicit counts if possible, 
+                    // or just assume chunk size - errorCount.
+                    const chunkErrors = result.errorCount || 0;
+                    successTotal += (chunk.length - chunkErrors);
+                    if (result.errors) errorsTotal = [...errorsTotal, ...result.errors];
+                } else {
+                    errorsTotal.push(`Batch ${i / BATCH_SIZE + 1} Failed: ${result.error}`);
+                }
+
+                // Small delay to allow UI update and prevent UI freeze
+                await new Promise(r => setTimeout(r, 50));
+            }
+
+            setProgress({ current: data.length, total: data.length }); // Done
+
+            if (errorsTotal.length > 0) {
+                setStatus('SUCCESS'); // Still partial success
+                setReport({
+                    message: `Completed with some issues. Imported ${successTotal}/${data.length}.`,
+                    errorCount: errorsTotal.length,
+                    errors: errorsTotal
+                });
+            } else {
+                setStatus('SUCCESS');
+                setReport({
+                    message: `Successfully imported all ${successTotal} records.`,
+                    errorCount: 0,
+                    errors: []
+                });
+            }
+
+        } catch (error: any) {
             setStatus('ERROR');
-            setReport({ message: result.error });
+            setReport({ message: `Critical Batch Error: ${error.message}`, errorCount: 1, errors: [error.message] });
         }
     };
 
     const handleEmployeeImport = async (data: any[]) => {
-        if (!confirm(`Are you sure you want to import ${data.length} employees? This will create user accounts for each.`)) return;
-
-        setStatus('IMPORTING');
-        const result = await bulkImportEmployees(data);
-        handleResult(result);
+        await processInBatches(data, bulkImportEmployees, "Employees");
     };
 
     const handleLeaveImport = async (data: any[]) => {
-        if (!confirm(`Import ${data.length} leave balance records? Existing balances for the same year will be updated.`)) return;
-        setStatus('IMPORTING');
-        const result = await importLeaveBalances(data);
-        handleResult(result);
+        await processInBatches(data, importLeaveBalances, "Leave Balances");
     };
 
     const handlePayrollImport = async (data: any[]) => {
-        if (!confirm(`Import ${data.length} historical payslips? This will create "PAID" payroll runs for past months.`)) return;
-        setStatus('IMPORTING');
-        const result = await importPayrollHistory(data);
-        handleResult(result);
+        await processInBatches(data, importPayrollHistory, "Payroll History");
     };
 
     const handleATSImport = async (data: any[]) => {
-        if (!confirm(`Import ${data.length} job requisitions?`)) return;
-        setStatus('IMPORTING');
-        const result = await importJobRequisitions(data);
-        handleResult(result);
+        await processInBatches(data, importJobRequisitions, "Job Requisitions");
     };
 
     const handlePerformanceImport = async (data: any[]) => {
-        if (!confirm(`Import ${data.length} goals?`)) return;
-        setStatus('IMPORTING');
-        const result = await importPerformanceGoals(data);
-        handleResult(result);
+        await processInBatches(data, importPerformanceGoals, "Performance Goals");
     };
 
     const handleTrainingImport = async (data: any[]) => {
-        if (!confirm(`Import ${data.length} certifications?`)) return;
-        setStatus('IMPORTING');
-        const result = await importTrainingRecords(data);
-        handleResult(result);
+        await processInBatches(data, importTrainingRecords, "Training Records");
     };
 
     return (
@@ -106,10 +137,10 @@ export default function DataImport() {
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                     <div className="mb-4">
                         <h4 className="font-semibold text-slate-800">3. Payroll History (YTD)</h4>
-                        <p className="text-xs text-slate-500">Import past payslips for tax calculations.</p>
+                        <p className="text-xs text-slate-500">Import past payslips.</p>
                     </div>
                     <div className="bg-purple-50 text-purple-800 text-xs p-3 rounded-lg mb-4">
-                        <strong>Required:</strong> email, grossSalary, netPay, month, year
+                        <strong>Required:</strong> email, grossSalary, netPay, month
                     </div>
                     <CSVImporter onImport={handlePayrollImport} label="Upload Payroll History" />
                 </div>
@@ -118,7 +149,7 @@ export default function DataImport() {
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                     <div className="mb-4">
                         <h4 className="font-semibold text-slate-800">4. Job Requisitions</h4>
-                        <p className="text-xs text-slate-500">Migrate open roles and vacancies.</p>
+                        <p className="text-xs text-slate-500">Migrate open roles.</p>
                     </div>
                     <div className="bg-orange-50 text-orange-800 text-xs p-3 rounded-lg mb-4">
                         <strong>Required:</strong> title, department
@@ -142,10 +173,10 @@ export default function DataImport() {
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                     <div className="mb-4">
                         <h4 className="font-semibold text-slate-800">6. Training/Certifications</h4>
-                        <p className="text-xs text-slate-500">Historical training records.</p>
+                        <p className="text-xs text-slate-500">Historical records.</p>
                     </div>
                     <div className="bg-indigo-50 text-indigo-800 text-xs p-3 rounded-lg mb-4">
-                        <strong>Required:</strong> email, name, issuer, issueDate
+                        <strong>Required:</strong> email, name, issuer
                     </div>
                     <CSVImporter onImport={handleTrainingImport} label="Upload Certifications" />
                 </div>
@@ -160,7 +191,7 @@ export default function DataImport() {
                         {status === 'SUCCESS' ? 'Import Complete' : 'Import Failed'}
                     </h5>
                     <p className="text-xs text-slate-700">{report.message}</p>
-                    {report.errorCount > 0 && (
+                    {report.errorCount > 0 && report.errors && (
                         <div className="mt-2 text-xs text-rose-600 bg-white p-2 rounded border border-rose-100">
                             <p className="font-semibold">{report.errorCount} errors occurred:</p>
                             <ul className="list-disc list-inside mt-1 max-h-32 overflow-y-auto">
@@ -171,8 +202,21 @@ export default function DataImport() {
                 </div>
             )}
             {status === 'IMPORTING' && (
-                <div className="fixed bottom-8 right-8 bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-3">
-                    <Loader2 className="w-5 h-5 animate-spin" /> Processing Import...
+                <div className="fixed bottom-8 right-8 bg-blue-600 text-white px-6 py-4 rounded-xl shadow-lg flex flex-col gap-2 min-w-[300px]">
+                    <div className="flex items-center gap-3">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span className="font-semibold">Processing Batch Import...</span>
+                    </div>
+                    <div className="w-full bg-blue-800/50 rounded-full h-2">
+                        <div
+                            className="bg-white h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${Math.round((progress.current / progress.total) * 100)}%` }}
+                        />
+                    </div>
+                    <div className="text-xs text-blue-100 flex justify-between">
+                        <span>Processed {progress.current} of {progress.total}</span>
+                        <span>{Math.round((progress.current / progress.total) * 100)}%</span>
+                    </div>
                 </div>
             )}
         </div>
