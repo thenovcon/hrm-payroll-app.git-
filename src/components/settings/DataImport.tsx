@@ -8,7 +8,8 @@ import {
     importPayrollHistory,
     importJobRequisitions,
     importPerformanceGoals,
-    importTrainingRecords
+    importTrainingRecords,
+    revalidateHRMPaths
 } from '@/lib/actions/import-actions';
 import { Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 
@@ -51,6 +52,9 @@ export default function DataImport() {
                 // Small delay to allow UI update and prevent UI freeze
                 await new Promise(r => setTimeout(r, 50));
             }
+
+            // Revalidate data paths only once at the end
+            await revalidateHRMPaths();
 
             setProgress({ current: data.length, total: data.length }); // Done
 

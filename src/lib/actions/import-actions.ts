@@ -92,7 +92,7 @@ export async function bulkImportEmployees(data: any[]) {
             }
         }
 
-        revalidatePath('/employees');
+
         return {
             success: true,
             message: `Successfully imported ${successCount} employees.`,
@@ -184,7 +184,6 @@ export async function importLeaveBalances(data: any[]) {
             }
         }
 
-        revalidatePath('/leave');
         return {
             success: true,
             message: `Successfully imported ${successCount} leave balances.`,
@@ -279,7 +278,6 @@ export async function importPayrollHistory(data: any[]) {
             }
         }
 
-        revalidatePath('/payroll');
         return {
             success: true,
             message: `Successfully imported ${successCount} payroll records.`,
@@ -340,7 +338,6 @@ export async function importJobRequisitions(data: any[]) {
             }
         }
 
-        revalidatePath('/ats');
         return {
             success: true,
             message: `Successfully imported ${successCount} requisitions.`,
@@ -396,7 +393,6 @@ export async function importPerformanceGoals(data: any[]) {
                 successCount++;
             } catch (err: any) { errors.push(`Error ${row.email}: ${err.message}`); }
         }
-        revalidatePath('/performance');
         return { success: true, message: `Imported ${successCount} goals.`, errorCount: errors.length, errors: errors.slice(0, 5) };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
@@ -437,7 +433,20 @@ export async function importTrainingRecords(data: any[]) {
                 successCount++;
             } catch (err: any) { errors.push(`Error ${row.email}: ${err.message}`); }
         }
-        revalidatePath('/training');
         return { success: true, message: `Imported ${successCount} certifications.`, errorCount: errors.length, errors: errors.slice(0, 5) };
     } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+/**
+ * Manually revalidate all import-related paths
+ * Call this ONCE after all batches are processed.
+ */
+export async function revalidateHRMPaths() {
+    revalidatePath('/employees');
+    revalidatePath('/leave');
+    revalidatePath('/payroll');
+    revalidatePath('/ats');
+    revalidatePath('/performance');
+    revalidatePath('/training');
+    return { success: true };
 }
