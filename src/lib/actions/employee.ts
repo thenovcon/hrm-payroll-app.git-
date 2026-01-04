@@ -8,6 +8,7 @@ export async function getEmployees() {
             orderBy: { createdAt: 'desc' },
             include: {
                 address: true,
+                department: true,
             }
         });
         return { success: true, data: employees };

@@ -442,11 +442,16 @@ export async function importTrainingRecords(data: any[]) {
  * Call this ONCE after all batches are processed.
  */
 export async function revalidateHRMPaths() {
-    revalidatePath('/employees');
-    revalidatePath('/leave');
-    revalidatePath('/payroll');
-    revalidatePath('/ats');
-    revalidatePath('/performance');
-    revalidatePath('/training');
-    return { success: true };
+    try {
+        revalidatePath('/employees');
+        revalidatePath('/leave');
+        revalidatePath('/payroll');
+        revalidatePath('/ats');
+        revalidatePath('/performance');
+        revalidatePath('/training');
+        return { success: true };
+    } catch (error) {
+        console.error('Revalidation Error:', error);
+        return { success: true, warning: 'Revalidation failed' }; // Don't fail the operation
+    }
 }

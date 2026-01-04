@@ -40,7 +40,7 @@ export default async function EmployeeList() {
                                         <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{emp.email}</div>
                                     </td>
                                     <td style={{ padding: '1rem' }}>{emp.position}</td>
-                                    <td style={{ padding: '1rem' }}>{emp.department}</td>
+                                    <td style={{ padding: '1rem' }}>{emp.department?.name || '-'}</td>
                                     <td style={{ padding: '1rem' }}>
                                         <span style={{
                                             padding: '0.25rem 0.5rem',
