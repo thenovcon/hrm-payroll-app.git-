@@ -8,6 +8,7 @@ import PolicyConfig from '@/components/settings/PolicyConfig';
 import NotificationSettings from '@/components/settings/NotificationSettings';
 import SystemJobs from '@/components/settings/SystemJobs';
 import StatutorySetup from '@/components/payroll/StatutorySetup';
+import DataImport from '@/components/settings/DataImport';
 
 const tabs = [
     { name: 'Company Setup', icon: '🏢' },
@@ -16,6 +17,7 @@ const tabs = [
     { name: 'HR Policies', icon: '📜' },
     { name: 'Notifications', icon: '🔔' },
     { name: 'System Jobs', icon: '⚡' },
+    { name: 'Data Import', icon: '📥' },
 ];
 
 export default function SettingsClient({ user }: { user: any }) {
@@ -65,6 +67,7 @@ export default function SettingsClient({ user }: { user: any }) {
                     {activeTab === 'HR Policies' && <PolicyConfig />}
                     {activeTab === 'Notifications' && <NotificationSettings user_id={user?.id} />}
                     {activeTab === 'System Jobs' && <SystemJobs />}
+                    {activeTab === 'Data Import' && <DataImport />}
                 </Suspense>
             </div>
         </div>

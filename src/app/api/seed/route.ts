@@ -8,6 +8,11 @@ export async function POST() {
     console.log('🚀 Starting Production Seed via API Route...');
 
     try {
+        // SECURITY CHECK: Disable in production unless explicitly enabled
+        if (process.env.NODE_ENV === 'production' && process.env.ENABLE_SEEDING !== 'true') {
+            return NextResponse.json({ error: 'Seeding disabled. Set ENABLE_SEEDING=true to override.' }, { status: 403 });
+        }
+
         // 1. Departments
         const DEPARTMENTS = [
             { name: 'Human Resources', code: 'HR' },

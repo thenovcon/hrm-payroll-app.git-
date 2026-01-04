@@ -1,0 +1,51 @@
+reqNumber,title,department,location,status,headcount
+REQ-2025-1000,Graphic Designer,Marketing,Tema,OPEN,3
+REQ-2025-1001,Talent Acquisition Lead,HR,Kumasi,DRAFT,1
+REQ-2025-1002,Legal Counsel,Legal,Accra,OPEN,3
+REQ-2025-1003,Frontend Developer,IT,Takoradi,OPEN,3
+REQ-2025-1004,Sales Associate,Sales,Kumasi,DRAFT,1
+REQ-2025-1005,Sales Associate,Sales,Accra,OPEN,3
+REQ-2025-1006,Payroll Analyst,Finance,Remote,OPEN,2
+REQ-2025-1007,Legal Counsel,Legal,Kumasi,OPEN,1
+REQ-2025-1008,Logistics Officer,Operations,Accra,OPEN,1
+REQ-2025-1009,Senior Accountant,Finance,Takoradi,OPEN,1
+REQ-2025-1010,Warehouse Manager,Operations,Remote,OPEN,3
+REQ-2025-1011,Graphic Designer,Marketing,Remote,DRAFT,2
+REQ-2025-1012,Graphic Designer,Marketing,Accra,FILLED,3
+REQ-2025-1013,Senior Accountant,Finance,Takoradi,OPEN,3
+REQ-2025-1014,Brand Manager,Marketing,Takoradi,DRAFT,1
+REQ-2025-1015,Payroll Analyst,Finance,Remote,OPEN,2
+REQ-2025-1016,Brand Manager,Marketing,Kumasi,OPEN,1
+REQ-2025-1017,Brand Manager,Marketing,Takoradi,DRAFT,3
+REQ-2025-1018,Legal Counsel,Legal,Kumasi,OPEN,1
+REQ-2025-1019,Senior Accountant,Finance,Remote,FILLED,3
+REQ-2025-1020,Regional Manager,Sales,Kumasi,OPEN,1
+REQ-2025-1021,Data Scientist,IT,Kumasi,OPEN,2
+REQ-2025-1022,Legal Counsel,Legal,Kumasi,CANCELLED,3
+REQ-2025-1023,Legal Counsel,Legal,Kumasi,OPEN,2
+REQ-2025-1024,Graphic Designer,Marketing,Kumasi,CANCELLED,1
+REQ-2025-1025,Regional Manager,Sales,Takoradi,CANCELLED,3
+REQ-2025-1026,Brand Manager,Marketing,Kumasi,CANCELLED,1
+REQ-2025-1027,Payroll Analyst,Finance,Kumasi,OPEN,3
+REQ-2025-1028,HR Intern,HR,Tema,OPEN,2
+REQ-2025-1029,Warehouse Manager,Operations,Takoradi,OPEN,3
+REQ-2025-1030,Legal Counsel,Legal,Tema,OPEN,3
+REQ-2025-1031,Backend Developer,IT,Tema,OPEN,2
+REQ-2025-1032,Senior Accountant,Finance,Tema,OPEN,2
+REQ-2025-1033,Warehouse Manager,Operations,Tema,OPEN,2
+REQ-2025-1034,Graphic Designer,Marketing,Kumasi,OPEN,1
+REQ-2025-1035,Brand Manager,Marketing,Remote,OPEN,2
+REQ-2025-1036,Payroll Analyst,Finance,Takoradi,FILLED,1
+REQ-2025-1037,Payroll Analyst,Finance,Kumasi,OPEN,3
+REQ-2025-1038,Sales Associate,Sales,Takoradi,OPEN,1
+REQ-2025-1039,Legal Counsel,Legal,Kumasi,DRAFT,2
+REQ-2025-1040,Sales Associate,Sales,Takoradi,OPEN,2
+REQ-2025-1041,Driver,Operations,Kumasi,OPEN,2
+REQ-2025-1042,Brand Manager,Marketing,Remote,DRAFT,2
+REQ-2025-1043,Talent Acquisition Lead,HR,Remote,OPEN,2
+REQ-2025-1044,Backend Developer,IT,Kumasi,DRAFT,1
+REQ-2025-1045,Data Scientist,IT,Kumasi,OPEN,1
+REQ-2025-1046,Senior Accountant,Finance,Remote,OPEN,2
+REQ-2025-1047,Driver,Operations,Remote,OPEN,1
+REQ-2025-1048,Legal Counsel,Legal,Remote,OPEN,2
+REQ-2025-1049,HR Intern,HR,Accra,OPEN,1

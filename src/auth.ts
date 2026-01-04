@@ -15,7 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     console.log('Authorize called with:', credentials?.username); // Debug log
                     if (!credentials?.username || !credentials?.password) return null;
 
-                    const username = credentials.username as string;
+                    const username = (credentials.username as string).toLowerCase();
                     const password = credentials.password as string;
 
                     const user = await prisma.user.findUnique({

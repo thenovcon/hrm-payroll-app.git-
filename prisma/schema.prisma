@@ -4,8 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Employee {
@@ -900,8 +901,13 @@ model Certification {
   id              String    @id @default(uuid())
   employeeId      String
   employee        Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  courseId        String
-  course          TrainingCourse @relation(fields: [courseId], references: [id])
+  courseId        String?
+  course          TrainingCourse? @relation(fields: [courseId], references: [id])
+  
+  name            String?   // For external certifications
+  issuer          String?   // e.g. AWS, SHRM
+  credentialUrl   String?
+
   
   certificateNumber String  @unique
   issueDate       DateTime  @default(now())

@@ -11,37 +11,13 @@ export default function RequisitionManagement() {
 
     // Mock Data for Demo if empty
     // Mock Data for Demo if empty
-    const MOCK_REQUISITIONS = [
-        { id: 'm1', reqNumber: 'REQ-24-001', title: 'Senior Frontend Engineer', department: 'Engineering', location: 'Remote (Ghana)', type: 'Full-time', priority: 'HIGH', status: 'APPROVED', headcount: 2, filled: 1, daysOpen: 12 },
-        { id: 'm2', reqNumber: 'REQ-24-002', title: 'HR Generalist', department: 'HR', location: 'Accra HQ', type: 'Full-time', priority: 'MEDIUM', status: 'PENDING', headcount: 1, filled: 0, daysOpen: 5 },
-        { id: 'm3', reqNumber: 'REQ-24-003', title: 'Sales Associate', department: 'Sales', location: 'Kumasi', type: 'Contract', priority: 'URGENT', status: 'APPROVED', headcount: 4, filled: 0, daysOpen: 2 },
-        { id: 'm4', reqNumber: 'REQ-24-004', title: 'Product Designer', department: 'Product', location: 'Accra HQ', type: 'Full-time', priority: 'HIGH', status: 'PENDING', headcount: 1, filled: 0, daysOpen: 1 },
-        { id: 'm5', reqNumber: 'REQ-24-005', title: 'Customer Support Lead', department: 'Operations', location: 'Remote', type: 'Full-time', priority: 'MEDIUM', status: 'DRAFT', headcount: 1, filled: 0, daysOpen: 0 },
-        { id: 'm6', reqNumber: 'REQ-24-006', title: 'DevOps Engineer', department: 'Engineering', location: 'Accra HQ', type: 'Full-time', priority: 'URGENT', status: 'APPROVED', headcount: 1, filled: 0, daysOpen: 15 },
-    ];
-
-    const handleStatusUpdate = async (id: string, status: string) => {
-        // Optimistic UI for mocks
-        if (id.startsWith('m')) {
-            setRequisitions(prev => prev.map(r => r.id === id ? { ...r, status } : r));
-            return;
-        }
-
-        const result = await updateRequisitionStatus(id, status);
-        if (result.success) {
-            fetchRequisitions();
-        } else {
-            alert(result.error);
-        }
-    };
-
     const fetchRequisitions = async () => {
         setLoading(true);
         const result = await getRequisitions();
-        if (result.success && result.data && result.data.length > 0) {
+        if (result.success && result.data) {
             setRequisitions(result.data);
         } else {
-            setRequisitions(MOCK_REQUISITIONS); // Fallback to mock for demo
+            setRequisitions([]);
         }
         setLoading(false);
     };
@@ -49,6 +25,15 @@ export default function RequisitionManagement() {
     useEffect(() => {
         fetchRequisitions();
     }, []);
+
+    const handleStatusUpdate = async (id: string, status: string) => {
+        const result = await updateRequisitionStatus(id, status);
+        if (result.success) {
+            fetchRequisitions();
+        } else {
+            alert(result.error);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
