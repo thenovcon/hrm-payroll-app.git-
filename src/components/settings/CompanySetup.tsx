@@ -3,6 +3,8 @@
 import React from 'react';
 
 export default function CompanySetup() {
+    const [logoPreview, setLogoPreview] = React.useState<string | null>(null);
+
     return (
         <div style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -10,7 +12,21 @@ export default function CompanySetup() {
                     <h3 className="text-xl font-bold">Company Profile & Structure</h3>
                     <p className="text-sm text-gray-500">Manage your organization's legal identity and physical locations.</p>
                 </div>
-                <button className="btn btn-primary">Save Changes</button>
+                <div className="flex gap-2">
+                    <button
+                        className="btn btn-outline"
+                        onClick={async () => {
+                            if (confirm('Seed default RBAC users? (hr_manager, line_manager, employee)')) {
+                                const { seedRBACUsers } = await import('@/lib/actions/seed-rbac');
+                                const res = await seedRBACUsers();
+                                alert(res.message || res.error);
+                            }
+                        }}
+                    >
+                        DEV: Seed Users
+                    </button>
+                    <button className="btn btn-primary">Save Changes</button>
+                </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
@@ -44,8 +60,12 @@ export default function CompanySetup() {
                     <div className="card" style={{ padding: '1.5rem' }}>
                         <h4 className="text-sm font-bold" style={{ marginBottom: '1rem' }}>Branding</h4>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                            <div style={{ width: '80px', height: '80px', background: 'var(--slate-100)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ fontSize: '2rem' }}>🏢</span>
+                            <div style={{ width: '80px', height: '80px', background: 'var(--slate-100)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                {logoPreview ? (
+                                    <img src={logoPreview} alt="Logo Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                ) : (
+                                    <span style={{ fontSize: '2rem' }}>🏢</span>
+                                )}
                             </div>
                             <div style={{ flex: 1 }}>
                                 <input
@@ -61,7 +81,11 @@ export default function CompanySetup() {
                                                 return;
                                             }
                                             // TODO: Implement actual upload to storage
-                                            alert(`Selected file: ${file.name}. Upload functionality to be implemented.`);
+                                            const objectUrl = URL.createObjectURL(file);
+                                            // Find the logo container and update it (hacky but valid for this component structure)
+                                            // Better: Use React State.
+                                            setLogoPreview(objectUrl);
+                                            alert(`Selected file: ${file.name}. Preview updated. Upload functionality to be implemented.`);
                                         }
                                     }}
                                 />

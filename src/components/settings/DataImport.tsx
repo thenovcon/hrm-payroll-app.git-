@@ -26,7 +26,7 @@ export default function DataImport() {
         setReport(null);
         setProgress({ current: 0, total: data.length });
 
-        const BATCH_SIZE = 50;
+        const BATCH_SIZE = 20; // Reduced to prevent Server Component render timeouts
         let successTotal = 0;
         let errorsTotal: string[] = [];
 

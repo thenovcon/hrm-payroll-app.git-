@@ -45,11 +45,19 @@ interface DashboardProps {
     userRole?: string;
 }
 
+import DrillDownPanel from './DrillDownPanel';
+
 export default function ModernSaaSDashboard({ metrics, trends, extraCharts, recentActivity = [], userRole = 'EMPLOYEE' }: DashboardProps) {
     const canViewFinancials = ['ADMIN', 'HR_MANAGER', 'ACCOUNTANT', 'PAYROLL_OFFICER'].includes(userRole);
+    const [drillData, setDrillData] = React.useState<any>(null);
+
+    const handleChartClick = (data: any) => {
+        setDrillData(data);
+    };
 
     return (
         <div className="min-h-screen bg-slate-50/50 p-6 space-y-8 font-sans text-slate-900">
+            <DrillDownPanel isOpen={!!drillData} onClose={() => setDrillData(null)} data={drillData} />
 
             {/* Top Stats Grid */}
             <div className={`grid grid-cols-1 md:grid-cols-2 ${canViewFinancials ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6`}>
@@ -110,7 +118,17 @@ export default function ModernSaaSDashboard({ metrics, trends, extraCharts, rece
                         </div>
                         <div className="h-[320px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={trends.payroll} barGap={8}>
+                                <BarChart
+                                    data={trends.payroll}
+                                    barGap={8}
+                                    onClick={(data) => {
+                                        if (data && data.activePayload && data.activePayload.length > 0) {
+                                            const payload = data.activePayload[0].payload;
+                                            handleChartClick({ type: 'payroll', label: payload.month, value: payload.cost });
+                                        }
+                                    }}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={COLORS.grid} />
                                     <XAxis
                                         dataKey="month"
