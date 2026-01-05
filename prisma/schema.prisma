@@ -798,10 +798,29 @@ model GoalCheckIn {
   date            DateTime  @default(now())
   progressPercent Float
   notes           String?
-  evidenceUrl     String?
   
   createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
+
+// --- BULK IMPORT TRACKING ---
+
+model ImportLog {
+  id            String       @id @default(cuid())
+  fileName      String
+  totalRecords  Int
+  status        ImportStatus @default(PROCESSING)
+  errorMessage  String?
+  createdBy     String       // User ID or Email
+  createdAt     DateTime     @default(now())
+}
+
+enum ImportStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 
 model Appraisal {
   id              String    @id @default(uuid())

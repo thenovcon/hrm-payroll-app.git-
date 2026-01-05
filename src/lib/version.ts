@@ -1,4 +1,4 @@
-export const APP_VERSION = '1.3.0';
-export const REVISION = 103;
+export const APP_VERSION = '1.3.2';
+export const REVISION = 105;
 export const BUILD_TIMESTAMP = '2026-01-05 15:00'; // UTC
 export const APP_FULL_VERSION = `v${APP_VERSION} (Rev ${REVISION})`;
