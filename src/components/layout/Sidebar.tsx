@@ -41,10 +41,5 @@ export default async function Sidebar() {
       menuItems={filteredItems}
     />
   );
-  // HIDDEN: Trigger RBAC Seeding if Admin (Simulating automation)
-  // In real world, this should be a script. Here we do it via a hidden component or effect on Sidebar if needed.
-  // Actually, let's NOT do it in render. I'll ask user to visit a route or button.
-  // Better: Add a "Seed Users" button to Settings.
-
-  return (
+}
 
