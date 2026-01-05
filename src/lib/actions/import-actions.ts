@@ -11,13 +11,16 @@ import { revalidatePath } from 'next/cache';
 export async function bulkImportEmployees(data: any[]) {
     try {
         let successCount = 0;
-        let errors = [];
+        let errors: string[] = [];
         const defaultPassword = await hash('novcon123', 10);
 
         // Fetch Department Map for quick lookup
-        const departments = await prisma.department.findMany();
+        const departments = await prisma.department.findMany({ select: { id: true, name: true, code: true } });
         const deptMap = new Map(departments.map(d => [d.name.toLowerCase(), d.id]));
-        const deptCodeMap = new Map(departments.map(d => [d.code.toLowerCase(), d.id]));
+        const deptCodeMap = departments.reduce((acc, d) => {
+            if (d.code) acc.set(d.code.toLowerCase(), d.id);
+            return acc;
+        }, new Map<string, string>());
 
         for (const row of data) {
             // Basic Validation
@@ -30,16 +33,16 @@ export async function bulkImportEmployees(data: any[]) {
                 // Resolve Department
                 let departmentId = null;
                 if (row.department) {
-                    const dName = row.department.toLowerCase();
+                    const dName = String(row.department).toLowerCase().trim();
                     departmentId = deptMap.get(dName) || deptCodeMap.get(dName);
-
-                    // Auto-create dept if missing (optional feature)
-                    if (!departmentId) {
-                        // For now, default to null or skip. Let's skip to be safe.
-                        // errors.push(`Skipped: Department '${row.department}' not found.`);
-                        // continue;
-                    }
                 }
+
+                // Safe Date Parsing helper
+                const safeDate = (d: any) => {
+                    if (!d) return new Date();
+                    const date = new Date(d);
+                    return isNaN(date.getTime()) ? new Date() : date;
+                };
 
                 const basicSalary = parseFloat(row.basicSalary) || 0;
 
@@ -50,9 +53,9 @@ export async function bulkImportEmployees(data: any[]) {
                             firstName: row.firstName,
                             lastName: row.lastName,
                             email: row.email,
-                            employeeId: row.employeeId || `IMP-${Math.floor(Math.random() * 10000)}`,
-                            dateOfBirth: new Date('1990-01-01'), // Default
-                            dateJoined: row.dateJoined ? new Date(row.dateJoined) : new Date(),
+                            employeeId: row.employeeId || `IMP-${Math.floor(Math.random() * 100000)}`,
+                            dateOfBirth: safeDate('1990-01-01'), // Default
+                            dateJoined: safeDate(row.dateJoined),
                             gender: row.gender || 'Unknown',
                             phone: row.phone || '0000000000',
                             position: row.position || 'Staff',
@@ -68,7 +71,6 @@ export async function bulkImportEmployees(data: any[]) {
                     });
 
                     // Create User Account
-                    // Username = part before @ of email
                     const username = row.email.split('@')[0];
                     await tx.user.create({
                         data: {
@@ -85,24 +87,23 @@ export async function bulkImportEmployees(data: any[]) {
 
             } catch (err: any) {
                 if (err.code === 'P2002') {
-                    errors.push(`Duplicate: ${row.email} already exists.`);
+                    errors.push(`Duplicate: ${row.email}`);
                 } else {
-                    errors.push(`Error import ${row.email}: ${err.message}`);
+                    errors.push(`Error ${row.email}: ${err.message || 'Unknown error'}`);
                 }
             }
         }
 
-
         return {
             success: true,
-            message: `Successfully imported ${successCount} employees.`,
+            message: `Imported ${successCount} employees.`,
             errorCount: errors.length,
-            errors: errors.slice(0, 10) // Return first 10 errors
+            errors: errors.slice(0, 10) // Limit return size
         };
 
     } catch (error: any) {
-        console.error('Import Error:', error);
-        return { success: false, error: 'Fatal import error' };
+        console.error('Fatal Import Error:', error);
+        return { success: false, error: `Fatal: ${error.message || 'Unknown server error'}` };
     }
 }
 
