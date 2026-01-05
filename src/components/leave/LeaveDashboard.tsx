@@ -10,13 +10,15 @@ export default function LeaveDashboard({
     userId,
     employeeId,
     role,
-    balances
+    balances,
+    leaveTypes = [] // New Prop
 }: {
     requests: any[],
     userId: string,
     employeeId: string,
     role: string,
-    balances: any[]
+    balances: any[],
+    leaveTypes?: any[]
 }) {
     const [activeTab, setActiveTab] = useState('My Requests');
 
@@ -112,11 +114,17 @@ export default function LeaveDashboard({
 
             {/* Tab Content */}
             <div className="card" style={{ minHeight: '400px', background: 'var(--bg-card)' }}>
+                import LeaveRequestModal from './LeaveRequestModal';
+
+                // ... (inside the component return)
+
                 {activeTab === 'My Requests' && (
                     <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                             <h2 className="text-xl font-bold">My Leave History</h2>
-                            <Link href="/leave/new" className="btn btn-primary">+ New Request</Link>
+                            <LeaveRequestModal employeeId={employeeId} leaveTypes={leaveTypes} onSuccess={() => window.location.reload()}>
+                                <button className="btn btn-primary cursor-pointer">+ New Request</button>
+                            </LeaveRequestModal>
                         </div>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>

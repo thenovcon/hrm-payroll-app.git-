@@ -27,6 +27,10 @@ export default async function LeavePage({ searchParams }: { searchParams: { seed
     // Use real data if available, else empty
     const requests = (result.success && result.data) ? result.data : [];
 
+    // Fetch Leave Types for Modal
+    const typesResult = await import('@/lib/actions/leave').then(mod => mod.getLeaveTypes());
+    const leaveTypes = (typesResult.success && typesResult.data) ? typesResult.data : [];
+
     // Fetch Balances if employee exists
     let balances: any[] = [];
     if (employeeId) {
@@ -54,6 +58,7 @@ export default async function LeavePage({ searchParams }: { searchParams: { seed
                 employeeId={employeeId || ''}
                 role={role}
                 balances={balances}
+                leaveTypes={leaveTypes}
             />
         </div>
     );

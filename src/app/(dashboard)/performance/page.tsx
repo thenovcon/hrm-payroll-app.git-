@@ -1,20 +1,25 @@
 import { auth } from '@/auth';
-import { getMyGoals } from '@/lib/actions/goal-actions';
+import { getMyGoals, getCompanyGoals, getDepartmentGoals } from '@/lib/actions/goal-actions';
 import { getReceivedFeedback, getFeedbackRequests } from '@/lib/actions/feedback-actions';
 import { seedPerformanceEngagement } from '@/lib/actions/seedPerformanceEngagement';
 import GoalCard from '@/components/performance/GoalCard';
+import GoalHierarchyView from '@/components/performance/GoalHierarchyView';
 
 export default async function PerformancePage({ searchParams }: { searchParams: { seed?: string } }) {
     const session = await auth();
+    const user = await import('@/lib/db/prisma').then(mod => mod.prisma.user.findUnique({ where: { id: session?.user?.id }, include: { employee: true } }));
+    const departmentId = user?.employee?.departmentId;
 
     if (searchParams?.seed === 'true') {
         await seedPerformanceEngagement();
     }
 
-    const [goals, feedback, requests] = await Promise.all([
+    const [goals, feedback, requests, companyGoals, departmentGoals] = await Promise.all([
         getMyGoals(),
         getReceivedFeedback(),
-        getFeedbackRequests()
+        getFeedbackRequests(),
+        getCompanyGoals(), // Need to implement
+        departmentId ? getDepartmentGoals(departmentId) : Promise.resolve([])
     ]);
 
     const finalGoals = goals;
@@ -34,7 +39,13 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
             </h1>
 
             {/* Performance Overview Widgets */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <GoalHierarchyView
+                companyGoals={companyGoals}
+                departmentGoals={departmentGoals}
+                myGoals={finalGoals}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-8">
                 <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-5 text-white shadow-lg">
                     <p className="text-emerald-100 text-sm font-medium mb-1">Total Achieved Goals</p>
                     <h3 className="text-3xl font-bold">{insights.totalAchieved}</h3>

@@ -163,3 +163,12 @@ export async function POST() {
         return NextResponse.json({ success: false, error: `Server Error: ${error.message || String(error)}` }, { status: 500 });
     }
 }
+
+export async function GET() {
+    try {
+        await seedATS();
+        return Response.json({ message: 'ATS Seeded Successfully' });
+    } catch (error) {
+        return Response.json({ error: 'Failed' }, { status: 500 });
+    }
+}

@@ -77,3 +77,51 @@ export async function getDepartmentGoals(departmentId: string) {
         include: { children: true }
     });
 }
+
+export async function getCompanyGoals() {
+    return await prisma.performanceGoal.findMany({
+        where: { level: 'COMPANY' },
+        orderBy: { createdAt: 'desc' },
+        include: { children: true }
+    });
+}
+
+export async function submitGoal(goalId: string) {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error('Unauthorized');
+
+    await prisma.performanceGoal.update({
+        where: { id: goalId },
+        data: { approvalStatus: 'PENDING' }
+    });
+    revalidatePath('/performance');
+}
+
+export async function approveGoal(goalId: string, comment?: string) {
+    const session = await auth();
+    // In real app, check if user is Manager or Admin
+    if (!session?.user?.id) throw new Error('Unauthorized');
+
+    await prisma.performanceGoal.update({
+        where: { id: goalId },
+        data: {
+            approvalStatus: 'APPROVED',
+            reviewerComment: comment
+        }
+    });
+    revalidatePath('/performance');
+}
+
+export async function rejectGoal(goalId: string, comment: string) {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error('Unauthorized');
+
+    await prisma.performanceGoal.update({
+        where: { id: goalId },
+        data: {
+            approvalStatus: 'REJECTED',
+            reviewerComment: comment
+        }
+    });
+    revalidatePath('/performance');
+}

@@ -22,7 +22,12 @@ export default async function MainPage() {
           include: {
             department: true,
             leaveRequests: { where: { status: 'PENDING' } },
-            enrollments: { where: { status: { in: ['ENROLLED', 'IN_PROGRESS'] } } }
+            enrollments: { where: { status: { in: ['ENROLLED', 'IN_PROGRESS'] } } },
+            skills: { include: { skill: true } },
+            attendance: {
+              where: { date: { gte: new Date(new Date().setDate(1)) } }, // Current month
+              orderBy: { date: 'asc' }
+            }
           }
         }
       }
@@ -35,7 +40,7 @@ export default async function MainPage() {
         trainingProgress: 65,
         attendanceRate: 95
       };
-      return <AgentPortal employee={user.employee} stats={stats} />;
+      return <AgentPortal employee={user.employee} stats={stats} attendance={user.employee.attendance} skills={user.employee.skills} />;
     }
   }
 
