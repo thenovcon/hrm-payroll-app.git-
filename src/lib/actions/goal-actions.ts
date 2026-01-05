@@ -99,8 +99,11 @@ export async function submitGoal(goalId: string) {
 
 export async function approveGoal(goalId: string, comment?: string) {
     const session = await auth();
-    // In real app, check if user is Manager or Admin
-    if (!session?.user?.id) throw new Error('Unauthorized');
+    const role = session?.user?.role;
+
+    if (!session?.user?.id || (role !== 'DEPT_HEAD' && role !== 'ADMIN')) {
+        throw new Error('Unauthorized: Only Department Heads or Admin can approve goals.');
+    }
 
     await prisma.performanceGoal.update({
         where: { id: goalId },
@@ -114,7 +117,11 @@ export async function approveGoal(goalId: string, comment?: string) {
 
 export async function rejectGoal(goalId: string, comment: string) {
     const session = await auth();
-    if (!session?.user?.id) throw new Error('Unauthorized');
+    const role = (session?.user as any)?.role;
+
+    if (!session?.user?.id || (role !== 'DEPT_HEAD' && role !== 'ADMIN')) {
+        throw new Error('Unauthorized: Only Department Heads or Admin can reject goals.');
+    }
 
     await prisma.performanceGoal.update({
         where: { id: goalId },

@@ -8,6 +8,7 @@ const menuItems = [
   { label: 'Leave Management', href: '/leave', icon: '🏖️' },
   { label: 'Attendance', href: '/attendance', icon: '⏰' },
   { label: 'Payroll', href: '/payroll', icon: '💰', roles: ['ADMIN', 'PAYROLL_OFFICER', 'ACCOUNTANT', 'HR_MANAGER'] },
+  { label: 'Team Hub', href: '/team', icon: '🎯', roles: ['ADMIN', 'DEPT_HEAD'] },
   { label: 'Performance', href: '/performance', icon: '📈' },
   { label: 'Engagement', href: '/engagement', icon: '🤝' },
 
@@ -15,6 +16,7 @@ const menuItems = [
   { label: 'Policies', href: '/policies', icon: '📚' },
   { label: 'Training', href: '/training', icon: '🎓' },
   { label: 'Reports', href: '/reports', icon: '📑', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
+  { label: 'Audit Log', href: '/audit', icon: '🛡️', roles: ['ADMIN', 'ACCOUNTANT'] },
   { label: 'System Config', href: '/settings', icon: '⚙️', roles: ['ADMIN', 'HR_MANAGER'] },
 ];
 

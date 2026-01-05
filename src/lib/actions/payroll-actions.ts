@@ -1,8 +1,18 @@
 'use server';
 
+import { auth } from '@/auth';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { TAX_BRACKETS } from '@/lib/payroll/taxRates';
+
+// --- SECURITY HELPERS ---
+async function checkWritePermission() {
+    const session = await auth();
+    if (session?.user?.role === 'ACCOUNTANT') {
+        throw new Error('PERMISSION DENIED: Accountants have Read-Only access.');
+    }
+    return session;
+}
 
 // --- STATUTORY CALCULATION HELPERS ---
 
