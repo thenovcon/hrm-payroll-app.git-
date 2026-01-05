@@ -36,7 +36,7 @@ export default function CompanySetup() {
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                             <div className="form-group">
                                 <label className="form-label">Legal Company Name</label>
-                                <input type="text" className="input" defaultValue="Novcon Ghana Ltd." />
+                                <input type="text" className="input" defaultValue="HRM+ Demo Corp" />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Registration Number</label>

@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NovCon HRM+ Solutions",
+  title: "HRM+",
   description: "Advanced HR Management System",
   manifest: "/manifest.json",
 };

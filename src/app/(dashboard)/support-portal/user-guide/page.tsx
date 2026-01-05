@@ -6,7 +6,7 @@ export default function UserGuidePage() {
             <div className="text-center space-y-4">
                 <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">User Guide</h1>
                 <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                    Welcome to the comprehensive documentation for the Novcon Ghana HRM & Payroll System.
+                    Welcome to the comprehensive documentation for the HRM+ System.
                     Use this guide to verify functionalities, understand modules, and manage your workforce effectively.
                 </p>
             </div>

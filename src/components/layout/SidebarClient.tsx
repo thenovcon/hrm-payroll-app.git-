@@ -19,8 +19,8 @@ export default function SidebarClient({ user, menuItems }: SidebarClientProps) {
     return (
         <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
             <div className={styles.logoContainer}>
-                {/* <img src="/logo.png" alt="NovCon Logo" style={{ height: '32px', marginRight: '10px' }} /> */}
-                <h1 className={styles.logoText}>NovCon Ghana HRM+</h1>
+                {/* <img src="/logo.png" alt="HRM+ Logo" style={{ height: '32px', marginRight: '10px' }} /> */}
+                <h1 className={styles.logoText}>HRM+</h1>
             </div>
 
             <nav className={styles.nav}>
