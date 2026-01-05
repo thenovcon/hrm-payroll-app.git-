@@ -38,7 +38,6 @@ export async function seedRBACUsers() {
                 const user = await prisma.user.create({
                     data: {
                         username: r.username,
-                        email: r.email,
                         password: password,
                         role: r.role,
                         status: 'ACTIVE',

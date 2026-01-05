@@ -121,7 +121,7 @@ export default function ModernSaaSDashboard({ metrics, trends, extraCharts, rece
                                 <BarChart
                                     data={trends.payroll}
                                     barGap={8}
-                                    onClick={(data) => {
+                                    onClick={(data: any) => {
                                         if (data && data.activePayload && data.activePayload.length > 0) {
                                             const payload = data.activePayload[0].payload;
                                             handleChartClick({ type: 'payroll', label: payload.month, value: payload.cost });
