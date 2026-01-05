@@ -257,7 +257,6 @@ export default async function MainPage() {
         metrics={modernMetrics}
         trends={modernTrends}
         extraCharts={extraCharts}
-        extraCharts={extraCharts}
         recentActivity={[]} // Will use internal mocks for layout
         userRole={userRole}
       />
