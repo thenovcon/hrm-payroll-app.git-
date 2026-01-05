@@ -7,9 +7,13 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
     PieChart, Pie, Cell, AreaChart, Area, LineChart, Line
 } from 'recharts';
-import { useEffect, useState } from "react";
-import { getHeadcountByDept, getSalaryDistribution, getPayrollTrends, getDemographics } from "@/lib/actions/analytics-actions";
+import { useEffect, useState, useMemo } from "react";
+import { getHeadcountByDept, getSalaryDistribution, getPayrollTrends, getDemographics, getRawSalaries, getDepartmentalGrowth } from "@/lib/actions/analytics-actions";
 import { Loader2, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
+
+import SalaryDistributionCurve from "@/components/analytics/SalaryDistributionCurve";
+import GrowthTrendChart from "@/components/analytics/GrowthTrendChart";
+import ExecutiveAISummary from "@/components/analytics/ExecutiveAISummary";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
@@ -19,19 +23,23 @@ export default function ExecutiveDashboard() {
         headcount: [],
         salaryDist: [],
         payrollTrend: [],
-        gender: []
+        gender: [],
+        rawSalaries: [],
+        growthData: []
     });
 
     useEffect(() => {
         async function loadData() {
             try {
-                const [headcount, salaryDist, payrollTrend, gender] = await Promise.all([
+                const [headcount, salaryDist, payrollTrend, gender, rawSalaries, growthData] = await Promise.all([
                     getHeadcountByDept(),
                     getSalaryDistribution(),
                     getPayrollTrends(),
-                    getDemographics()
+                    getDemographics(),
+                    getRawSalaries(),
+                    getDepartmentalGrowth()
                 ]);
-                setData({ headcount, salaryDist, payrollTrend, gender });
+                setData({ headcount, salaryDist, payrollTrend, gender, rawSalaries, growthData });
             } catch (error) {
                 console.error("Failed to load dashboards", error);
             } finally {
@@ -40,6 +48,16 @@ export default function ExecutiveDashboard() {
         }
         loadData();
     }, []);
+
+    const contextData = useMemo(() => {
+        return `
+        Total Headcount: ${data.headcount.reduce((a: number, b: any) => a + b.value, 0)}
+        Payroll Last Month: ${data.payrollTrend.length > 0 ? data.payrollTrend[data.payrollTrend.length - 1].Cost : 'N/A'}
+        Departments: ${data.headcount.map((d: any) => d.name).join(', ')}
+        Gender Split: ${data.gender.map((g: any) => `${g.name}:${g.value}`).join(', ')}
+        Recent Growth: ${data.growthData.length > 0 ? 'Positive' : 'Stable'}
+        `;
+    }, [data]);
 
     if (loading) {
         return <div className="flex h-96 items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
@@ -50,6 +68,9 @@ export default function ExecutiveDashboard() {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
+            {/* AI Summary Section */}
+            <ExecutiveAISummary contextData={contextData} />
+
             {/* KPI Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-none shadow-lg">
@@ -88,16 +109,14 @@ export default function ExecutiveDashboard() {
                         <TrendingUp className="h-4 w-4 text-purple-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">₵{data.salaryDist.length > 0 ? '---' : 'N/A'}</div>
-                        <p className="text-xs text-muted-foreground mt-1">Median Estimate</p>
+                        <div className="text-2xl font-bold">₵{data.rawSalaries.length > 0 ? Math.round(data.rawSalaries.reduce((a: number, b: number) => a + b, 0) / data.rawSalaries.length).toLocaleString() : 'N/A'}</div>
+                        <p className="text-xs text-muted-foreground mt-1">Mean Basic Pay</p>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Charts */}
+            {/* Charts Row 1: Payroll Trend & Headcount */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-
-                {/* Payroll Trend - Large */}
                 <Card className="col-span-4 border-l-4 border-emerald-500">
                     <CardHeader>
                         <CardTitle>Payroll Cost Analysis</CardTitle>
@@ -127,7 +146,6 @@ export default function ExecutiveDashboard() {
                     </CardContent>
                 </Card>
 
-                {/* Headcount Distribution - Side */}
                 <Card className="col-span-3">
                     <CardHeader>
                         <CardTitle>Workforce by Department</CardTitle>
@@ -162,11 +180,17 @@ export default function ExecutiveDashboard() {
                 </Card>
             </div>
 
+            {/* Charts Row 2: Advanced Analytics (Bell Curve & Growth) */}
             <div className="grid gap-6 md:grid-cols-2">
-                {/* Salary Histogram */}
+                <SalaryDistributionCurve salaries={data.rawSalaries} />
+                <GrowthTrendChart data={data.growthData} />
+            </div>
+
+            {/* Row 3: Gender & Legacy Distribution */}
+            <div className="grid gap-6 md:grid-cols-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Salary Distribution Curve</CardTitle>
+                        <CardTitle>Salary Bucket Distribution</CardTitle>
                         <CardDescription>Frequency of salary ranges</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -187,7 +211,6 @@ export default function ExecutiveDashboard() {
                     </CardContent>
                 </Card>
 
-                {/* Gender Demographics */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Gender Balance</CardTitle>
