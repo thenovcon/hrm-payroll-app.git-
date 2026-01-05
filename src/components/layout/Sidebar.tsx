@@ -7,11 +7,12 @@ const menuItems = [
   { label: 'Employees', href: '/employees', icon: '👥', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'DEPT_HEAD'] },
   { label: 'Leave Management', href: '/leave', icon: '🏖️' },
   { label: 'Attendance', href: '/attendance', icon: '⏰' },
-  { label: 'Payroll', href: '/payroll', icon: '💰', roles: ['ADMIN', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
+  { label: 'Payroll', href: '/payroll', icon: '💰', roles: ['ADMIN', 'PAYROLL_OFFICER', 'ACCOUNTANT', 'HR_MANAGER'] },
   { label: 'Performance', href: '/performance', icon: '📈' },
   { label: 'Engagement', href: '/engagement', icon: '🤝' },
 
-  { label: 'Policies', href: '/policies', icon: '📚', roles: ['ADMIN', 'HR_MANAGER', 'DEPT_HEAD'] },
+  // Policies accessible to all for "Ask HR" and general knowledge
+  { label: 'Policies', href: '/policies', icon: '📚' },
   { label: 'Training', href: '/training', icon: '🎓' },
   { label: 'Reports', href: '/reports', icon: '📑', roles: ['ADMIN', 'HR_MANAGER', 'HR', 'PAYROLL_OFFICER', 'ACCOUNTANT'] },
   { label: 'System Config', href: '/settings', icon: '⚙️', roles: ['ADMIN', 'HR_MANAGER'] },

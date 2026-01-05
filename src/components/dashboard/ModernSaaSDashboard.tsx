@@ -42,23 +42,28 @@ interface DashboardProps {
         goalCompletion: any[];
     };
     recentActivity: any[]; // Mocked for now?
+    userRole?: string;
 }
 
-export default function ModernSaaSDashboard({ metrics, trends, extraCharts, recentActivity = [] }: DashboardProps) {
+export default function ModernSaaSDashboard({ metrics, trends, extraCharts, recentActivity = [], userRole = 'EMPLOYEE' }: DashboardProps) {
+    const canViewFinancials = ['ADMIN', 'HR_MANAGER', 'ACCOUNTANT', 'PAYROLL_OFFICER'].includes(userRole);
+
     return (
         <div className="min-h-screen bg-slate-50/50 p-6 space-y-8 font-sans text-slate-900">
 
             {/* Top Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <MetricCard
-                    title="Total Payroll"
-                    value={`GH₵${(metrics.payrollCost / 1000).toFixed(1)}k`}
-                    change="+2.5%"
-                    trend="up"
-                    color="blue"
-                    icon={<DollarSign className="w-5 h-5 text-white" />}
-                    percent={78}
-                />
+            <div className={`grid grid-cols-1 md:grid-cols-2 ${canViewFinancials ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6`}>
+                {canViewFinancials && (
+                    <MetricCard
+                        title="Total Payroll"
+                        value={`GH₵${(metrics.payrollCost / 1000).toFixed(1)}k`}
+                        change="+2.5%"
+                        trend="up"
+                        color="blue"
+                        icon={<DollarSign className="w-5 h-5 text-white" />}
+                        percent={78}
+                    />
+                )}
                 <MetricCard
                     title="Total Headcount"
                     value={metrics.headcount.toString()}
@@ -90,49 +95,60 @@ export default function ModernSaaSDashboard({ metrics, trends, extraCharts, rece
 
             {/* Middle Section: Main Chart + Side Donut */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Main Bar Chart (Revenue/Payroll) */}
-                <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                    <div className="flex justify-between items-center mb-6">
-                        <div>
-                            <h3 className="text-lg font-bold text-slate-800">Payroll Cost Trend</h3>
-                            <p className="text-sm text-slate-500">Monthly gross salary distribution</p>
+                {/* Main Bar Chart (Revenue/Payroll) - HIDE if no financial access */}
+                {canViewFinancials ? (
+                    <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-800">Payroll Cost Trend</h3>
+                                <p className="text-sm text-slate-500">Monthly gross salary distribution</p>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm">
+                                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-blue-500"></span> Actual</span>
+                                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-200"></span> Projected</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2 text-sm">
-                            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-blue-500"></span> Actual</span>
-                            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-200"></span> Projected</span>
+                        <div className="h-[320px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={trends.payroll} barGap={8}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={COLORS.grid} />
+                                    <XAxis
+                                        dataKey="month"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: COLORS.subtext, fontSize: 12 }}
+                                        dy={10}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: COLORS.subtext, fontSize: 12 }}
+                                        tickFormatter={(val) => `${val / 1000}k`}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                                    />
+                                    <Bar
+                                        dataKey="cost"
+                                        fill={COLORS.primary}
+                                        radius={[6, 6, 6, 6]}
+                                        barSize={32}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
                         </div>
                     </div>
-                    <div className="h-[320px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={trends.payroll} barGap={8}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={COLORS.grid} />
-                                <XAxis
-                                    dataKey="month"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: COLORS.subtext, fontSize: 12 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: COLORS.subtext, fontSize: 12 }}
-                                    tickFormatter={(val) => `${val / 1000}k`}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'rgba(0,0,0,0.02)' }}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
-                                />
-                                <Bar
-                                    dataKey="cost"
-                                    fill={COLORS.primary}
-                                    radius={[6, 6, 6, 6]}
-                                    barSize={32}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                ) : (
+                    // Replacement widget for Line Managers (Recruitment/Team focus)
+                    <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center justify-center">
+                        <div className="text-center">
+                            <h3 className="text-lg font-bold text-slate-800">Team Performance & Activity</h3>
+                            <p className="text-sm text-slate-500">Overview of your department's key metrics.</p>
+                            {/* Can add Team-specific chart here later */}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Donut Chart (Headcount) */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">

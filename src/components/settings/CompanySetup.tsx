@@ -48,7 +48,30 @@ export default function CompanySetup() {
                                 <span style={{ fontSize: '2rem' }}>🏢</span>
                             </div>
                             <div style={{ flex: 1 }}>
-                                <button className="btn" style={{ marginBottom: '0.5rem' }}>Change Logo</button>
+                                <input
+                                    type="file"
+                                    id="logo-upload"
+                                    hidden
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files?.[0]) {
+                                            const file = e.target.files[0];
+                                            if (file.size > 2 * 1024 * 1024) {
+                                                alert("File size must be less than 2MB");
+                                                return;
+                                            }
+                                            // TODO: Implement actual upload to storage
+                                            alert(`Selected file: ${file.name}. Upload functionality to be implemented.`);
+                                        }
+                                    }}
+                                />
+                                <button
+                                    className="btn"
+                                    style={{ marginBottom: '0.5rem' }}
+                                    onClick={() => document.getElementById('logo-upload')?.click()}
+                                >
+                                    Change Logo
+                                </button>
                                 <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', margin: 0 }}>Recommended size: 512x512px. Max 2MB.</p>
                             </div>
                         </div>
