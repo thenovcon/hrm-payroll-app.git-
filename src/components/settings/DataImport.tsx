@@ -8,12 +8,13 @@ import {
     importPayrollHistory,
     importJobRequisitions,
     importPerformanceGoals,
-    importTrainingRecords,
-    revalidateHRMPaths
+    importTrainingRecords
 } from '@/lib/actions/import-actions';
 import { Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function DataImport() {
+    const router = useRouter();
     const [status, setStatus] = useState<'IDLE' | 'IMPORTING' | 'SUCCESS' | 'ERROR'>('IDLE');
     const [report, setReport] = useState<any>(null);
     const [progress, setProgress] = useState<{ current: number, total: number }>({ current: 0, total: 0 });
@@ -53,8 +54,8 @@ export default function DataImport() {
                 await new Promise(r => setTimeout(r, 50));
             }
 
-            // Revalidate data paths only once at the end
-            await revalidateHRMPaths();
+            // Client-side refresh only - avoids server component render crashes during action response
+            router.refresh();
 
             setProgress({ current: data.length, total: data.length }); // Done
 
