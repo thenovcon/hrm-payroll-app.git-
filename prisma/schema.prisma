@@ -279,6 +279,19 @@ model AuditLog {
   createdAt       DateTime  @default(now())
 }
 
+model SalaryTemplate {
+  id              String    @id @default(uuid())
+  name            String    @unique // e.g. "Senior Dev Structure", "Intern Structure"
+  description     String?
+  
+  // Rules for automated salary generation
+  // JSON: { "basic": 5000, "allowances": [{ "name": "Transport", "type": "FIXED", "value": 500 }, { "name": "Housing", "type": "PERCENTAGE", "value": 10 }] }
+  structure       String    
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
 model SalaryStructure {
   id              String    @id @default(uuid())
   employeeId      String    @unique

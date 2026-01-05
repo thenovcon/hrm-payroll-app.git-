@@ -37,7 +37,7 @@ export async function rankCandidate(applicationId: string) {
         }
 
         // Real Gemini Logic
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const prompt = `
             Act as an Expert Recruiter.
             Job Title: ${application.jobPosting.title}
