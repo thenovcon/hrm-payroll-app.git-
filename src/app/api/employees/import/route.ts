@@ -24,21 +24,22 @@ export async function POST(req: Request) {
             return acc;
         }, new Map<string, string>());
 
-        const results = await Promise.all(
-            chunk.map(async (row: any) => {
-                if (!row.email) return null; // Skip invalid
+        const results = [];
+        for (const row of chunk) {
+            if (!row.email) continue;
 
-                // Resolve Department
-                let departmentId = null;
-                if (row.department) {
-                    const dName = String(row.department).toLowerCase().trim();
-                    departmentId = deptMap.get(dName) || deptCodeMap.get(dName);
-                }
+            // Resolve Department
+            let departmentId = null;
+            if (row.department) {
+                const dName = String(row.department).toLowerCase().trim();
+                departmentId = deptMap.get(dName) || deptCodeMap.get(dName);
+            }
 
-                // Prepare Data
-                const basicSalary = parseFloat(row.basicSalary) || 0;
-                const empId = row.employeeId || `IMP-${Math.floor(Math.random() * 1000000)}`;
+            // Prepare Data
+            const basicSalary = parseFloat(row.basicSalary) || 0;
+            const empId = row.employeeId || `IMP-${Math.floor(Math.random() * 1000000)}`;
 
+            try {
                 // Upsert Employee
                 const emp = await prisma.employee.upsert({
                     where: { email: row.email },
@@ -70,26 +71,28 @@ export async function POST(req: Request) {
 
                 // Ensure User Account Exists
                 const username = row.email.split('@')[0];
-                try {
-                    const existingUser = await prisma.user.findFirst({ where: { OR: [{ username }, { employeeId: emp.id }] } });
-                    if (!existingUser) {
-                        await prisma.user.create({
-                            data: {
-                                username,
-                                password: defaultPassword,
-                                role: 'EMPLOYEE',
-                                status: 'ACTIVE',
-                                employeeId: emp.id
-                            }
-                        });
-                    }
-                } catch (e) {
-                    console.error(`User creation failed for ${row.email}`, e);
+                const existingUser = await prisma.user.findFirst({ where: { OR: [{ username }, { employeeId: emp.id }] } });
+
+                if (!existingUser) {
+                    await prisma.user.create({
+                        data: {
+                            username,
+                            password: defaultPassword,
+                            role: 'EMPLOYEE',
+                            status: 'ACTIVE',
+                            employeeId: emp.id
+                        }
+                    });
                 }
 
-                return emp;
-            })
-        );
+                results.push(emp);
+            } catch (innerError) {
+                console.error(`Failed to import row for ${row.email}:`, innerError);
+                // We typically catch here to let the rest of the batch proceed, 
+                // BUT if connection pool is dead, this might repeat. 
+                // Sequential processing usually avoids the "Timeout" error effectively.
+            }
+        }
 
         const successCount = results.filter(r => r !== null).length;
 
