@@ -12,6 +12,7 @@ import {
 } from '@/lib/actions/import-actions';
 import { Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import ImportVerificationReport from './ImportVerificationReport';
 
 export default function DataImport() {
     const router = useRouter();
@@ -75,7 +76,57 @@ export default function DataImport() {
         }
     };
 
-    const handleEmployeeImport = async (data: any[]) => { await processInBatches(data, bulkImportEmployees, "Employees"); };
+    const handleEmployeeImport = async (data: any[]) => {
+        // Direct API implementation for Employees to bypass Server Component limits
+        const importFn = async (chunk: any[]) => {
+            const response = await fetch('/api/employees/import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chunk }),
+            });
+            return await response.json();
+        };
+
+        if (!confirm(`Are you sure you want to import ${data.length} records for Employees (Direct API)?`)) return;
+
+        setStatus('IMPORTING');
+        setStats({ success: 0, failed: 0 });
+        setErrorLog([]);
+        setProgress({ current: 0, total: data.length });
+
+        const BATCH_SIZE = 50;
+
+        try {
+            for (let i = 0; i < data.length; i += BATCH_SIZE) {
+                const chunk = data.slice(i, i + BATCH_SIZE);
+                setProgress({ current: i, total: data.length });
+
+                const result = await importFn(chunk);
+
+                if (result.success) {
+                    const batchSuccess = result.count || 0;
+                    setStats(prev => ({
+                        success: prev.success + batchSuccess,
+                        failed: prev.failed + (chunk.length - batchSuccess) // Simplified fails if not enumerated
+                    }));
+                } else {
+                    setStats(prev => ({ ...prev, failed: prev.failed + chunk.length }));
+                    setErrorLog(prev => [...prev, { email: 'BATCH_FAIL', reason: result.error || 'API Error' }]);
+                }
+
+                await new Promise(r => setTimeout(r, 200)); // Increased throttle as requested
+            }
+
+            setProgress({ current: data.length, total: data.length });
+            setStatus('SUCCESS');
+            router.refresh();
+
+        } catch (error: any) {
+            setStatus('ERROR');
+            setErrorLog(prev => [...prev, { email: 'CRITICAL', reason: error.message }]);
+        }
+    };
+
     const handleLeaveImport = async (data: any[]) => { await processInBatches(data, importLeaveBalances, "Leave Balances"); };
     const handlePayrollImport = async (data: any[]) => { await processInBatches(data, importPayrollHistory, "Payroll History"); };
     const handleATSImport = async (data: any[]) => { await processInBatches(data, importJobRequisitions, "Job Requisitions"); };
@@ -188,6 +239,10 @@ export default function DataImport() {
                     </div>
                 </div>
             )}
+            )}
+
+            {/* Verification Report */}
+            <ImportVerificationReport />
         </div>
     );
 }
