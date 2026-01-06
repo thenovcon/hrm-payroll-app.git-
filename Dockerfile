@@ -21,6 +21,12 @@ RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV DATABASE_URL "postgresql://dummy:dummy@localhost:5432/dummy"
 ENV AUTH_SECRET "dummy_secret_for_build"
+# Add GOOGLE_API_KEY for build-time validation or usage if strictly required
+ARG GOOGLE_API_KEY
+ENV GOOGLE_API_KEY $GOOGLE_API_KEY
+# Ensure NEXT_PUBLIC vars are picked up if they are present in environment
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_URL $NEXT_PUBLIC_APP_URL
 RUN npm run build
 
 # Production image

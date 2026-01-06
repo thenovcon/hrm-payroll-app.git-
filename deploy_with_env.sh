@@ -20,8 +20,12 @@ echo "Deploying to Cloud Run with Environment Variables..."
 echo "Running Prisma Migrations..."
 npx prisma migrate deploy
 
+echo "Building Container Image on Cloud Build..."
+gcloud builds submit --tag gcr.io/$PROJECT_ID/$SERVICE_NAME --project $PROJECT_ID .
+
+echo "Deploying Container to Cloud Run..."
 gcloud run deploy $SERVICE_NAME \
-  --source . \
+  --image gcr.io/$PROJECT_ID/$SERVICE_NAME \
   --platform managed \
   --region $REGION \
   --project $PROJECT_ID \

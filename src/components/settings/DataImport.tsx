@@ -239,7 +239,6 @@ export default function DataImport() {
                     </div>
                 </div>
             )}
-            )}
 
             {/* Verification Report */}
             <ImportVerificationReport />
