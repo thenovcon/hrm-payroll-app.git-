@@ -46,7 +46,7 @@ export async function getTrainingCourses() {
         const courses = await prisma.trainingCourse.findMany({
             orderBy: { createdAt: 'desc' }
         });
-        return courses;
+        return JSON.parse(JSON.stringify(courses));
     } catch (error) {
         console.error('Error fetching training courses:', error);
         return [];

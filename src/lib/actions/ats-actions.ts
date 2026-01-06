@@ -4,6 +4,8 @@ import { prisma } from '@/lib/db/prisma';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 
+const serialize = (obj: any): any => JSON.parse(JSON.stringify(obj));
+
 // --- JOB POSTINGS ---
 
 export async function getJobPostings() {
@@ -17,7 +19,7 @@ export async function getJobPostings() {
             },
             orderBy: { createdAt: 'desc' }
         });
-        return { success: true, data: postings };
+        return { success: true, data: serialize(postings) };
     } catch (error) {
         console.error('Error fetching job postings:', error);
         return { success: false, error: 'Failed to fetch job postings' };
@@ -47,7 +49,7 @@ export async function createJobPosting(requisitionId: string) {
         });
 
         revalidatePath('/ats');
-        return { success: true, data: posting };
+        return { success: true, data: serialize(posting) };
     } catch (error) {
         console.error('Error creating job posting:', error);
         return { success: false, error: 'Failed to create job posting' };
@@ -61,7 +63,7 @@ export async function updateJobPosting(id: string, data: { status?: string; cont
             data
         });
         revalidatePath('/ats');
-        return { success: true, data: posting };
+        return { success: true, data: serialize(posting) };
     } catch (error) {
         console.error('Error updating job posting:', error);
         return { success: false, error: 'Failed to update job posting' };
@@ -76,7 +78,7 @@ export async function getRequisitions() {
             include: { jobPosting: true },
             orderBy: { createdAt: 'desc' }
         });
-        return { success: true, data: reqs };
+        return { success: true, data: serialize(reqs) };
     } catch (error) {
         console.error('Error fetching requisitions:', error);
         return { success: false, error: 'Failed to fetch requisitions' };
@@ -86,7 +88,7 @@ export async function getRequisitions() {
 export async function createRequisition(formData: FormData) {
     try {
         const session = await auth();
-        if (!session?.user) return { success: false, error: 'Unauthorized' };
+        if (!session?.user?.id) return { success: false, error: 'Unauthorized' };
 
         // Basic validation/parsing
         const data = {
@@ -103,7 +105,7 @@ export async function createRequisition(formData: FormData) {
 
         const requisition = await prisma.requisition.create({ data });
         revalidatePath('/ats');
-        return { success: true, data: requisition };
+        return { success: true, data: serialize(requisition) };
     } catch (error) {
         console.error('Error creating requisition:', error);
         return { success: false, error: 'Failed to create requisition' };
@@ -135,7 +137,7 @@ export async function getApplications() {
             },
             orderBy: { createdAt: 'desc' }
         });
-        return { success: true, data: apps };
+        return { success: true, data: serialize(apps) };
     } catch (error) {
         console.error('Error fetching applications:', error);
         return { success: false, error: 'Failed to fetch applications' };
@@ -169,7 +171,7 @@ export async function submitApplication(formData: FormData) {
         });
 
         revalidatePath('/ats');
-        return { success: true, data: application };
+        return { success: true, data: serialize(application) };
     } catch (error) {
         console.error('Error creating application:', error);
         return { success: false, error: 'Failed to submit application' };
@@ -183,7 +185,7 @@ export async function updateApplicationStatus(id: string, status: string) {
             data: { status }
         });
         revalidatePath('/ats');
-        return { success: true, data: app };
+        return { success: true, data: serialize(app) };
     } catch (error) {
         console.error('Error updating application:', error);
         return { success: false, error: 'Failed to update application' };
@@ -205,7 +207,7 @@ export async function getInterviews() {
             },
             orderBy: { interviewDate: 'asc' }
         });
-        return { success: true, data: interviews };
+        return { success: true, data: serialize(interviews) };
     } catch (error) {
         console.error('Error fetching interviews:', error);
         return { success: false, error: 'Failed to fetch interviews' };
@@ -255,7 +257,7 @@ export async function getCandidates() {
             },
             orderBy: { name: 'asc' }
         });
-        return { success: true, data: candidates };
+        return { success: true, data: serialize(candidates) };
     } catch (error) {
         console.error('Error fetching candidates:', error);
         return { success: false, error: 'Failed to fetch candidates' };

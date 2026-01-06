@@ -52,6 +52,9 @@ export async function updateGoalProgress(goalId: string, progress: number, note?
     revalidatePath('/performance');
 }
 
+// Helper for serialization
+const serialize = (obj: any) => JSON.parse(JSON.stringify(obj));
+
 export async function getMyGoals() {
     const session = await auth();
     if (!session?.user?.id) return [];
@@ -59,7 +62,7 @@ export async function getMyGoals() {
     const userEmployee = await prisma.employee.findFirst({ where: { email: session.user.email! } });
     if (!userEmployee) return [];
 
-    return await prisma.performanceGoal.findMany({
+    const goals = await prisma.performanceGoal.findMany({
         where: { employeeId: userEmployee.id },
         orderBy: { createdAt: 'desc' },
         include: {
@@ -69,21 +72,24 @@ export async function getMyGoals() {
             }
         }
     });
+    return serialize(goals);
 }
 
 export async function getDepartmentGoals(departmentId: string) {
-    return await prisma.performanceGoal.findMany({
+    const goals = await prisma.performanceGoal.findMany({
         where: { departmentId, level: 'DEPARTMENT' },
         include: { children: true }
     });
+    return serialize(goals);
 }
 
 export async function getCompanyGoals() {
-    return await prisma.performanceGoal.findMany({
+    const goals = await prisma.performanceGoal.findMany({
         where: { level: 'COMPANY' },
         orderBy: { createdAt: 'desc' },
         include: { children: true }
     });
+    return serialize(goals);
 }
 
 export async function submitGoal(goalId: string) {

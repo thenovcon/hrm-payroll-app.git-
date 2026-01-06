@@ -38,6 +38,8 @@ export async function calculateGhanaPAYE(taxableIncome: number): Promise<number>
 
 // --- PAYROLL ACTIONS ---
 
+const serialize = (obj: any): any => JSON.parse(JSON.stringify(obj));
+
 export async function getPayrollSettings() {
     try {
         let settings = await prisma.payrollSettings.findUnique({
@@ -61,7 +63,7 @@ export async function getPayrollSettings() {
                 include: { taxBrackets: true }
             });
         }
-        return { success: true, data: settings };
+        return { success: true, data: serialize(settings) };
     } catch (error) {
         return { success: false, error: 'Failed to fetch payroll settings' };
     }
@@ -93,7 +95,7 @@ export async function getPayrollRuns() {
             orderBy: [{ year: 'desc' }, { month: 'desc' }],
             include: { payslips: true }
         });
-        return { success: true, data: runs };
+        return { success: true, data: serialize(runs) };
     } catch (error) {
         return { success: false, error: 'Failed to fetch payroll runs' };
     }
@@ -213,7 +215,7 @@ export async function createPayrollRun(month: number, year: number) {
         });
 
         revalidatePath('/payroll');
-        return { success: true, data: run };
+        return { success: true, data: serialize(run) };
     } catch (error) {
         console.error('Payroll Run Error:', error);
         return { success: false, error: 'Failed to process payroll run' };
