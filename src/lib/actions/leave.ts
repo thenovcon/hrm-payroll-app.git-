@@ -5,6 +5,9 @@ import { revalidatePath } from 'next/cache';
 
 // ... existing imports
 
+// Helper to serialize deep objects to plain JSON safe types
+const serialize = (obj: any): any => JSON.parse(JSON.stringify(obj));
+
 export async function getLeaveBalances(employeeId: string) {
     try {
         const balances = await prisma.leaveBalance.findMany({
@@ -12,7 +15,7 @@ export async function getLeaveBalances(employeeId: string) {
             include: { leaveType: true },
             orderBy: { year: 'desc' },
         });
-        return { success: true, data: balances };
+        return { success: true, data: serialize(balances) };
     } catch (error) {
         console.error('Failed to fetch leave balances:', error);
         return { success: false, error: 'Failed to fetch leave balances' };
@@ -20,17 +23,18 @@ export async function getLeaveBalances(employeeId: string) {
 }
 
 export async function getLeaveTypes() {
-    // ... existing getLeaveTypes
     try {
         const types = await prisma.leaveType.findMany({
             orderBy: { name: 'asc' },
         });
-        return { success: true, data: types };
+        return { success: true, data: serialize(types) };
     } catch (error) {
         console.error('Failed to fetch leave types:', error);
         return { success: false, error: 'Failed to fetch leave types' };
     }
 }
+
+// ... create/approve/reject functions remain mostly same but ensure no weird returns ...
 
 export async function createLeaveRequest(formData: FormData) {
     const employeeId = formData.get('employeeId') as string;
@@ -67,9 +71,9 @@ export async function createLeaveRequest(formData: FormData) {
 
         revalidatePath('/leave');
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to create leave request:', error);
-        return { success: false, error: 'Failed to create leave request' };
+        return { success: false, error: error.message || 'Failed to create leave request' };
     }
 }
 
@@ -169,7 +173,8 @@ export async function getLeaveRequests(filters?: { employeeId?: string, managerI
                 leaveType: true,
             },
         });
-        return { success: true, data: requests };
+        // Serialize Dates to avoid "Only plain objects can be passed to Client Components"
+        return { success: true, data: serialize(requests) };
     } catch (error) {
         console.error('Failed to fetch leave requests:', error);
         return { success: false, error: 'Failed to fetch leave requests' };
