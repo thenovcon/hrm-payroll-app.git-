@@ -121,7 +121,7 @@ export async function bulkImportEmployees(data: any[]) {
 export async function importLeaveBalances(data: any[]) {
     try {
         let successCount = 0;
-        let errors = [];
+        let failedRows: { email: string; error: string }[] = [];
 
         // Pre-fetch all leave types for mapping
         const leaveTypes = await prisma.leaveType.findMany();
@@ -130,7 +130,7 @@ export async function importLeaveBalances(data: any[]) {
 
         for (const row of data) {
             if (!row.email || !row.leaveType) {
-                errors.push(`Skipped: Missing email or leave type.`);
+                failedRows.push({ email: row.email || 'Unknown', error: 'Missing email or leave type' });
                 continue;
             }
 
@@ -147,7 +147,7 @@ export async function importLeaveBalances(data: any[]) {
                 });
 
                 if (!user || !user.employee) {
-                    errors.push(`Employee not found for email: ${row.email}`);
+                    failedRows.push({ email: row.email, error: 'Employee not found' });
                     continue;
                 }
 
@@ -156,7 +156,7 @@ export async function importLeaveBalances(data: any[]) {
                 const typeId = typeMap.get(ltName) || slugMap.get(ltName);
 
                 if (!typeId) {
-                    errors.push(`Leave Type '${row.leaveType}' not found.`);
+                    failedRows.push({ email: row.email, error: `Leave Type '${row.leaveType}' not found` });
                     continue;
                 }
 
@@ -188,20 +188,20 @@ export async function importLeaveBalances(data: any[]) {
                 successCount++;
 
             } catch (err: any) {
-                errors.push(`Error for ${row.email}: ${err.message}`);
+                failedRows.push({ email: row.email, error: err.message || 'Database Error' });
             }
         }
 
         return {
             success: true,
-            message: `Successfully imported ${successCount} leave balances.`,
-            errorCount: errors.length,
-            errors: errors.slice(0, 10)
+            count: successCount,
+            failed: failedRows.slice(0, 100), // Limit payload size
+            message: `Processed ${data.length} records. Success: ${successCount}, Failed: ${failedRows.length}`
         };
 
     } catch (error: any) {
         console.error('Leave Import Error:', error);
-        return { success: false, error: 'Fatal leave import error' };
+        return { success: false, error: 'Fatal leave import error: ' + error.message };
     }
 }
 
@@ -214,14 +214,14 @@ export async function importLeaveBalances(data: any[]) {
 export async function importPayrollHistory(data: any[]) {
     try {
         let successCount = 0;
-        let errors = [];
+        let failedRows: { email: string; error: string }[] = [];
 
-        // 1. Group data by Month/Year to create Runs first?
-        // Actually, let's just create a "MIGRATED_HISTORY" run per month if it doesn't exist.
+        // Group data or just process - processing per row for now
+        // Note: Ideally we should cache User/PayrollRuns to reduce DB hits
 
         for (const row of data) {
             if (!row.email || !row.month || !row.year) {
-                errors.push(`Skipped: Missing keys for ${row.email || 'Unknown'}`);
+                failedRows.push({ email: row.email || 'Unknown', error: 'Missing keys (email, month, year)' });
                 continue;
             }
 
@@ -233,14 +233,15 @@ export async function importPayrollHistory(data: any[]) {
                 });
 
                 if (!user?.employee) {
-                    errors.push(`Employee not found: ${row.email}`);
+                    failedRows.push({ email: row.email, error: 'Employee not found' });
                     continue;
                 }
 
                 const month = parseInt(row.month);
                 const year = parseInt(row.year);
 
-                // Find or Create Run
+                // Find or Create Run (Optimized)
+                // In production, we should cache this, but for < 2000 records, findUnique is fast enough.
                 let run = await prisma.payrollRun.findUnique({
                     where: { month_year: { month, year } }
                 });
@@ -271,9 +272,11 @@ export async function importPayrollHistory(data: any[]) {
                         taxableIncome: grossSalary - ssnitEmployee, // Approximation
                         incomeTax,
                         ssnitEmployee,
-                        ssnitEmployer: 0, // Optional for history
-                        tier2Employee: 0, tier2Employer: 0, // Optional
-                        tier3Employee: 0, tier3Employer: 0,
+                        ssnitEmployer: 0,
+                        tier2Employee: 0,
+                        tier2Employer: 0,
+                        tier3Employee: 0,
+                        tier3Employer: 0,
                         totalDeductions: (grossSalary - netPay),
                         netPay
                     }
@@ -282,43 +285,42 @@ export async function importPayrollHistory(data: any[]) {
                 successCount++;
 
             } catch (err: any) {
-                errors.push(`Error ${row.email}: ${err.message}`);
+                failedRows.push({ email: row.email, error: err.message });
             }
         }
 
         return {
             success: true,
-            message: `Successfully imported ${successCount} payroll records.`,
-            errorCount: errors.length,
-            errors: errors.slice(0, 10)
+            count: successCount,
+            failed: failedRows.slice(0, 100),
+            message: `Processed ${data.length} records. Success: ${successCount}, Failed: ${failedRows.length}`
         };
 
     } catch (error: any) {
         console.error('Payroll Import Error:', error);
-        return { success: false, error: 'Fatal payroll import error' };
+        return { success: false, error: 'Fatal payroll import error: ' + error.message };
     }
 }
 
 /**
  * Bulk Import Job Requisitions (ATS)
- * Columns: reqNumber, title, department, location, headcount, status
  */
 export async function importJobRequisitions(data: any[]) {
     try {
         let successCount = 0;
-        let errors = [];
+        let failedRows: { email: string; error: string }[] = [];
 
         // Fetch Department Map
-        const departments = await prisma.department.findMany();
-        const deptMap = new Map(departments.map(d => [d.name.toLowerCase(), d.name])); // Map Name->Name (String field in Requisition)
+        const departments = await prisma.department.findMany({ select: { id: true, name: true } });
+        const deptMap = new Map(departments.map(d => [d.name.toLowerCase(), d.name]));
 
-        // Find Admin to attribute creation to (fallback)
-        const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
-        if (!admin) throw new Error('No Admin found to owner requisitions');
+        // Find Admin
+        const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' }, select: { id: true } });
+        if (!admin) throw new Error('No Admin found to own requisitions');
 
         for (const row of data) {
             if (!row.title || !row.department) {
-                errors.push(`Skipped: Missing title or department`);
+                failedRows.push({ email: row.title || 'Unknown', error: 'Missing title or department' });
                 continue;
             }
 
@@ -332,8 +334,8 @@ export async function importJobRequisitions(data: any[]) {
                         department: deptMap.get(row.department.toLowerCase()) || row.department,
                         location: row.location || 'Head Office',
                         type: row.type || 'Full-time',
-                        priority: (row.priority || 'MEDIUM').toUpperCase(),
-                        status: (row.status || 'DRAFT').toUpperCase(),
+                        priority: (row.priority || 'MEDIUM').toUpperCase() as any,
+                        status: (row.status || 'DRAFT').toUpperCase() as any,
                         headcount: headCount,
                         createdById: admin.id
                     }
@@ -341,32 +343,31 @@ export async function importJobRequisitions(data: any[]) {
 
                 successCount++;
             } catch (err: any) {
-                if (err.code === 'P2002') errors.push(`Duplicate Req Number: ${row.reqNumber}`);
-                else errors.push(`Error ${row.title}: ${err.message}`);
+                const key = row.title || row.reqNumber || 'Row';
+                if (err.code === 'P2002') failedRows.push({ email: key, error: 'Duplicate Requisition' });
+                else failedRows.push({ email: key, error: err.message });
             }
         }
 
         return {
             success: true,
-            message: `Successfully imported ${successCount} requisitions.`,
-            errorCount: errors.length,
-            errors: errors.slice(0, 10)
+            count: successCount,
+            failed: failedRows.slice(0, 100),
+            message: `Imported ${successCount} requisitions. Failed: ${failedRows.length}`
         };
 
     } catch (error: any) {
-        console.error('ATS Import Error:', error);
-        return { success: false, error: 'Fatal ATS import error' };
+        return { success: false, error: 'Fatal ATS import error: ' + error.message };
     }
 }
 
 /**
  * Bulk Import Performance Goals
- * Columns: email, title, description, status, progress,dueDate
  */
 export async function importPerformanceGoals(data: any[]) {
     try {
         let successCount = 0;
-        let errors = [];
+        let failedRows: { email: string; error: string }[] = [];
 
         // Ensure "2024 Cycle" exists
         const cycle = await prisma.performanceCycle.upsert({
@@ -377,13 +378,13 @@ export async function importPerformanceGoals(data: any[]) {
 
         for (const row of data) {
             if (!row.email || !row.title) {
-                errors.push(`Skipped: Missing email or title`);
+                failedRows.push({ email: row.email || 'Unknown', error: 'Missing email or title' });
                 continue;
             }
 
             const user = await prisma.user.findFirst({ where: { employee: { email: row.email } }, include: { employee: true } });
             if (!user?.employee) {
-                errors.push(`Employee not found: ${row.email}`);
+                failedRows.push({ email: row.email, error: 'Employee not found' });
                 continue;
             }
 
@@ -393,37 +394,35 @@ export async function importPerformanceGoals(data: any[]) {
                         employeeId: user.employee.id,
                         title: row.title,
                         description: row.description || '',
-                        status: (row.status || 'IN_PROGRESS').toUpperCase(),
+                        status: (row.status || 'IN_PROGRESS').toUpperCase() as any,
                         progress: parseInt(row.progress) || 0,
                         cycleId: cycle.id
                     }
                 });
                 successCount++;
-            } catch (err: any) { errors.push(`Error ${row.email}: ${err.message}`); }
+            } catch (err: any) { failedRows.push({ email: row.email, error: err.message }); }
         }
-        return { success: true, message: `Imported ${successCount} goals.`, errorCount: errors.length, errors: errors.slice(0, 5) };
+        return { success: true, count: successCount, failed: failedRows.slice(0, 100), message: `Imported ${successCount} goals.` };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 
 /**
- * Bulk Import Training (Certifications) - Mapping to Enrollment or Certification?
- * Schema: Certification model exists.
- * Columns: email, name, issuer, issueDate
+ * Bulk Import Training Records
  */
 export async function importTrainingRecords(data: any[]) {
     try {
         let successCount = 0;
-        let errors = [];
+        let failedRows: { email: string; error: string }[] = [];
 
         for (const row of data) {
             if (!row.email || !row.name) {
-                errors.push(`Skipped: Missing email or course name`);
+                failedRows.push({ email: row.email || 'Unknown', error: 'Missing email or course name' });
                 continue;
             }
 
             const user = await prisma.user.findFirst({ where: { employee: { email: row.email } }, include: { employee: true } });
             if (!user?.employee) {
-                errors.push(`Employee not found: ${row.email}`);
+                failedRows.push({ email: row.email, error: 'Employee not found' });
                 continue;
             }
 
@@ -439,8 +438,8 @@ export async function importTrainingRecords(data: any[]) {
                     }
                 });
                 successCount++;
-            } catch (err: any) { errors.push(`Error ${row.email}: ${err.message}`); }
+            } catch (err: any) { failedRows.push({ email: row.email, error: err.message }); }
         }
-        return { success: true, message: `Imported ${successCount} certifications.`, errorCount: errors.length, errors: errors.slice(0, 5) };
+        return { success: true, count: successCount, failed: failedRows.slice(0, 100), message: `Imported ${successCount} training records.` };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
