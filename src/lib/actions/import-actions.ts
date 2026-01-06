@@ -22,110 +22,91 @@ export async function bulkImportEmployees(data: any[]) {
             return acc;
         }, new Map<string, string>());
 
-        // Helper to chunk array
-        const chunk = <T>(arr: T[], size: number): T[][] =>
-            Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
-                arr.slice(i * size, i * size + size)
-            );
+        // Safe Date Parsing helper
+        const safeDate = (d: any) => {
+            if (!d) return new Date();
+            const date = new Date(d);
+            return isNaN(date.getTime()) ? new Date() : date;
+        };
 
-        // Process in chunks of 20 to avoid timeouts/memory spikes and optimize connection usage
-        const chunks = chunk(data, 20);
-        console.log(`Starting import of ${data.length} records in ${chunks.length} chunks.`);
+        // Process sequentially to be safe and avoid connection pool exhaustion
+        // The client is already chunking, so we just process this batch.
+        for (const row of data) {
+            // Basic Validation
+            if (!row.email || !row.firstName || !row.lastName) {
+                errors.push(`Skipped: Missing fields for ${row.email || 'Unknown'}`);
+                continue;
+            }
 
-        for (const [index, batch] of chunks.entries()) {
-            console.log(`Processing chunk ${index + 1}/${chunks.length}...`);
-
-            // Process chunk in parallel
-            const results = await Promise.allSettled(batch.map(async (row) => {
-                // Basic Validation
-                if (!row.email || !row.firstName || !row.lastName) {
-                    throw new Error(`Skipped: Missing fields for ${row.email || 'Unknown'}`);
+            try {
+                // Resolve Department
+                let departmentId = null;
+                if (row.department) {
+                    const dName = String(row.department).toLowerCase().trim();
+                    departmentId = deptMap.get(dName) || deptCodeMap.get(dName);
                 }
 
-                try {
-                    // Resolve Department
-                    let departmentId = null;
-                    if (row.department) {
-                        const dName = String(row.department).toLowerCase().trim();
-                        departmentId = deptMap.get(dName) || deptCodeMap.get(dName);
-                    }
+                const basicSalary = parseFloat(row.basicSalary) || 0;
 
-                    // Safe Date Parsing helper
-                    const safeDate = (d: any) => {
-                        if (!d) return new Date();
-                        const date = new Date(d);
-                        return isNaN(date.getTime()) ? new Date() : date;
-                    };
-
-                    const basicSalary = parseFloat(row.basicSalary) || 0;
-
-                    // Create Employee & User
-                    await prisma.$transaction(async (tx) => {
-                        const emp = await tx.employee.create({
-                            data: {
-                                firstName: row.firstName,
-                                lastName: row.lastName,
-                                email: row.email,
-                                employeeId: row.employeeId || `IMP-${Math.floor(Math.random() * 1000000)}`, // Increased range
-                                dateOfBirth: safeDate('1990-01-01'), // Default
-                                dateJoined: safeDate(row.dateJoined),
-                                gender: row.gender || 'Unknown',
-                                phone: row.phone || '0000000000',
-                                position: row.position || 'Staff',
-                                employmentType: 'Permanent',
-                                status: 'ACTIVE',
-                                departmentId: departmentId,
-                                salaryStructure: {
-                                    create: {
-                                        basicSalary: basicSalary
-                                    }
+                // Transaction per employee (Sequential)
+                await prisma.$transaction(async (tx) => {
+                    const emp = await tx.employee.create({
+                        data: {
+                            firstName: row.firstName,
+                            lastName: row.lastName,
+                            email: row.email,
+                            employeeId: row.employeeId || `IMP-${Math.floor(Math.random() * 1000000)}`,
+                            dateOfBirth: safeDate('1990-01-01'),
+                            dateJoined: safeDate(row.dateJoined),
+                            gender: row.gender || 'Unknown',
+                            phone: row.phone || '0000000000',
+                            position: row.position || 'Staff',
+                            employmentType: 'Permanent',
+                            status: 'ACTIVE',
+                            departmentId: departmentId,
+                            salaryStructure: {
+                                create: {
+                                    basicSalary: basicSalary
                                 }
                             }
-                        });
-
-                        // Create User Account
-                        const username = row.email.split('@')[0];
-                        await tx.user.create({
-                            data: {
-                                username: username,
-                                password: defaultPassword,
-                                role: 'EMPLOYEE',
-                                status: 'ACTIVE',
-                                employeeId: emp.id
-                            }
-                        });
+                        }
                     });
 
-                    return row.email; // Success
+                    // Create User Account
+                    const username = row.email.split('@')[0];
+                    await tx.user.create({
+                        data: {
+                            username: username,
+                            password: defaultPassword,
+                            role: 'EMPLOYEE',
+                            status: 'ACTIVE',
+                            employeeId: emp.id
+                        }
+                    });
+                });
 
-                } catch (err: any) {
-                    if (err.code === 'P2002') {
-                        throw new Error(`Duplicate: ${row.email}`);
-                    } else {
-                        throw new Error(`Error ${row.email}: ${err.message || 'Unknown error'}`);
-                    }
-                }
-            }));
+                successCount++;
 
-            // Aggregate results from this chunk
-            results.forEach((result) => {
-                if (result.status === 'fulfilled') {
-                    successCount++;
+            } catch (err: any) {
+                if (err.code === 'P2002') {
+                    errors.push(`Duplicate: ${row.email}`);
                 } else {
-                    errors.push(result.reason.message);
+                    console.error(`Error importing ${row.email}:`, err);
+                    errors.push(`Error ${row.email}: ${err.message || 'Unknown error'}`);
                 }
-            });
+            }
         }
 
         return {
             success: true,
             message: `Imported ${successCount} employees.`,
             errorCount: errors.length,
-            errors: errors.slice(0, 50) // Return first 50 errors only
+            errors: errors.slice(0, 50)
         };
 
     } catch (error: any) {
         console.error('Fatal Import Error:', error);
+        // Important: Return a serializable object, do not throw
         return { success: false, error: `Fatal: ${error.message || 'Unknown server error'}` };
     }
 }
@@ -460,5 +441,3 @@ export async function importTrainingRecords(data: any[]) {
         return { success: true, message: `Imported ${successCount} certifications.`, errorCount: errors.length, errors: errors.slice(0, 5) };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
-
-
