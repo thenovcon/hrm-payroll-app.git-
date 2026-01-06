@@ -142,9 +142,9 @@ export default function LeaveDashboard({
                             <tbody>
                                 {myRequests.map(req => (
                                     <tr key={req.id} style={{ borderBottom: '1px solid var(--slate-50)' }}>
-                                        <td style={{ padding: '1rem', fontWeight: 600 }}>{req.leaveType.name}</td>
+                                        <td style={{ padding: '1rem', fontWeight: 600 }}>{req.leaveType?.name || 'Unknown Type'}</td>
                                         <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                                            {new Date(req.startDate).toLocaleDateString()} - {new Date(req.endDate).toLocaleDateString()}
+                                            {req.startDate ? new Date(req.startDate).toLocaleDateString() : 'N/A'} - {req.endDate ? new Date(req.endDate).toLocaleDateString() : 'N/A'}
                                         </td>
                                         <td style={{ padding: '1rem' }}>{req.daysRequested}</td>
                                         <td style={{ padding: '1rem' }}>
