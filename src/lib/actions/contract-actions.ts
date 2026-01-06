@@ -24,7 +24,7 @@ export async function generateContract(applicationId: string) {
     const contractContent = `
         EMPLOYMENT AGREEMENT
 
-        This Agreement is made on ${startDate} between Novcon Ghana Ltd ("Employer") and ${candidateName} ("Employee").
+        This Agreement is made on ${startDate} between Novelty Concepts Ltd Ltd ("Employer") and ${candidateName} ("Employee").
 
         1. POSITION
         The Employee is employed as ${roleTitle}.

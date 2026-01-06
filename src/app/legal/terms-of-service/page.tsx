@@ -8,7 +8,7 @@ export default function TermsOfService() {
             <p>Last Updated: January 1, 2026</p>
 
             <h2>1. ACCEPTANCE OF TERMS</h2>
-            <p>These Terms of Service ("Terms") constitute a legally binding agreement between you and Novelty Concepts Ltd, trading as Novcon Ghana ("Company," "we," "us," or "our") governing your use of the Novcon Ghana HRM & Payroll System (the "System" or "Service").</p>
+            <p>These Terms of Service ("Terms") constitute a legally binding agreement between you and Novelty Concepts Ltd ("Company," "we," "us," or "our") governing your use of the Novelty Concepts Ltd HRM & Payroll System (the "System" or "Service").</p>
             <p>By accessing or using the System, you agree to be bound by these Terms. If you do not agree, do not use the System.</p>
 
             <h2>2. DEFINITIONS</h2>
@@ -21,7 +21,7 @@ export default function TermsOfService() {
             </ul>
 
             <h2>3. SERVICE DESCRIPTION</h2>
-            <p>The Novcon Ghana HRM & Payroll System is a cloud-based Software-as-a-Service (SaaS) platform providing:</p>
+            <p>The Novelty Concepts Ltd HRM & Payroll System is a cloud-based Software-as-a-Service (SaaS) platform providing:</p>
             <ul>
                 <li>Recruitment and Applicant Tracking</li>
                 <li>Employee Information Management</li>
@@ -155,7 +155,7 @@ export default function TermsOfService() {
 
             <h2>8. INTELLECTUAL PROPERTY</h2>
             <h3>8.1 Our IP Rights</h3>
-            <p>The System, including all software, designs, text, graphics, and other content, is owned by Novcon Ghana and protected by:</p>
+            <p>The System, including all software, designs, text, graphics, and other content, is owned by Novelty Concepts Ltd and protected by:</p>
             <ul>
                 <li>Copyright laws</li>
                 <li>Trademark laws</li>
@@ -326,7 +326,7 @@ export default function TermsOfService() {
             </ul>
 
             <h2>15. INDEMNIFICATION</h2>
-            <p>You agree to indemnify and hold harmless Novcon Ghana, its officers, directors, employees, and agents from:</p>
+            <p>You agree to indemnify and hold harmless Novelty Concepts Ltd, its officers, directors, employees, and agents from:</p>
             <ul>
                 <li>Claims arising from your use of the System</li>
                 <li>Your violation of these Terms</li>
@@ -364,7 +364,7 @@ export default function TermsOfService() {
 
             <h2>18. GENERAL PROVISIONS</h2>
             <h3>18.1 Entire Agreement</h3>
-            <p>These Terms, together with the Privacy Policy and any other referenced policies, constitute the entire agreement between you and Novcon Ghana.</p>
+            <p>These Terms, together with the Privacy Policy and any other referenced policies, constitute the entire agreement between you and Novelty Concepts Ltd.</p>
 
             <h3>18.2 Severability</h3>
             <p>If any provision is found invalid or unenforceable, the remaining provisions remain in effect.</p>
@@ -384,7 +384,7 @@ export default function TermsOfService() {
             <h3>18.7 Notices</h3>
             <p>Notices must be in writing and sent to:</p>
             <ul>
-                <li>To Novcon Ghana: legal@novconghana.com or [physical address]</li>
+                <li>To Novelty Concepts Ltd: legal@novconghana.com or [physical address]</li>
                 <li>To You: The email associated with your Account</li>
             </ul>
 
@@ -393,7 +393,7 @@ export default function TermsOfService() {
 
             <h2>19. CONTACT INFORMATION</h2>
             <p>For questions about these Terms:</p>
-            <p>Novcon Ghana 59 Black Hoop Lane, Community 8, Tema Accra, Ghana</p>
+            <p>Novelty Concepts Ltd 59 Black Hoop Lane, Community 8, Tema Accra, Ghana</p>
             <p>Email: support@thenoveltyconcepts.com: +233 20 021 7444</p>
         </div>
     );

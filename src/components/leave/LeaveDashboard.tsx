@@ -53,7 +53,10 @@ export default function LeaveDashboard({
                 <div className="card" style={{ borderLeft: '4px solid var(--primary-500)' }}>
                     <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-500)' }}>Annual Leave Available</p>
                     <p style={{ margin: '0.25rem 0 0 0', fontSize: '1.5rem', fontWeight: 800 }}>
-                        {balances.find(b => b.leaveType.name.includes('Annual'))?.daysAllocated - balances.find(b => b.leaveType.name.includes('Annual'))?.daysUsed || 0} Days
+                        {(() => {
+                            const ann = balances.find(b => b.leaveType?.name?.includes('Annual'));
+                            return ann ? (ann.daysAllocated - ann.daysUsed) : 0;
+                        })()} Days
                     </p>
                 </div>
                 <div className="card" style={{ borderLeft: '4px solid var(--accent-amber)' }}>

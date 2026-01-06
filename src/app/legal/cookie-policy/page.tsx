@@ -6,7 +6,7 @@ export default function CookiePolicy() {
         <div>
             <h1>COOKIE POLICY</h1>
             <p>Last Updated: January 1, 2026</p>
-            <p>This Cookie Policy explains how Novcon Ghana uses cookies and similar technologies on the Novcon Ghana HRM & Payroll System.</p>
+            <p>This Cookie Policy explains how Novelty Concepts Ltd uses cookies and similar technologies on the Novelty Concepts Ltd HRM & Payroll System.</p>
 
             <h2>1. WHAT ARE COOKIES?</h2>
             <p>Cookies are small text files stored on your device (computer, smartphone, tablet) when you visit a website. They help websites remember your preferences, login status, and other information to improve your experience.</p>

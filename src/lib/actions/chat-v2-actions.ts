@@ -149,7 +149,7 @@ async function generateAIResponse(conversationId: string, userPrompt: string) {
         console.error("RAG Error:", e);
     }
 
-    const systemPrompt = `You are a helpful HR Assistant for Novcon Ghana.
+    const systemPrompt = `You are a helpful HR Assistant for Novelty Concepts Ltd.
     Use the following HR Policies to answer the user's question if relevant.
     If the answer is not in the policies, say "I don't have information on that in the company policies. Please contact your local admin to have this information uploaded."
     

@@ -85,18 +85,22 @@ export async function POST(req: Request) {
                     });
                 }
 
-                results.push(emp);
-            } catch (innerError) {
+                results.push({ success: true });
+            } catch (innerError: any) {
                 console.error(`Failed to import row for ${row.email}:`, innerError);
-                // We typically catch here to let the rest of the batch proceed, 
-                // BUT if connection pool is dead, this might repeat. 
-                // Sequential processing usually avoids the "Timeout" error effectively.
+                results.push({ success: false, email: row.email, error: innerError.message });
             }
         }
 
-        const successCount = results.filter(r => r !== null).length;
+        const successCount = results.filter(r => r.success).length;
+        const failedRows = results.filter(r => !r.success);
 
-        return NextResponse.json({ success: true, count: successCount });
+        return NextResponse.json({
+            success: true,
+            count: successCount,
+            failed: failedRows,
+            message: `Processed ${chunk.length} rows. Success: ${successCount}, Failed: ${failedRows.length}`
+        });
 
     } catch (error: any) {
         console.error("API Import Error:", error);

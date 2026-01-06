@@ -8,7 +8,7 @@ export default function PrivacyPolicy() {
             <p>Last Updated: January 1, 2026</p>
 
             <h2>1. INTRODUCTION</h2>
-            <p>Novelty Concepts Ltd, trading as Novcon Ghana ("we," "our," or "us") is committed to protecting the privacy and security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard information when you use the Novcon Ghana HRM & Payroll System (the "System" or "Service").</p>
+            <p>Novelty Concepts Ltd, trading as Novelty Concepts Ltd ("we," "our," or "us") is committed to protecting the privacy and security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard information when you use the Novelty Concepts Ltd HRM & Payroll System (the "System" or "Service").</p>
             <p>This Privacy Policy applies to all users of the System, including employers, human resources personnel, managers, employees, and job applicants.</p>
             <p>By using the System, you consent to the data practices described in this policy.</p>
 
@@ -141,7 +141,7 @@ export default function PrivacyPolicy() {
                 <li>Communicate with employees</li>
             </ul>
 
-            <h3>4.2 Novcon Ghana Uses Data To:</h3>
+            <h3>4.2 Novelty Concepts Ltd Uses Data To:</h3>
             <ul>
                 <li>Provide and maintain the System</li>
                 <li>Process transactions and billing</li>
@@ -183,7 +183,7 @@ export default function PrivacyPolicy() {
             <ul>
                 <li>Comply with court orders or legal processes</li>
                 <li>Enforce our Terms of Service</li>
-                <li>Protect the rights, property, or safety of Novcon Ghana, our users, or others</li>
+                <li>Protect the rights, property, or safety of Novelty Concepts Ltd, our users, or others</li>
                 <li>Prevent fraud or security threats</li>
             </ul>
 
@@ -311,7 +311,7 @@ export default function PrivacyPolicy() {
             <p>Continued use of the System after changes constitutes acceptance of the updated policy.</p>
 
             <h2>13. CONTACT INFORMATION</h2>
-            <p>Data Controller: Novcon Ghana [Company Address] Accra, Ghana</p>
+            <p>Data Controller: Novelty Concepts Ltd [Company Address] Accra, Ghana</p>
             <p>Data Protection Officer: Email: support@thenoveltyconcepts.com Phone: +233 20 021 7444</p>
             <p>General Privacy Inquiries: Email: support@thenoveltyconcepts.com</p>
         </div>

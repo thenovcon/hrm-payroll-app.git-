@@ -6,7 +6,7 @@ export default function SLA() {
         <div>
             <h1>SERVICE LEVEL AGREEMENT (SLA)</h1>
             <p>Effective Date: January 1, 2026</p>
-            <p>This Service Level Agreement ("SLA") defines the performance standards and availability commitments for the Novcon Ghana HRM & Payroll System.</p>
+            <p>This Service Level Agreement ("SLA") defines the performance standards and availability commitments for the Novelty Concepts Ltd HRM & Payroll System.</p>
 
             <h2>1. DEFINITIONS</h2>
             <ul>

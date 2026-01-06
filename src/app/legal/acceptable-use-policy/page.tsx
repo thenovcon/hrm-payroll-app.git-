@@ -6,7 +6,7 @@ export default function AcceptableUsePolicy() {
         <div>
             <h1>ACCEPTABLE USE POLICY</h1>
             <p>Last Updated: January 1, 2026</p>
-            <p>This Acceptable Use Policy ("AUP") governs your use of the Novcon Ghana HRM & Payroll System and is incorporated into our Terms of Service.</p>
+            <p>This Acceptable Use Policy ("AUP") governs your use of the Novelty Concepts Ltd HRM & Payroll System and is incorporated into our Terms of Service.</p>
 
             <h2>1. PURPOSE</h2>
             <p>This AUP ensures that all users:</p>

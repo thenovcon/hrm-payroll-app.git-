@@ -6,9 +6,12 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HRM+",
-  description: "Advanced HR Management System",
+  title: "Novelty Concepts Ltd HRM",
+  description: "Advanced HR Management System for Novelty Concepts Ltd",
   manifest: "/manifest.json",
+  icons: {
+    icon: '/logo.png',
+  }
 };
 
 import { auth } from '@/auth';

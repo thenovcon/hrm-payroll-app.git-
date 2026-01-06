@@ -22,7 +22,7 @@ export default function TalentPool() {
         <div style={{ padding: '1.5rem' }}>
             <div style={{ marginBottom: '1.5rem' }}>
                 <h3 className="text-lg font-bold">Talent Pool</h3>
-                <p className="text-sm text-gray-500">A unified database of all candidates who have applied to Novcon Ghana.</p>
+                <p className="text-sm text-gray-500">A unified database of all candidates who have applied to Novelty Concepts Ltd.</p>
             </div>
 
             <div style={{ overflowX: 'auto' }}>

@@ -105,10 +105,22 @@ export default function DataImport() {
 
                 if (result.success) {
                     const batchSuccess = result.count || 0;
+                    const batchFailures = result.failed || [];
+
                     setStats(prev => ({
                         success: prev.success + batchSuccess,
-                        failed: prev.failed + (chunk.length - batchSuccess) // Simplified fails if not enumerated
+                        failed: prev.failed + batchFailures.length
                     }));
+
+                    if (batchFailures.length > 0) {
+                        setErrorLog(prev => [
+                            ...prev,
+                            ...batchFailures.map((f: any) => ({
+                                email: f.email || 'Unknown',
+                                reason: f.error || 'Import Failed'
+                            }))
+                        ]);
+                    }
                 } else {
                     setStats(prev => ({ ...prev, failed: prev.failed + chunk.length }));
                     setErrorLog(prev => [...prev, { email: 'BATCH_FAIL', reason: result.error || 'API Error' }]);

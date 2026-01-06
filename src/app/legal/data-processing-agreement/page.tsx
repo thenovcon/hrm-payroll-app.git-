@@ -6,13 +6,13 @@ export default function DPA() {
         <div>
             <h1>DATA PROCESSING AGREEMENT (DPA)</h1>
             <p>Effective Date: January 1, 2026</p>
-            <p>This Data Processing Agreement ("DPA") forms part of the Terms of Service between Novelty Concepts Ltd trading as Novcon Ghana ("Processor") and the subscribing organization ("Controller") for the provision of the Novcon Ghana HRM & Payroll System.</p>
+            <p>This Data Processing Agreement ("DPA") forms part of the Terms of Service between Novelty Concepts Ltd trading as Novelty Concepts Ltd ("Processor") and the subscribing organization ("Controller") for the provision of the Novelty Concepts Ltd HRM & Payroll System.</p>
 
             <h2>1. DEFINITIONS</h2>
             <p>For purposes of this DPA:</p>
             <ul>
                 <li><strong>"Controller":</strong> The organization that determines the purposes and means of processing personal data</li>
-                <li><strong>"Processor":</strong> Novcon Ghana, which processes personal data on behalf of the Controller</li>
+                <li><strong>"Processor":</strong> Novelty Concepts Ltd, which processes personal data on behalf of the Controller</li>
                 <li><strong>"Data Subject":</strong> An individual whose personal data is processed</li>
                 <li><strong>"Personal Data":</strong> Any information relating to an identified or identifiable natural person</li>
                 <li><strong>"Processing":</strong> Any operation performed on personal data (collection, storage, use, disclosure, deletion, etc.)</li>
@@ -21,7 +21,7 @@ export default function DPA() {
 
             <h2>2. SCOPE AND ROLES</h2>
             <h3>2.1 Scope</h3>
-            <p>This DPA applies to the processing of personal data by Novcon Ghana when providing the System to the Controller.</p>
+            <p>This DPA applies to the processing of personal data by Novelty Concepts Ltd when providing the System to the Controller.</p>
 
             <h3>2.2 Controller Responsibilities</h3>
             <p>The Controller:</p>
@@ -34,7 +34,7 @@ export default function DPA() {
             </ul>
 
             <h3>2.3 Processor Responsibilities</h3>
-            <p>Novcon Ghana:</p>
+            <p>Novelty Concepts Ltd:</p>
             <ul>
                 <li>Processes personal data only on documented instructions from the Controller</li>
                 <li>Ensures confidentiality of personnel with access to personal data</li>
@@ -46,7 +46,7 @@ export default function DPA() {
 
             <h2>3. NATURE AND PURPOSE OF PROCESSING</h2>
             <h3>3.1 Nature of Processing</h3>
-            <p>Novcon Ghana processes personal data by:</p>
+            <p>Novelty Concepts Ltd processes personal data by:</p>
             <ul>
                 <li>Collecting data entered by the Controller</li>
                 <li>Storing data in secure databases</li>
@@ -91,7 +91,7 @@ export default function DPA() {
 
             <h2>4. CONTROLLER INSTRUCTIONS</h2>
             <h3>4.1 Documented Instructions</h3>
-            <p>Novcon Ghana will process personal data only based on documented instructions from the Controller, including:</p>
+            <p>Novelty Concepts Ltd will process personal data only based on documented instructions from the Controller, including:</p>
             <ul>
                 <li>Instructions contained in the Terms of Service</li>
                 <li>Instructions provided through System features and configuration</li>
@@ -106,7 +106,7 @@ export default function DPA() {
 
             <h2>5. SECURITY OF PROCESSING</h2>
             <h3>5.1 Security Measures</h3>
-            <p>Novcon Ghana implements appropriate technical and organizational measures, including:</p>
+            <p>Novelty Concepts Ltd implements appropriate technical and organizational measures, including:</p>
             <p><strong>Technical Measures:</strong></p>
             <ul>
                 <li>Encryption of data in transit (TLS/SSL) and at rest</li>
@@ -134,7 +134,7 @@ export default function DPA() {
 
             <h2>6. SUB-PROCESSORS</h2>
             <h3>6.1 Authorization</h3>
-            <p>The Controller authorizes Novcon Ghana to engage sub-processors for specific processing activities.</p>
+            <p>The Controller authorizes Novelty Concepts Ltd to engage sub-processors for specific processing activities.</p>
 
             <h3>6.2 Current Sub-processors</h3>
             <p>As of this date, we use the following sub-processors:</p>
@@ -295,7 +295,7 @@ export default function DPA() {
 
             <h2>19. CONTACT INFORMATION</h2>
             <p>For DPA inquiries:</p>
-            <p>Novcon Ghana (Processor) Data Protection Officer Email: support@thenoveltyconcepts.com Address: 59 Black Hoop Lane, Community 8, Tema</p>
+            <p>Novelty Concepts Ltd (Processor) Data Protection Officer Email: support@thenoveltyconcepts.com Address: 59 Black Hoop Lane, Community 8, Tema</p>
             <p>Controller Novelty Concepts Ltd Dennis Gborglah dennis.gborglah@thenoveltyconcepts.com</p>
         </div>
     );

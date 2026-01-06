@@ -11,7 +11,7 @@ export default async function CareerPortal() {
             <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                 <header style={{ textAlign: 'center', marginBottom: '4rem' }}>
                     <h1 style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--primary-900)', marginBottom: '1rem' }}>
-                        Join Novcon Ghana
+                        Join Novelty Concepts Ltd
                     </h1>
                     <p style={{ fontSize: '1.25rem', color: 'var(--slate-600)' }}>
                         Help us build the future of human resource management in Ghana.
@@ -62,7 +62,7 @@ export default async function CareerPortal() {
                 </div>
 
                 <footer style={{ marginTop: '4rem', textAlign: 'center', color: 'var(--slate-400)', fontSize: '0.875rem' }}>
-                    © {new Date().getFullYear()} Novcon Ghana. All rights reserved.
+                    © {new Date().getFullYear()} Novelty Concepts Ltd. All rights reserved.
                 </footer>
             </div>
         </div>
