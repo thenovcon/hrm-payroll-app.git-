@@ -99,9 +99,12 @@ export async function bulkImportEmployees(data: any[]) {
 
         return {
             success: true,
-            message: `Imported ${successCount} employees.`,
-            errorCount: errors.length,
-            errors: errors.slice(0, 50)
+            successCount, // Explicitly return count
+            failedRows: errors.map(e => {
+                const parts = e.split(':');
+                return { email: parts[0]?.replace('Error ', '').replace('Duplicate', '').trim(), reason: parts.slice(1).join(':').trim() };
+            }),
+            message: `Processed batch. Success: ${successCount}, Failed: ${errors.length}`
         };
 
     } catch (error: any) {

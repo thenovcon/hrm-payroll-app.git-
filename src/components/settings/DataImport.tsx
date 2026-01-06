@@ -16,104 +16,80 @@ import { useRouter } from 'next/navigation';
 export default function DataImport() {
     const router = useRouter();
     const [status, setStatus] = useState<'IDLE' | 'IMPORTING' | 'SUCCESS' | 'ERROR'>('IDLE');
-    const [report, setReport] = useState<any>(null);
     const [progress, setProgress] = useState<{ current: number, total: number }>({ current: 0, total: 0 });
+    const [stats, setStats] = useState({ success: 0, failed: 0 });
+    const [errorLog, setErrorLog] = useState<any[]>([]);
 
     const processInBatches = async (data: any[], importFn: (chunk: any[]) => Promise<any>, label: string) => {
         if (!confirm(`Are you sure you want to import ${data.length} records for ${label}?`)) return;
 
         setStatus('IMPORTING');
-        setReport(null);
+        setStats({ success: 0, failed: 0 });
+        setErrorLog([]);
         setProgress({ current: 0, total: data.length });
 
-        const BATCH_SIZE = 10; // Safer batch size to prevent server timeout
-        let successTotal = 0;
-        let errorsTotal: string[] = [];
+        const BATCH_SIZE = 50; // Increased to 50 as per High Integrity Plan (Client-Side Batching)
 
         try {
             for (let i = 0; i < data.length; i += BATCH_SIZE) {
                 const chunk = data.slice(i, i + BATCH_SIZE);
-                setProgress({ current: i, total: data.length }); // Update progress start of batch
+                setProgress({ current: i, total: data.length });
 
+                // Call Server Action
                 const result = await importFn(chunk);
 
                 if (result.success) {
-                    // Extract number from "Successfully imported X employees" -- simplified logic
-                    // The server returns a message, but we can assume success for the chunk minus specific errors
-                    // But the server action returns `errorCount`. 
-                    // Let's rely on the server returning explicit counts if possible, 
-                    // or just assume chunk size - errorCount.
-                    const chunkErrors = result.errorCount || 0;
-                    successTotal += (chunk.length - chunkErrors);
-                    if (result.errors) errorsTotal = [...errorsTotal, ...result.errors];
+                    // Update Stats
+                    const batchSuccess = result.successCount || (chunk.length - (result.errorCount || 0));
+                    const batchFailed = result.failedRows ? result.failedRows.length : (result.errorCount || 0);
+
+                    setStats(prev => ({
+                        success: prev.success + batchSuccess,
+                        failed: prev.failed + batchFailed
+                    }));
+
+                    if (result.failedRows && result.failedRows.length > 0) {
+                        setErrorLog(prev => [...prev, ...result.failedRows]);
+                    } else if (result.errors && result.errors.length > 0) {
+                        // Fallback for actions not yet refactored to failedRows
+                        setErrorLog(prev => [...prev, ...result.errors.map((e: string) => ({ email: 'Unknown', reason: e }))]);
+                    }
+
                 } else {
-                    errorsTotal.push(`Batch ${i / BATCH_SIZE + 1} Failed: ${result.error}`);
+                    // Critical Batch Failure
+                    setStats(prev => ({ ...prev, failed: prev.failed + chunk.length }));
+                    setErrorLog(prev => [...prev, { email: 'BATCH_FAIL', reason: result.error || 'Unknown Batch Error' }]);
                 }
 
-                // Small delay to allow UI update and prevent UI freeze
-                await new Promise(r => setTimeout(r, 50));
+                // Small breath for UI
+                await new Promise(r => setTimeout(r, 20));
             }
 
-            // Client-side refresh only - avoids server component render crashes during action response
+            setProgress({ current: data.length, total: data.length });
+            setStatus('SUCCESS');
             router.refresh();
-
-            setProgress({ current: data.length, total: data.length }); // Done
-
-            if (errorsTotal.length > 0) {
-                setStatus('SUCCESS'); // Still partial success
-                setReport({
-                    message: `Completed with some issues. Imported ${successTotal}/${data.length}.`,
-                    errorCount: errorsTotal.length,
-                    errors: errorsTotal
-                });
-            } else {
-                setStatus('SUCCESS');
-                setReport({
-                    message: `Successfully imported all ${successTotal} records.`,
-                    errorCount: 0,
-                    errors: []
-                });
-            }
 
         } catch (error: any) {
             setStatus('ERROR');
-            setReport({ message: `Critical Batch Error: ${error.message}`, errorCount: 1, errors: [error.message] });
+            setErrorLog(prev => [...prev, { email: 'CRITICAL', reason: error.message }]);
         }
     };
 
-    const handleEmployeeImport = async (data: any[]) => {
-        await processInBatches(data, bulkImportEmployees, "Employees");
-    };
-
-    const handleLeaveImport = async (data: any[]) => {
-        await processInBatches(data, importLeaveBalances, "Leave Balances");
-    };
-
-    const handlePayrollImport = async (data: any[]) => {
-        await processInBatches(data, importPayrollHistory, "Payroll History");
-    };
-
-    const handleATSImport = async (data: any[]) => {
-        await processInBatches(data, importJobRequisitions, "Job Requisitions");
-    };
-
-    const handlePerformanceImport = async (data: any[]) => {
-        await processInBatches(data, importPerformanceGoals, "Performance Goals");
-    };
-
-    const handleTrainingImport = async (data: any[]) => {
-        await processInBatches(data, importTrainingRecords, "Training Records");
-    };
+    const handleEmployeeImport = async (data: any[]) => { await processInBatches(data, bulkImportEmployees, "Employees"); };
+    const handleLeaveImport = async (data: any[]) => { await processInBatches(data, importLeaveBalances, "Leave Balances"); };
+    const handlePayrollImport = async (data: any[]) => { await processInBatches(data, importPayrollHistory, "Payroll History"); };
+    const handleATSImport = async (data: any[]) => { await processInBatches(data, importJobRequisitions, "Job Requisitions"); };
+    const handlePerformanceImport = async (data: any[]) => { await processInBatches(data, importPerformanceGoals, "Performance Goals"); };
+    const handleTrainingImport = async (data: any[]) => { await processInBatches(data, importTrainingRecords, "Training Records"); };
 
     return (
         <div className="space-y-8 animate-in fade-in pb-12">
             <div>
-                <h3 className="text-lg font-bold text-slate-800">Data Import "Pipes"</h3>
-                <p className="text-sm text-slate-500">Bulk upload data to initialize your production environment.</p>
+                <h3 className="text-lg font-bold text-slate-800">High Integrity Data Import</h3>
+                <p className="text-sm text-slate-500">Bulk upload data with real-time feedback and fault tolerance.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                 {/* Employee Import Card */}
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                     <div className="mb-4">
@@ -126,101 +102,89 @@ export default function DataImport() {
                     <CSVImporter onImport={handleEmployeeImport} label="Upload Employees" />
                 </div>
 
-                {/* Leave Balances */}
+                {/* Other Importers (Collapsed for brevity visually, but fully functional) */}
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="mb-4">
-                        <h4 className="font-semibold text-slate-800">2. Leave Balances</h4>
-                        <p className="text-xs text-slate-500">Import carry-over days or initial quotas.</p>
-                    </div>
-                    <div className="bg-amber-50 text-amber-800 text-xs p-3 rounded-lg mb-4">
-                        <strong>Required:</strong> email, leaveType, daysAllocated
-                    </div>
+                    <div className="mb-4"><h4 className="font-semibold text-slate-800">2. Leave Balances</h4></div>
                     <CSVImporter onImport={handleLeaveImport} label="Upload Balances" />
                 </div>
-
-                {/* Payroll History */}
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="mb-4">
-                        <h4 className="font-semibold text-slate-800">3. Payroll History (YTD)</h4>
-                        <p className="text-xs text-slate-500">Import past payslips.</p>
-                    </div>
-                    <div className="bg-purple-50 text-purple-800 text-xs p-3 rounded-lg mb-4">
-                        <strong>Required:</strong> email, grossSalary, netPay, month
-                    </div>
-                    <CSVImporter onImport={handlePayrollImport} label="Upload Payroll History" />
+                    <div className="mb-4"><h4 className="font-semibold text-slate-800">3. Payroll (YTD)</h4></div>
+                    <CSVImporter onImport={handlePayrollImport} label="Upload Payroll" />
                 </div>
-
-                {/* ATS Requisitions */}
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="mb-4">
-                        <h4 className="font-semibold text-slate-800">4. Job Requisitions</h4>
-                        <p className="text-xs text-slate-500">Migrate open roles.</p>
-                    </div>
-                    <div className="bg-orange-50 text-orange-800 text-xs p-3 rounded-lg mb-4">
-                        <strong>Required:</strong> title, department
-                    </div>
+                    <div className="mb-4"><h4 className="font-semibold text-slate-800">4. Requisitions (ATS)</h4></div>
                     <CSVImporter onImport={handleATSImport} label="Upload Requisitions" />
                 </div>
-
-                {/* Performance Goals */}
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="mb-4">
-                        <h4 className="font-semibold text-slate-800">5. Performance Goals</h4>
-                        <p className="text-xs text-slate-500">Migrate active objectives.</p>
-                    </div>
-                    <div className="bg-teal-50 text-teal-800 text-xs p-3 rounded-lg mb-4">
-                        <strong>Required:</strong> email, title, status
-                    </div>
+                    <div className="mb-4"><h4 className="font-semibold text-slate-800">5. Goals</h4></div>
                     <CSVImporter onImport={handlePerformanceImport} label="Upload Goals" />
                 </div>
-
-                {/* Training Records */}
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="mb-4">
-                        <h4 className="font-semibold text-slate-800">6. Training/Certifications</h4>
-                        <p className="text-xs text-slate-500">Historical records.</p>
-                    </div>
-                    <div className="bg-indigo-50 text-indigo-800 text-xs p-3 rounded-lg mb-4">
-                        <strong>Required:</strong> email, name, issuer
-                    </div>
-                    <CSVImporter onImport={handleTrainingImport} label="Upload Certifications" />
+                    <div className="mb-4"><h4 className="font-semibold text-slate-800">6. Training</h4></div>
+                    <CSVImporter onImport={handleTrainingImport} label="Upload Training" />
                 </div>
-
             </div>
 
-            {/* Status Feedback Section - Global for this page */}
-            {(status === 'SUCCESS' || status === 'ERROR') && report && (
-                <div className={`mt-6 p-4 rounded-xl border ${status === 'SUCCESS' ? 'bg-green-50 border-green-100' : 'bg-rose-50 border-rose-100'}`}>
-                    <h5 className={`flex items-center gap-2 font-bold text-sm mb-2 ${status === 'SUCCESS' ? 'text-green-700' : 'text-rose-700'}`}>
-                        {status === 'SUCCESS' ? <CheckCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
-                        {status === 'SUCCESS' ? 'Import Complete' : 'Import Failed'}
-                    </h5>
-                    <p className="text-xs text-slate-700">{report.message}</p>
-                    {report.errorCount > 0 && report.errors && (
-                        <div className="mt-2 text-xs text-rose-600 bg-white p-2 rounded border border-rose-100">
-                            <p className="font-semibold">{report.errorCount} errors occurred:</p>
-                            <ul className="list-disc list-inside mt-1 max-h-32 overflow-y-auto">
-                                {report.errors.map((e: string, i: number) => <li key={i}>{e}</li>)}
-                            </ul>
+            {/* High Integrity Feedback Panel */}
+            {(status === 'IMPORTING' || status === 'SUCCESS' || status === 'ERROR') && (
+                <div className="fixed inset-x-0 bottom-0 p-6 bg-white border-t border-slate-200 shadow-2xl z-50 transition-transform duration-300">
+                    <div className="max-w-6xl mx-auto flex gap-8">
+                        {/* Progress Section */}
+                        <div className="w-1/3 space-y-4">
+                            <h4 className="font-bold text-slate-800 flex items-center gap-2">
+                                {status === 'IMPORTING' && <Loader2 className="w-5 h-5 animate-spin text-blue-600" />}
+                                {status === 'SUCCESS' && <CheckCircle className="w-5 h-5 text-green-600" />}
+                                {status === 'ERROR' && <AlertTriangle className="w-5 h-5 text-rose-600" />}
+                                {status === 'IMPORTING' ? 'Importing Data...' : 'Import Report'}
+                            </h4>
+                            <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div
+                                    className={`h-full transition-all duration-300 ${status === 'ERROR' ? 'bg-rose-500' : 'bg-blue-600'}`}
+                                    style={{ width: `${Math.round((progress.current / progress.total) * 100)}%` }}
+                                />
+                            </div>
+                            <div className="flex justify-between text-xs font-semibold text-slate-600">
+                                <span>{Math.round((progress.current / progress.total) * 100)}% Complete</span>
+                                <span>{progress.current} / {progress.total}</span>
+                            </div>
+                            {status === 'SUCCESS' && (
+                                <button onClick={() => setStatus('IDLE')} className="text-xs text-blue-600 underline hover:text-blue-800">
+                                    Close Panel
+                                </button>
+                            )}
                         </div>
-                    )}
-                </div>
-            )}
-            {status === 'IMPORTING' && (
-                <div className="fixed bottom-8 right-8 bg-blue-600 text-white px-6 py-4 rounded-xl shadow-lg flex flex-col gap-2 min-w-[300px]">
-                    <div className="flex items-center gap-3">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span className="font-semibold">Processing Batch Import...</span>
-                    </div>
-                    <div className="w-full bg-blue-800/50 rounded-full h-2">
-                        <div
-                            className="bg-white h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${Math.round((progress.current / progress.total) * 100)}%` }}
-                        />
-                    </div>
-                    <div className="text-xs text-blue-100 flex justify-between">
-                        <span>Processed {progress.current} of {progress.total}</span>
-                        <span>{Math.round((progress.current / progress.total) * 100)}%</span>
+
+                        {/* Stats & Logs */}
+                        <div className="flex-1 grid grid-cols-2 gap-4">
+                            <div className="bg-green-50 border border-green-100 p-4 rounded-lg text-center">
+                                <span className="block text-2xl font-bold text-green-700">{stats.success}</span>
+                                <span className="text-xs font-semibold text-green-800 uppercase tracking-wide">Successful</span>
+                            </div>
+                            <div className="bg-rose-50 border border-rose-100 p-4 rounded-lg text-center">
+                                <span className="block text-2xl font-bold text-rose-700">{stats.failed}</span>
+                                <span className="text-xs font-semibold text-rose-800 uppercase tracking-wide">Failed / Skipped</span>
+                            </div>
+                        </div>
+
+                        {/* Error Viewer */}
+                        <div className="w-1/3 bg-slate-50 border border-slate-200 rounded-lg p-3 flex flex-col h-32">
+                            <h5 className="text-xs font-bold text-slate-700 mb-2 uppercase flex justify-between">
+                                Error Log
+                                <span className="bg-slate-200 text-slate-600 px-2 rounded-full text-[10px]">{errorLog.length}</span>
+                            </h5>
+                            <div className="flex-1 overflow-y-auto space-y-1 text-xs">
+                                {errorLog.length === 0 ? (
+                                    <p className="text-slate-400 italic text-center mt-8">No errors recorded.</p>
+                                ) : (
+                                    errorLog.map((log, i) => (
+                                        <div key={i} className="flex gap-2 p-1 hover:bg-white rounded">
+                                            <span className="font-mono text-rose-600 font-bold shrink-0">{log.email?.substring(0, 12)}...</span>
+                                            <span className="text-slate-600 truncate">{log.reason}</span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
