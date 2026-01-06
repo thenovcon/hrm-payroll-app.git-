@@ -8,7 +8,7 @@ export async function getNotifications(isRead = false) {
     const session = await auth();
     if (!session?.user?.id) return [];
 
-    return await prisma.notification.findMany({
+    const notifications = await prisma.notification.findMany({
         where: {
             userId: session.user.id,
             isRead
@@ -16,6 +16,9 @@ export async function getNotifications(isRead = false) {
         orderBy: { createdAt: 'desc' },
         take: 20
     });
+
+    // Serialize Dates specifically for Client Component props
+    return JSON.parse(JSON.stringify(notifications));
 }
 
 export async function markAsRead(notificationId: string) {
